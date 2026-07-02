@@ -1,5 +1,5 @@
 ---
-title: "Ingest Expert Materials into Mega Brain"
+title: "Ingest Expert Materials into Mega Brain's Pipeline"
 sidebarTitle: "Ingesting Materials"
 description: "Learn how to feed videos, PDFs, audio files, and more into Mega Brain so JARVIS can transform them into structured, searchable knowledge."
 ---
@@ -34,13 +34,13 @@ Mega Brain accepts the following source types through the `/ingest` command:
 
     When prompted, enter your source:
 
-    ```
+    ```text
     Source: https://www.youtube.com/watch?v=dQw4w9WgXcQ
     ```
 
     Or for a local file:
 
-    ```
+    ```text
     Source: ./materials/expert-interview.pdf
     ```
   </Step>
@@ -48,12 +48,12 @@ Mega Brain accepts the following source types through the `/ingest` command:
     JARVIS automatically validates the source format, downloads or reads the content, and normalizes it into a consistent internal representation. For YouTube videos and audio files, transcription happens at this stage.
   </Step>
   <Step title="Monitor progress through automation hooks">
-    JARVIS reports real-time status updates as it works through the ingestion pipeline. Watch the output in Claude Code — each of the 20+ automation hooks fires in sequence and logs its result, so you always know where the process stands.
+    JARVIS reports real-time status updates as it works through the ingestion pipeline. Watch the output in Claude Code — each automation hook fires in sequence and logs its result, so you always know where the process stands.
   </Step>
   <Step title="Confirm ingestion is complete">
     Wait for the final confirmation message before moving on to DNA extraction or agent creation. Attempting to extract DNA from a partially ingested source produces incomplete results.
 
-    ```
+    ```text
     ✓ Ingestion complete: expert-interview.pdf
       → 3,847 content segments indexed
       → Ready for /extract-dna

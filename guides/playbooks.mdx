@@ -1,7 +1,7 @@
 ---
-title: "Create Actionable Playbooks from Expert Knowledge"
+title: "Generate Actionable Playbooks from Expert Knowledge"
 sidebarTitle: "Playbooks"
-description: "Synthesize ingested expert materials into step-by-step playbooks you can execute, share, and update as your knowledge base grows."
+description: "Synthesize ingested expert materials into step-by-step playbooks you can execute, share, and update as your knowledge base grows over time."
 ---
 
 Playbooks are the most immediately usable output Mega Brain can produce. Where raw ingested material and DNA schemas store knowledge in a form optimized for agents to reason over, a playbook transforms that same knowledge into a structured, human-readable action guide tailored to a specific goal. Think of a playbook as the answer to the question: "Given everything I've learned from these experts, exactly what should I do to achieve X?" The result is opinionated, step-by-step, and grounded in evidence — not a generic template, but a synthesis of real expert thinking applied to your stated objective.
@@ -11,16 +11,16 @@ Playbooks are the most immediately usable output Mega Brain can produce. Where r
 Every playbook Mega Brain generates includes the following components:
 
 <CardGroup cols={2}>
-  <Card title="Step-by-Step Action Guide" icon="list-check">
+  <Card title="Step-by-Step Action Guide" icon="list-check" href="/concepts/knowledge-pipeline">
     A sequenced set of concrete actions organized around achieving the playbook's stated goal or scenario. Each step is specific enough to act on immediately.
   </Card>
-  <Card title="Synthesized Expert Insights" icon="brain">
+  <Card title="Synthesized Expert Insights" icon="brain" href="/concepts/dna-extraction">
     Key insights drawn from multiple ingested sources and attributed to the relevant experts and materials, so you understand not just what to do but why.
   </Card>
-  <Card title="Evidence Links" icon="arrow-up-right-from-square">
+  <Card title="Evidence Links" icon="arrow-up-right-from-square" href="/guides/ingesting-materials">
     Every major recommendation traces back to the source material it came from — a chapter, a video timestamp, or a course module — giving you full provenance and a path to go deeper.
   </Card>
-  <Card title="Recommended Tools & Frameworks" icon="wrench">
+  <Card title="Recommended Tools & Frameworks" icon="wrench" href="/concepts/dna-extraction">
     Where relevant, Mega Brain surfaces the specific tools, frameworks, or mental models the extracted experts recommend for the scenario, drawn directly from their documented approaches.
   </Card>
 </CardGroup>
@@ -48,13 +48,13 @@ Every playbook Mega Brain generates includes the following components:
   <Step title="Specify the topic or goal for the playbook">
     Enter a clear, outcome-oriented topic. The more specific your goal, the more actionable the playbook output.
 
-    ```
+    ```text
     Playbook topic: Launch a new SaaS product
     ```
 
     You can be more specific if you have a defined context:
 
-    ```
+    ```text
     Playbook topic: Launch a bootstrapped B2B SaaS product with no paid ads
     ```
 
@@ -63,7 +63,7 @@ Every playbook Mega Brain generates includes the following components:
   <Step title="Mega Brain synthesizes the playbook">
     JARVIS scans your full extracted knowledge base, identifies every relevant philosophy, framework, heuristic, and methodology, and assembles them into a coherent action sequence. For a topic with strong coverage in your knowledge base, this typically produces a multi-section playbook with 15–40 discrete action steps.
 
-    ```
+    ```text
     ✓ Playbook generated: Launch a new SaaS product
       → 6 sections created
       → 28 action steps documented
@@ -93,6 +93,9 @@ Playbooks are living documents, not one-time outputs.
 
     ```bash
     /playbook
+    ```
+
+    ```text
     Playbook topic: Launch a new SaaS product
     ```
   </Tab>

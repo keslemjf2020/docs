@@ -1,5 +1,5 @@
 ---
-title: "Get Started with Mega Brain in Minutes"
+title: "Mega Brain Quickstart: From Ingestion to Mind-Clone Agent"
 sidebarTitle: "Quickstart"
 description: "Ingest your first expert material, run the knowledge pipeline, extract a DNA schema, and create a mind-clone agent — all in one session."
 ---
@@ -22,7 +22,7 @@ This tutorial gets you from a fresh installation to a working mind-clone agent i
   <Step title="Run /jarvis-briefing">
     Start every session by checking system status with the JARVIS briefing:
 
-    ```
+    ```text
     /jarvis-briefing
     ```
 
@@ -31,7 +31,7 @@ This tutorial gets you from a fresh installation to a working mind-clone agent i
   <Step title="Ingest your first material">
     Bring your first piece of expert content into Mega Brain using the `/ingest` command. You can provide a YouTube URL, a local PDF path, or a plain text transcription:
 
-    ```
+    ```text
     /ingest
     ```
 
@@ -40,7 +40,7 @@ This tutorial gets you from a fresh installation to a working mind-clone agent i
   <Step title="Extract DNA">
     Once ingestion completes, extract a structured knowledge profile from the material:
 
-    ```
+    ```text
     /extract-dna
     ```
 
@@ -49,11 +49,29 @@ This tutorial gets you from a fresh installation to a working mind-clone agent i
   <Step title="Create a mind-clone agent">
     With a DNA schema in place, generate an AI agent that reasons from the extracted knowledge:
 
-    ```
+    ```text
     /create-agent
     ```
 
     Follow the prompts to name your agent and confirm the source DNA. Mega Brain compiles the schema into an agent definition and registers it in your knowledge base. You can then invoke the agent directly in Claude Code to ask questions, generate advice, or pull it into a Conclave session with other agents.
+  </Step>
+  <Step title="Run a Conclave session">
+    Bring multiple agents together for structured, evidence-based deliberation:
+
+    ```text
+    /conclave
+    ```
+
+    Select the agents you want to include and provide a decision or topic to deliberate on. JARVIS orchestrates the session, captures each agent's reasoning, and produces a documented output with the key conclusions and supporting evidence from each perspective.
+  </Step>
+  <Step title="Generate a playbook">
+    Synthesize the knowledge from your ingested materials into a structured, step-by-step guide:
+
+    ```text
+    /playbook
+    ```
+
+    Follow the prompts to specify the topic and source materials. Mega Brain combines insights from your DNA schemas and knowledge base into a reusable playbook tailored to your workflow. Playbooks are the shareable end-product of the full pipeline.
   </Step>
 </Steps>
 

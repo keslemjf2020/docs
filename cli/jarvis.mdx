@@ -1,5 +1,5 @@
 ---
-title: "JARVIS: Mega Brain's Pipeline Orchestrator"
+title: "JARVIS: Mega Brain's Intelligent Pipeline Orchestrator"
 sidebarTitle: "JARVIS"
 description: "Understand how JARVIS orchestrates Mega Brain's knowledge pipeline, runs 20+ quality hooks, and keeps your session state consistent across commands."
 ---
@@ -11,19 +11,19 @@ JARVIS is the intelligent orchestrator at the heart of Mega Brain. Every time yo
 JARVIS handles five core responsibilities throughout your Mega Brain session:
 
 <CardGroup cols={2}>
-  <Card title="Format Detection and Normalization" icon="file-magnifying-glass">
-    Identifies incoming material types during ingestion and normalizes them into a consistent internal format before processing begins.
+  <Card title="Format Detection and Normalization" icon="file-magnifying-glass" href="/guides/ingesting-materials">
+    Identifies incoming material types during ingestion and normalizes them into a consistent format before processing begins.
   </Card>
-  <Card title="Quality Control via Automation Hooks" icon="shield-check">
+  <Card title="Quality Control via Automation Hooks" icon="shield-check" href="/configuration/hooks">
     Runs 20+ automation hooks at defined pipeline stages to catch issues early — before bad data propagates into your DNA schemas or agents.
   </Card>
-  <Card title="Pipeline Health Monitoring" icon="chart-line">
+  <Card title="Pipeline Health Monitoring" icon="chart-line" href="/concepts/knowledge-pipeline">
     Continuously monitors each pipeline stage and surfaces errors, warnings, and completion status in the `/jarvis-briefing` report.
   </Card>
-  <Card title="Session State Management" icon="database">
+  <Card title="Session State Management" icon="database" href="/cli/overview">
     Tracks ingested materials, extracted schemas, and active agents across commands so each step builds seamlessly on the last.
   </Card>
-  <Card title="Multi-Agent Coordination" icon="users">
+  <Card title="Multi-Agent Coordination" icon="users" href="/concepts/conclave">
     Manages context loading, agent sequencing, and output synthesis during `/conclave` deliberation sessions.
   </Card>
 </CardGroup>
@@ -75,7 +75,7 @@ The fastest way to understand what JARVIS is doing in your environment is to run
   <Step title="Type /jarvis-briefing and press Enter">
     Type the command directly at the Claude Code prompt — no flags or arguments needed. JARVIS will begin compiling the status report immediately.
 
-    ```bash
+    ```text
     /jarvis-briefing
     ```
   </Step>

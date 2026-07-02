@@ -1,5 +1,5 @@
 ---
-title: "Build an Expert Mind Clone with Mega Brain"
+title: "Build Expert Mind Clone Agents from Ingested Materials"
 sidebarTitle: "Building Mind Clones"
 description: "Extract an expert's cognitive DNA from ingested materials and create a Mind Clone Agent that reasons, responds, and cites sources the way they do."
 ---
@@ -39,7 +39,7 @@ Before you create a Mind Clone, make sure you have:
 
     When prompted, specify the target:
 
-    ```
+    ```text
     Extract from: Alex Hormozi
     ```
 
@@ -54,7 +54,7 @@ Before you create a Mind Clone, make sure you have:
   <Step title="Review the DNA schema">
     JARVIS outputs a structured cognitive profile once extraction completes. Read through it carefully before proceeding. Verify that the extracted philosophies and frameworks match what you know about the expert from the source materials.
 
-    ```
+    ```text
     ✓ DNA extraction complete: Alex Hormozi
       → 5 philosophies extracted
       → 12 mental models identified
@@ -75,7 +75,7 @@ Before you create a Mind Clone, make sure you have:
 
     When prompted for agent type, select **Mind Clone**:
 
-    ```
+    ```text
     Agent type: Mind Clone
     Based on DNA schema: alex-hormozi
     Agent name: Alex Hormozi Mind Clone
@@ -86,7 +86,7 @@ Before you create a Mind Clone, make sure you have:
   <Step title="Test the agent">
     Ask the Mind Clone a question relevant to the expert's domain. Observe how it structures its response — a well-built Mind Clone reasons through the expert's documented frameworks and cites the specific source material behind each claim.
 
-    ```
+    ```text
     You: How should I price a new service offer?
 
     Alex Hormozi Mind Clone:
@@ -104,13 +104,13 @@ Before you create a Mind Clone, make sure you have:
 Not all Mind Clones are equal. The quality of the agent scales directly with the quality and volume of its source material.
 
 <CardGroup cols={3}>
-  <Card title="More Material = Richer Agent" icon="layer-group">
+  <Card title="More Material = Richer Agent" icon="layer-group" href="/guides/ingesting-materials">
     Each additional ingested source adds new concepts, examples, and nuance to the DNA schema. A Mind Clone built from 20 sources will outperform one built from 2.
   </Card>
-  <Card title="Diverse Format Types" icon="shapes">
+  <Card title="Diverse Format Types" icon="shapes" href="/concepts/knowledge-pipeline">
     Combining videos, PDFs, and courses builds a more complete cognitive profile than any single format. Each medium captures different facets of how an expert thinks and communicates.
   </Card>
-  <Card title="Evidence Citations" icon="link">
+  <Card title="Evidence Citations" icon="link" href="/concepts/dna-extraction">
     Every response the Mind Clone generates is traceable to a specific moment in a specific source. This grounding prevents hallucination and lets you verify claims directly against the original material.
   </Card>
 </CardGroup>
