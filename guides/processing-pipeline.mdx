@@ -1,0 +1,316 @@
+---
+title: "Running the JARVIS Processing Pipeline"
+sidebarTitle: "Processing Pipeline"
+description: "Walk through the 5-phase JARVIS pipeline that converts raw transcriptions into dossiers, structured insights, and enriched agent memories."
+---
+
+Once you've ingested one or more materials into your inbox, you're ready to run the JARVIS processing pipeline. This is the core step that transforms raw transcriptions into structured knowledge — extracting insights, resolving entity names, synthesizing narratives, and updating every relevant agent's memory. A single `/process-jarvis` command kicks off all five phases automatically.
+
+## When to Run Processing
+
+Run `/process-jarvis` any time you have files waiting in your `inbox/` directory. You can process one file at a time or work through a batch. Each run is incremental — existing knowledge is updated and extended, never overwritten.
+
+<Note>
+  The complete pipeline takes 2–5 minutes per material, depending on word count and complexity. Use `/save` before a long batch run so you can resume if interrupted.
+</Note>
+
+## Starting the Pipeline
+
+<Steps>
+  <Step title="Process a single file">
+    Pass the exact file path from your inbox:
+
+    ```bash
+    /process-jarvis inbox/cole-gordon/MASTERCLASS/closing-techniques.txt
+    ```
+  </Step>
+  <Step title="Or combine ingestion and processing">
+    Use the `--process` flag on `/ingest` to skip the manual step:
+
+    ```bash
+    /ingest https://youtube.com/watch?v=abc123 --process
+    ```
+  </Step>
+  <Step title="Monitor progress with a briefing">
+    After processing completes, run a briefing to confirm results:
+
+    ```bash
+    /jarvis-briefing
+    ```
+
+    The briefing shows your health score, total processed materials, pending inbox files, and active agent statuses.
+  </Step>
+</Steps>
+
+## Phase 1: Initialization
+
+The pipeline starts by validating inputs, extracting metadata, loading state files, and checking for duplicates.
+
+**Metadata extracted from the file path:**
+
+```
+inbox/COLE GORDON/MASTERMINDS/video-title.txt
+       ↓            ↓           ↓
+  SOURCE_PERSON  SOURCE_TYPE  FILENAME
+```
+
+This produces structured metadata including `SOURCE_PERSON`, `SOURCE_COMPANY`, `SOURCE_TYPE`, `SOURCE_ID` (e.g., `CG003`), `SCOPE`, and `CORPUS`.
+
+**State files loaded or created:**
+
+| File | Contents |
+|------|----------|
+| `CHUNKS-STATE.json` | All semantic chunks |
+| `CANONICAL-MAP.json` | Entity normalization map |
+| `INSIGHTS-STATE.json` | Extracted insights |
+| `NARRATIVES-STATE.json` | Synthesized narratives |
+
+A 6-level duplicate check runs here, and processing aborts immediately if the file has already been registered.
+
+## Phase 2: Chunking
+
+The raw content is broken into semantic chunks of approximately 300 words each. Chunking preserves timestamps, speaker labels, formatting, and context boundaries so that every downstream insight remains traceable to its exact source location.
+
+**Chunk structure:**
+
+```json
+{
+  "id_chunk": "chunk_CG003_042",
+  "source_id": "CG003",
+  "source_path": "inbox/cole-gordon/MASTERCLASS/...",
+  "source_type": "lecture",
+  "text": "The CLOSER needs to master NEPQ...",
+  "speaker": "Cole Gordon",
+  "word_count": 287,
+  "pessoas": ["Cole Gordon", "closer"],
+  "temas": ["sales", "objection handling"],
+  "key_concepts": ["NEPQ", "discovery call"],
+  "chunk_sequence": 42
+}
+```
+
+Chunks are the foundation of traceability — every insight extracted in later phases links back to specific chunk IDs.
+
+## Phase 3: Entity Resolution
+
+Entity resolution canonicalizes variations of the same person, theme, or concept into a single authoritative form. This prevents the same idea from appearing under multiple names in your knowledge base.
+
+**Examples of what gets resolved:**
+
+<Tabs>
+  <Tab title="Person Names">
+    **Problem:** Multiple spelling variations
+
+    ```
+    "Sam oven"
+    "Sam Ovens"
+    "sam"
+    "Samuel Ovens"
+    ```
+
+    **Solution:** A single canonical entry
+
+    ```
+    Canonical: "Sam Ovens"
+    Aliases: ["sam", "Sam oven", "Samuel Ovens"]
+    Confidence: 0.95
+    ```
+  </Tab>
+  <Tab title="Themes">
+    **Problem:** Synonym explosion
+
+    ```
+    "objection handling"
+    "overcoming objections"
+    "handling resistance"
+    "dealing with objections"
+    ```
+
+    **Solution:** Normalized theme
+
+    ```
+    Canonical: "Objection Handling"
+    Related: ["handling resistance", "overcoming objections"]
+    Domain: "Sales"
+    ```
+  </Tab>
+  <Tab title="Concepts & Frameworks">
+    **Problem:** Framework name variations
+
+    ```
+    "NEPQ"
+    "Neuro-Emotional Persuasion Questions"
+    "nepq framework"
+    "neuro emotional persuasion"
+    ```
+
+    **Solution:** Registered concept
+
+    ```
+    Canonical: "NEPQ (Neuro-Emotional Persuasion Questions)"
+    Author: "Jeremy Miner"
+    Category: "Sales Framework"
+    ```
+  </Tab>
+</Tabs>
+
+**Merge confidence thresholds:**
+
+- **≥ 0.95** — Auto-merge (high confidence)
+- **0.85–0.94** — Added to review queue for manual check
+- **< 0.85** — Kept separate
+
+## Phase 4: Insight Extraction
+
+This phase extracts structured knowledge from the chunks and classifies each insight by category and priority.
+
+**Priority levels:**
+
+- **HIGH** — Impacts revenue, structure, or critical decisions (e.g., *"Close rate below 60% means you need script work, not more leads"*)
+- **MEDIUM** — Improves process or clarity but not urgent (e.g., *"Use CRM tags to track objection types by prospect stage"*)
+- **LOW** — Background context (e.g., *"Cole Gordon started his sales career at age 19"*)
+
+**Insight structure:**
+
+```json
+{
+  "insight_id": "INS_CG003_042",
+  "category": "HEURISTIC",
+  "priority": "HIGH",
+  "content": "If close rate < 60%, problem is script, not lead volume",
+  "chunks": ["chunk_CG003_042", "chunk_CG003_043"],
+  "confidence": 0.92,
+  "actionable_by": ["closer", "sales-manager"],
+  "frameworks_referenced": ["NEPQ"],
+  "status": "new"
+}
+```
+
+**The 5 Knowledge Layers (DNA Schema):**
+
+<Steps>
+  <Step title="L1: Philosophies">
+    Core beliefs and worldview that appear 3 or more times in different contexts. No numeric thresholds required.
+
+    *Example: "Philosophy beats tactics"*
+  </Step>
+  <Step title="L2: Mental Models">
+    Thinking frameworks and lenses the expert uses to analyze situations. These generate specific questions and change how you see problems.
+
+    *Example: "3 Audience Buckets (YES/NO/MAYBE)"*
+  </Step>
+  <Step title="L3: Heuristics (Most Valuable)">
+    Practical rules with numeric thresholds, following an "If X then Y" format. These are the most actionable items in the entire schema.
+
+    *Example: "If show rate < 75%, fix confirmation system"*
+  </Step>
+  <Step title="L4: Frameworks">
+    Structured methodologies with named components. Unlike methodologies, these don't require a rigid order.
+
+    *Example: "NEPQ Framework (Situation, Problem, Implication, Need-Payoff)"*
+  </Step>
+  <Step title="L5: Methodologies">
+    Step-by-step processes with a required sequence and success criteria per step.
+
+    *Example: "7-Step Closing Process"*
+  </Step>
+</Steps>
+
+## Phase 5: Narrative Synthesis
+
+Insights are synthesized into executive-memory-style narratives, organized both by person and by theme. These narratives are **appended to incrementally** — they grow richer with every new material you process, never replacing existing knowledge.
+
+**Person narrative example:**
+
+```markdown
+## Alex Hormozi - Narrative Synthesis
+
+### Position on Pricing
+Hormozi consistently advocates for value-based pricing...
+[chunk_AH001_023, chunk_AH002_045]
+
+### Patterns Identified
+1. Always ties price to value equation (4 variables)
+2. Rejects cost-plus pricing in all contexts
+3. References Porsche pricing as case study
+
+### Open Loops
+- How does this apply to services vs products?
+- What's the threshold for "premium" positioning?
+```
+
+**Cross-expert theme synthesis example:**
+
+```markdown
+## Objection Handling - Cross-Expert Synthesis
+
+### Consensus Points
+All 3 experts agree:
+- Objections = lack of perceived value
+- Pre-empt objections in presentation
+- Never argue with prospect
+
+### Divergences
+- Cole Gordon: Use NEPQ questions
+- Alex Hormozi: Use Value Equation
+- Jeremy Miner: Use Neuro-Emotional triggers
+```
+
+## Complete Pipeline Output
+
+When the pipeline finishes, you'll see a structured summary:
+
+```
+═══════════════════════════════════════════════
+        JARVIS PIPELINE COMPLETE
+         Cole Gordon (CG003)
+═══════════════════════════════════════════════
+
+[CHUNK]    Chunks created: 23 │ Avg size: 289 words
+[ENTITY]   Entities resolved: 12 │ Aliases: 5 │ Review queue: 2
+[INSIGHT]  Total: 12 │ HIGH: 5 │ MEDIUM: 4 │ LOW: 3
+[NARRATIVE] Persons updated: 1 │ Themes updated: 2 │ Open loops: 4
+[DOSSIER]  Persons: 0 created, 1 updated │ Themes: 1 created, 1 updated
+
+[OK] STATUS: SUCCESS
+     Time: 2m 34s
+═══════════════════════════════════════════════
+```
+
+## Troubleshooting
+
+<AccordionGroup>
+  <Accordion title="File not found error">
+    Verify the full path is correct, including the person subdirectory and content type folder:
+
+    ```bash
+    /process-jarvis inbox/[PERSON]/[TYPE]/[FILE].txt
+    ```
+  </Accordion>
+  <Accordion title="Duplicate detected">
+    The file has already been processed. Check `system/REGISTRY/file-registry.json` to find the registered entry. To reprocess, remove the entry from the registry first.
+  </Accordion>
+  <Accordion title="Review queue has entries">
+    Some entity names were ambiguous. Manual review is needed at `/processing/canonical/REVIEW-QUEUE.json`. This won't block downstream steps, but unresolved entities may appear under different names.
+  </Accordion>
+  <Accordion title="Low insight extraction (fewer than 5 insights)">
+    Possible causes include generic content (not expert-level), poor transcription quality, or incorrect content type classification. Check the `--type` flag on your next ingest.
+  </Accordion>
+</AccordionGroup>
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Creating Mind Clones" icon="brain" href="/guides/creating-mind-clones">
+    Extract cognitive DNA from your processed materials and create expert agent replicas.
+  </Card>
+  <Card title="Working with Agents" icon="robot" href="/guides/working-with-agents">
+    Query Cargo agents and Mind Clones now enriched with your processed knowledge.
+  </Card>
+  <Card title="Using Conclave" icon="users" href="/guides/using-conclave">
+    Run multi-agent deliberation sessions on strategic decisions.
+  </Card>
+  <Card title="Session Management" icon="floppy-disk" href="/guides/session-management">
+    Save processing progress and resume long batch runs across sessions.
+  </Card>
+</CardGroup>

@@ -1,11 +1,11 @@
 {
-  "projectType": "saas",
+  "projectType": "cli-tool",
   "projectName": "Mega Brain",
-  "projectDescription": "An AI-powered knowledge management system that ingests expert materials and transforms them into structured playbooks, DNA schemas, and mind-clone agents.",
+  "projectDescription": "A Claude Code-powered AI knowledge management system that ingests expert materials and transforms them into structured knowledge, playbooks, DNA schemas, and mind-clone agents.",
   "theme": "luma",
-  "primaryColor": "#7C3AED",
-  "lightColor": "#A78BFA",
-  "darkColor": "#5B21B6",
+  "primaryColor": "#6366F1",
+  "lightColor": "#818CF8",
+  "darkColor": "#4F46E5",
   "navigation": {
     "tabs": [
       {
@@ -16,41 +16,67 @@
             "pages": [
               "introduction",
               "installation",
-              "quickstart"
+              "quickstart",
+              "configuration"
             ]
           },
           {
             "group": "Core Concepts",
             "pages": [
+              "concepts/architecture",
               "concepts/knowledge-pipeline",
-              "concepts/dna-extraction",
-              "concepts/agents",
-              "concepts/conclave"
+              "concepts/dna-schema",
+              "concepts/layer-system",
+              "concepts/agents"
             ]
           },
           {
             "group": "Guides",
             "pages": [
               "guides/ingesting-materials",
-              "guides/building-mind-clones",
-              "guides/running-conclave",
-              "guides/playbooks"
+              "guides/processing-pipeline",
+              "guides/creating-mind-clones",
+              "guides/using-conclave",
+              "guides/working-with-agents",
+              "guides/session-management"
             ]
           },
           {
-            "group": "CLI Reference",
+            "group": "Advanced",
             "pages": [
-              "cli/overview",
-              "cli/slash-commands",
-              "cli/jarvis"
+              "advanced/hooks-system",
+              "advanced/skills-routing",
+              "advanced/agent-creation",
+              "advanced/validation",
+              "advanced/layer-management"
             ]
           },
           {
-            "group": "Configuration",
+            "group": "Community",
             "pages": [
-              "configuration/api-keys",
-              "configuration/hooks",
-              "configuration/community-vs-pro"
+              "community/community-vs-pro",
+              "community/faq",
+              "community/troubleshooting",
+              "community/changelog",
+              "community/contributing"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "CLI Reference",
+        "groups": [
+          {
+            "group": "Commands",
+            "pages": [
+              "commands/overview",
+              "commands/setup",
+              "commands/ingest",
+              "commands/process-jarvis",
+              "commands/jarvis-briefing",
+              "commands/extract-dna",
+              "commands/conclave",
+              "commands/save-resume"
             ]
           }
         ]
@@ -58,22 +84,26 @@
     ]
   },
   "keyFeatures": [
-    "Multi-format ingestion (video, PDF, audio, transcriptions, podcasts)",
-    "5-Layer DNA Extraction (Philosophies, Mental Models, Heuristics, Frameworks, Methodologies)",
+    "Multi-format ingestion (YouTube, PDFs, audio, transcriptions, podcasts)",
+    "5-layer DNA extraction (Philosophies, Mental Models, Heuristics, Frameworks, Methodologies)",
     "Mind Clone Agents — AI agents that reason like specific experts",
     "Multi-Agent Conclave for evidence-based deliberation",
     "JARVIS Orchestrator with 20+ automation hooks",
     "CLI-first workflow with slash commands and session persistence",
-    "Full source provenance and knowledge traceability"
+    "L1/L2/L3 distribution layer system",
+    "Full source provenance tracing"
   ],
   "publicApiSurface": [
-    "npx mega-brain-ai setup",
-    "/jarvis-briefing",
+    "/setup",
     "/ingest",
+    "/process-jarvis",
+    "/jarvis-briefing",
     "/extract-dna",
-    "/create-agent",
     "/conclave",
-    "/playbook",
-    "OPENAI_API_KEY configuration"
+    "/save",
+    "/resume",
+    "npx mega-brain-ai setup",
+    "OPENAI_API_KEY",
+    "ANTHROPIC_API_KEY"
   ]
 }

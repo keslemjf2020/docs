@@ -1,0 +1,240 @@
+---
+title: "/process-jarvis: Run the 8-Phase Knowledge Pipeline"
+sidebarTitle: "/process-jarvis"
+description: "Transform a raw ingested file into structured knowledge, dossiers, and agent memories by running the full 8-phase JARVIS pipeline on a single source."
+---
+
+After you ingest a piece of content, it sits in your inbox as a plain text file. `/process-jarvis` is what turns that raw transcript or document into structured knowledge. It runs the file through 8 mandatory phases — chunking the content, resolving entities, extracting insights, synthesizing narratives, compiling dossiers, enriching agent memories, and finalising the registry. This is the core engine of Mega Brain.
+
+<Warning>
+All 8 phases are **mandatory**. The pipeline must complete Phase 8 (Finalization) for the results to propagate correctly. Do not stop after Phase 7.
+</Warning>
+
+## Syntax
+
+```bash
+/process-jarvis [FILE_PATH]
+```
+
+<ParamField body="FILE_PATH" type="string" required>
+  Path to a file inside the `inbox/` directory.
+
+  **Example:** `inbox/ALEX HORMOZI/MASTERCLASSES/scaling-masterclass.txt`
+</ParamField>
+
+## Examples
+
+<CodeGroup>
+  ```bash Single file
+  /process-jarvis "inbox/ALEX HORMOZI/MASTERCLASSES/scaling-masterclass.txt"
+  ```
+
+  ```bash Different expert
+  /process-jarvis "inbox/COLE GORDON/MASTERMINDS/closing-masterclass.txt"
+  ```
+
+  ```bash Course module
+  /process-jarvis "inbox/SAM OVENS/COURSES/module-1-foundations.txt"
+  ```
+</CodeGroup>
+
+## Pipeline Overview
+
+```
+┌──────────────────────────────────────────────────────────────────┐
+│                     JARVIS PIPELINE v2.2                         │
+├──────────────────────────────────────────────────────────────────┤
+│  Phase 1: Initialization + Validation        [PRE-1, POST-1]     │
+│  Phase 2: Chunking (~300 words/chunk)         [PRE-2, POST-2]     │
+│  Phase 3: Entity Resolution                   [PRE-3, POST-3]     │
+│  Phase 4: Insight Extraction                  [PRE-4, POST-4]     │
+│  Phase 5: Narrative Synthesis                 [PRE-5, POST-5]     │
+│  Phase 6: Dossier Compilation                 [PRE-6, POST-6]     │
+│  Phase 7: Agent Enrichment                    [User Prompt]       │
+│  Phase 8: Finalization + Registry Update      [CHECKPOINT 7]      │
+└──────────────────────────────────────────────────────────────────┘
+```
+
+## Phase-by-Phase Breakdown
+
+<Steps>
+  <Step title="Phase 1: Initialization">
+    **Purpose:** Validate the input file and extract metadata from its path.
+
+    The pipeline reads the file path to extract the source person, company, content type, and scope. It loads or creates the four state files (`CHUNKS-STATE.json`, `CANONICAL-MAP.json`, `INSIGHTS-STATE.json`, `NARRATIVES-STATE.json`) needed for subsequent phases.
+
+    **Duplicate detection runs here.** The pipeline checks for exact duplicates (MD5 hash), content hash matches, partial fingerprints, and YouTube ID collisions. If a duplicate is found, processing stops immediately.
+
+    ```
+    ⛔ DUPLICATE EXACT DETECTED - PROCESSING STOPPED
+
+    Current file: inbox/COLE GORDON/video.txt
+    Duplicate of: inbox/COLE GORDON/old-video.txt
+    Registered: 2026-02-15T10:30:00Z | SOURCE_ID: CG001
+
+    This file will NOT be processed.
+    ```
+  </Step>
+
+  <Step title="Phase 2: Chunking">
+    **Purpose:** Split the content into ~300-word semantic chunks, each tagged with metadata.
+
+    Every chunk receives a sequential ID (`chunk_{SOURCE_ID}_{001...NNN}`), a word count, and lists of people and themes extracted from the text. Chunks are appended to `processing/chunks/CHUNKS-STATE.json`.
+  </Step>
+
+  <Step title="Phase 3: Entity Resolution">
+    **Purpose:** Canonicalise person and company names so that "Cole", "Cole Gordon", and "CG" all resolve to the same entity.
+
+    The pipeline applies a confidence threshold of 0.85. Aliases are added to `CANONICAL-MAP.json` and all affected chunks are updated. This phase also handles typos, abbreviations, and name collisions across different corpora.
+  </Step>
+
+  <Step title="Phase 4: Insight Extraction">
+    **Purpose:** Extract actionable insights from each chunk and classify them by priority.
+
+    | Priority | Criteria | Example |
+    |---|---|---|
+    | **HIGH** | Affects money, structure, risk, or decisions | "Commission structure must be 10% base + 5% accelerator" |
+    | **MEDIUM** | Improves process or clarity | "Weekly team meetings improve morale" |
+    | **LOW** | Peripheral background context | "Cole started his career in 2015" |
+
+    If an insight contradicts an existing one, both are flagged with `status: "contradiction"` and queued for human review. Output goes to `processing/insights/INSIGHTS-STATE.json`.
+  </Step>
+
+  <Step title="Phase 5: Narrative Synthesis">
+    **Purpose:** Synthesise insights into executive-style narrative summaries.
+
+    Each narrative identifies patterns, expert positions, tensions (contradictions), open loops (unanswered questions), consensus points, and suggested next questions. When a dossier already exists, the pipeline appends — it never replaces existing content. Output goes to `processing/narratives/NARRATIVES-STATE.json`.
+  </Step>
+
+  <Step title="Phase 6: Dossier Compilation">
+    **Purpose:** Transform narratives into Markdown dossiers — one per person, one per theme.
+
+    <Warning>
+      Every dossier section **must** include `chunk_ids` for traceability. Sections without chunk IDs are blocked.
+
+      ```
+      ### Christmas Tree Structure [CG001_012, SS001_045]  ✓ Valid
+      ### Christmas Tree Structure                          ✗ BLOCKED
+      ```
+    </Warning>
+
+    Person dossiers are written in first person ("I believe…") and cover the expert's central philosophy, modus operandi, technical arsenal, traps to avoid, and signature quotes. Theme dossiers use a neutral narrator and document consensus points, divergences, and frameworks across all contributing experts. Files are saved to `knowledge/dossiers/`.
+  </Step>
+
+  <Step title="Phase 7: Agent Enrichment">
+    **Purpose:** Push relevant knowledge from the processed source into the memory of each affected cargo agent.
+
+    The pipeline maps themes and frameworks to the agents responsible for them. For example, content tagged `02-PROCESSO-VENDAS` updates the CLOSER, SDS, and LNS agents. Each agent's `MEMORY.md` file is appended with the new `source_id`. After this phase runs, you'll see a confirmation prompt before Phase 8 begins.
+  </Step>
+
+  <Step title="Phase 8: Finalization (MANDATORY)">
+    **Purpose:** Commit all changes to the registry and verify that agent coverage is complete.
+
+    Phase 8 runs five critical operations:
+
+    1. **Update RAG index** — re-indexes all knowledge files for semantic search
+    2. **Update file registry** — registers the MD5 hash and marks the file as `PROCESSED`
+    3. **Update SESSION-STATE.md** — adds an entry to the processed files table
+    4. **Update INBOX-REGISTRY.md** — marks the file as `COMPLETE`
+    5. **Verify agent coverage** — confirms that every expected agent received the `source_id`
+
+    If agent coverage is incomplete, Phase 8 fails and logs the missing agents:
+
+    ```
+    ❌ AGENT COVERAGE FAILED
+
+    Expected: [CLOSER, SDS, LNS]
+    Received: [CLOSER, SDS]
+    MISSING: LNS
+
+    Phase 7 must be re-run to fix coverage.
+    ```
+  </Step>
+</Steps>
+
+## Execution Report
+
+After a successful run, the pipeline prints a full summary:
+
+```
+═══════════════════════════════════════════════════════════════════
+JARVIS PIPELINE COMPLETE: COLE GORDON (CG003)
+═══════════════════════════════════════════════════════════════════
+
+[CHUNK]    Chunks created: 29 | Avg chunk size: 294 words
+[ENTITY]   Entities resolved: 47 | Aliases added: 12
+[INSIGHT]  Extracted: 63 | HIGH: 18 | MEDIUM: 32 | LOW: 13
+[NARRATIVE] Persons updated: 1 | Themes updated: 5 | Open loops: 8
+[DOSSIER]  1 updated (DOSSIER-COLE-GORDON.md) | 5 themes updated
+[AGENT]    MEMORYs updated: 8 agents
+[FINALIZE] ✓ RAG index | ✓ File registry | ✓ Agent coverage: 100%
+
+[OK] STATUS: SUCCESS
+═══════════════════════════════════════════════════════════════════
+```
+
+## Performance
+
+| Content Size | Chunks | Processing Time |
+|---|---|---|
+| ~3k words | ~10 chunks | 2–3 min |
+| ~10k words | ~33 chunks | 5–8 min |
+| ~30k words | ~100 chunks | 15–20 min |
+
+<Info>
+Processing time scales with chunk count, not file size. A highly dense 10k-word transcript will take longer than a sparse one of the same word count.
+</Info>
+
+**Resource usage:**
+- RAM: ~500 MB per file
+- API calls: 0 (runs entirely locally)
+- Disk: temporary files in `artifacts/`
+
+## Best Practices
+
+**Process chronologically.** When ingesting multiple files from the same expert, process them in date order so the narrative accumulates in a logical sequence.
+
+**Review HIGH priority insights.** After each run, check the `INSIGHTS-STATE.json` for HIGH priority items — these most directly affect decisions, commissions, and operational risk.
+
+**Verify agent coverage.** After Phase 8 completes, confirm that all expected agents received the source ID:
+
+```bash
+grep -r "CG003" agents/cargo/*/MEMORY.md
+```
+
+**Monitor contradictions.** If contradictions are detected, resolve them before running `/extract-dna` — the DNA schema will inherit unresolved conflicts.
+
+## Troubleshooting
+
+<AccordionGroup>
+  <Accordion title='"Pipeline stopped at Phase 7"'>
+    This is expected behaviour. Phase 8 requires explicit confirmation before running. When you see the prompt, type `Y` to proceed:
+
+    ```
+    Continue to Phase 8 (Finalization)? [Y/n]
+    ```
+  </Accordion>
+
+  <Accordion title='"chunk_ids missing in dossier"'>
+    Phase 6 requires chunk IDs in every section. Locate the section missing IDs and add the appropriate reference in the format `[SOURCE_ID_CHUNK_NUM]`.
+  </Accordion>
+
+  <Accordion title='"Agent MEMORY not updated"'>
+    Check that the theme is correctly mapped to the relevant agents, that the agent files exist at `agents/cargo/SALES/{AGENT}/MEMORY.md`, and that there are no file permission issues.
+  </Accordion>
+
+  <Accordion title="Reprocessing a file that was already processed">
+    If you need to reprocess a file, confirm at the prompt:
+
+    ```
+    ⚠️  File already processed: CG003
+
+    Reprocess? This will:
+      - Remove old chunks for this source_id
+      - Re-extract all insights
+      - Update existing dossiers
+
+    [y/N]
+    ```
+  </Accordion>
+</AccordionGroup>

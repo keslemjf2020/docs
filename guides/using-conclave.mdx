@@ -1,0 +1,195 @@
+---
+title: "Running Multi-Agent Conclave Deliberation Sessions"
+sidebarTitle: "Using Conclave"
+description: "Use the /conclave command to run structured multi-agent debates where C-level AI agents deliberate on strategic decisions and produce evidence-backed recommendations."
+---
+
+When you face a high-stakes strategic decision, querying a single agent gives you one perspective. Conclave gives you all of them at once. The `/conclave` command assembles a panel of AI agents — each representing a different functional role — to debate your question, critique each other's reasoning, identify hidden risks, and synthesize a single actionable recommendation. Every claim must be backed by evidence from your processed materials.
+
+## What Is Conclave?
+
+Conclave is Mega Brain's multi-agent deliberation system. It runs once per query through five structured phases, ensuring that every decision is pressure-tested before a recommendation is made.
+
+<Steps>
+  <Step title="Phase 0: Constitutional Foundation">
+    Four governing principles are invoked before any agent speaks: **Empiricism** (decisions must cite data), **Pareto** (focus on the 20% with 80% of the impact), **Inversion** (ask what would make this fail), and **Antifragility** (prefer options that benefit from uncertainty).
+  </Step>
+  <Step title="Phase 1: Role Agent Debate">
+    C-level agents — CRO, CFO, CMO, and COO — each present their position with supporting evidence and confidence scores. All claims must be traceable to `chunk_ids` from your materials.
+  </Step>
+  <Step title="Phase 2: Methodological Critic">
+    A dedicated critic evaluates the *quality of reasoning*, not the positions themselves. It scores each argument across five dimensions and flags missing data, causal assumption errors, and unaddressed opportunity costs.
+  </Step>
+  <Step title="Phase 3: Devil's Advocate">
+    The Devil's Advocate identifies the most fragile premise in the debate, names the highest-probability failure mode, and surfaces the most important alternative scenario that was ignored.
+  </Step>
+  <Step title="Phase 4: Synthesizer">
+    Integrates all perspectives into a structured recommendation with a confidence score, phased action plan, residual risks, reversion criteria, and next steps with owners and deadlines.
+  </Step>
+</Steps>
+
+<Note>
+  Conclave runs **once** per query — there are no loops or re-deliberations. If aggregate confidence falls below 60%, the session escalates to human decision and presents the options side by side instead of recommending one.
+</Note>
+
+## Running a Conclave Session
+
+### Invoking Conclave
+
+Pose your strategic question as a plain-language string:
+
+```bash
+/conclave "Should I change closer commission from 10% to 15%?"
+```
+
+Conclave automatically estimates the value at risk, selects the relevant role agents, and begins deliberation.
+
+### High-Confidence Output (> 60%)
+
+When agents reach sufficient consensus, you receive a full recommendation:
+
+```
+═══════════════════════════════════════════════
+PHASE 4: SYNTHESIS
+═══════════════════════════════════════════════
+
+DECISION RECOMMENDED:
+DO NOT raise commission to 15% across the board.
+
+INSTEAD, implement 3-phase approach:
+
+PHASE 1 (30 days): Diagnose turnover root cause
+  • Conduct proper exit interviews (3rd party)
+  • Survey current closers on satisfaction
+  • Benchmark comp vs. market
+  • Cost: $5K
+
+PHASE 2 (60 days): Performance tier system
+  • <60% close rate: 10% commission
+  • 60-70% close rate: 12% commission
+  • >70% close rate: 15% commission
+
+PHASE 3 (90 days): Training investment
+  • Script optimization workshop
+  • Cost: $25K
+
+CONFIDENCE: 78%
+
+NEXT STEPS:
+1. Approve Phase 1 diagnostic - Finance: CFO - By: Mar 20
+2. Design tier structure draft - Sales: CRO - By: Mar 27
+3. RFP for training vendor - Ops: COO - By: Apr 3
+
+REVERSION CRITERIA:
+IF after 90 days turnover ≥ 40% THEN escalate to CEO
+IF tier system causes team conflict THEN simplify
+```
+
+### Low-Confidence Output (< 60%)
+
+When data is insufficient or conflict is irresolvable, Conclave escalates to you instead of guessing:
+
+```
+═══════════════════════════════════════════════
+    [CONCLAVE: DECISION INCONCLUSIVE]
+═══════════════════════════════════════════════
+
+⚠️ CONFIDENCE: 48% - BELOW THRESHOLD
+
+TYPE OF UNCERTAINTY:
+[✓] Data insufficient
+
+OPTIONS FOR HUMAN DECISION:
+
+OPTION A: Increase to 15% universally
+  Trade-off: Higher retention vs. $180K cost
+  Evidence: Exit interviews (weak)
+
+OPTION B: Tiered commission structure
+  Trade-off: Complexity vs. performance incentive
+  Evidence: Unit economics (strong)
+
+OPTION C: Investigate root cause first
+  Trade-off: 30-day delay vs. better decision
+
+⚠️ This case requires HUMAN DECISION.
+   Recommended action: Gather missing data (Option C) first.
+```
+
+## The Four Constitutional Principles
+
+Every Conclave session begins by invoking these principles. They constrain how agents reason throughout the deliberation.
+
+<CardGroup cols={2}>
+  <Card title="⚖️ Empiricism" icon="chart-bar">
+    All claims must cite specific numbers and traceable `chunk_ids`. Anecdotes must be labeled as such. Opinions without data are flagged as violations.
+  </Card>
+  <Card title="📊 Pareto (80/20)" icon="chart-pie">
+    Agents must identify the highest-leverage option and compare ROI across alternatives. "Do everything" solutions are penalized.
+  </Card>
+  <Card title="🔄 Inversion" icon="arrow-rotate-left">
+    The Devil's Advocate must list failure modes. Each agent names at least one risk. The Synthesizer must address the top three risks explicitly.
+  </Card>
+  <Card title="💪 Antifragility" icon="shield">
+    Agents identify which option improves under stress and uncertainty. Fragile solutions that require perfect conditions are ranked lower.
+  </Card>
+</CardGroup>
+
+## Understanding the Agents
+
+### Role Agents (Phase 1)
+
+Each C-level agent brings a distinct functional lens to the debate:
+
+| Agent | Focus | Bias |
+|-------|-------|------|
+| **CRO** | Revenue growth, sales performance | Actions that increase deals |
+| **CFO** | Unit economics, profitability, risk | Conservative financial decisions |
+| **CMO** | Positioning, demand generation | Brand and marketing investment |
+| **COO** | Systems, scalability, execution | Operational improvements |
+
+### Methodological Critic (Phase 2)
+
+The Critic scores deliberation quality across five dimensions (0–20 each, 100 total):
+
+- **Premises declared** — Did agents state their assumptions?
+- **Evidence traceable** — Are `chunk_ids` properly cited?
+- **Logic consistent** — Does the math hold?
+- **Alternative scenarios** — Were other options considered?
+- **Conflicts resolved** — Were disagreements addressed?
+
+The Critic **does not** take a position, recommend an option, or inject new data. Its role is purely evaluative.
+
+### Devil's Advocate (Phase 3)
+
+The Devil's Advocate always delivers:
+
+1. The most fragile premise in the debate, with reasoning
+2. The main undiscussed risk (probability and impact estimated)
+3. An alternative scenario that was ignored entirely
+4. Reversal criteria — when to reconsider the decision
+
+## When to Use Conclave
+
+Conclave is best suited for:
+
+- **Compensation and incentive structure changes** — high financial stakes, multiple stakeholders
+- **Pricing and packaging decisions** — strategic tradeoffs with long-term impact
+- **Hiring and headcount decisions** — capacity vs. skill vs. lead volume diagnostics
+- **Operational process changes** — where one department's gain is another's friction
+- **Significant budget allocations** — where opportunity cost matters
+
+<Tip>
+  For tactical questions like "How do I handle this objection?" or "What's a good cold call opener?", query a Cargo agent or Mind Clone directly instead. Conclave is designed for strategic decisions where multiple functional perspectives add value.
+</Tip>
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Working with Agents" icon="robot" href="/guides/working-with-agents">
+    Learn to query individual Cargo agents and Mind Clones for faster, focused answers.
+  </Card>
+  <Card title="Session Management" icon="floppy-disk" href="/guides/session-management">
+    Save Conclave outputs and decisions to your session for future reference.
+  </Card>
+</CardGroup>

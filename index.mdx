@@ -1,0 +1,68 @@
+---
+title: "Mega Brain — AI Knowledge Management System"
+sidebarTitle: "Home"
+description: "Turn expert videos, PDFs, and podcasts into structured playbooks, DNA schemas, and AI mind-clone agents. Built for solo entrepreneurs and small teams."
+---
+
+Mega Brain is a Claude Code-powered knowledge system that ingests expert materials — videos, PDFs, transcriptions, podcasts, and training courses — and transforms them into structured, queryable intelligence. Instead of letting valuable expertise sit in scattered files and forgotten notes, you get actionable playbooks, 5-layer DNA schemas, and AI agents that reason like the experts whose work you've studied.
+
+<CardGroup cols={2}>
+  <Card title="Introduction" icon="book-open" href="/introduction">
+    Learn what Mega Brain is, who it's for, and how the knowledge pipeline works end to end.
+  </Card>
+  <Card title="Quick Start" icon="rocket" href="/quickstart">
+    Ingest your first material, run the pipeline, and query a mind-clone agent in under 5 minutes.
+  </Card>
+  <Card title="Core Concepts" icon="diagram-project" href="/concepts/architecture">
+    Understand the architecture: DNA layers, the JARVIS orchestrator, and the agent system.
+  </Card>
+  <Card title="CLI Reference" icon="terminal" href="/commands/overview">
+    Every slash command documented — `/ingest`, `/process-jarvis`, `/extract-dna`, `/conclave`, and more.
+  </Card>
+  <Card title="Guides" icon="map" href="/guides/ingesting-materials">
+    Step-by-step walkthroughs for ingesting materials, creating mind clones, and running Conclave sessions.
+  </Card>
+  <Card title="Community vs Pro" icon="layer-group" href="/community/community-vs-pro">
+    Compare the free Community (L1) edition with the Pro (L2) edition and see what each unlocks.
+  </Card>
+</CardGroup>
+
+## Get up and running
+
+Follow these four steps to go from a fresh install to your first structured knowledge artifact.
+
+<Steps>
+  <Step title="Install Mega Brain">
+    Install the package globally via npm or run it directly with npx, then let the setup wizard handle dependencies.
+
+    ```bash
+    npm install -g mega-brain-ai
+    # or
+    npx mega-brain-ai setup
+    ```
+  </Step>
+  <Step title="Configure your API keys">
+    The setup wizard prompts you for your keys and writes them to `.env`. Only `OPENAI_API_KEY` is required — it powers video and audio transcription via Whisper.
+
+    ```bash
+    # Minimal .env
+    OPENAI_API_KEY=sk-your-key-here
+    ```
+  </Step>
+  <Step title="Ingest your first material">
+    Open your Mega Brain project in Claude Code and drop in a YouTube URL or a local PDF path.
+
+    ```
+    /ingest https://www.youtube.com/watch?v=YOUR_VIDEO_ID
+    ```
+  </Step>
+  <Step title="Process, extract, and query">
+    Run the JARVIS pipeline, extract the expert's cognitive DNA, and start asking questions of a mind-clone agent trained on their actual material.
+
+    ```
+    /process-jarvis
+    /extract-dna expert-name
+    /ask expert-name "What's your framework for pricing a high-ticket offer?"
+    ```
+  </Step>
+</Steps>

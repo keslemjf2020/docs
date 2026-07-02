@@ -1,83 +1,187 @@
 ---
-title: "Ingest Expert Materials into Mega Brain's Pipeline"
+title: "Ingesting Expert Materials into Mega Brain"
 sidebarTitle: "Ingesting Materials"
-description: "Learn how to feed videos, PDFs, audio files, and more into Mega Brain so JARVIS can transform them into structured, searchable knowledge."
+description: "Learn how to import YouTube videos, PDFs, podcasts, and local files into Mega Brain using the /ingest command and organize them for processing."
 ---
 
-Ingestion is the first step in the Mega Brain pipeline. When you ingest a source, JARVIS normalizes its content, extracts raw knowledge, and makes it available for DNA extraction and agent creation. Mega Brain accepts YouTube videos, PDF documents, audio recordings, text transcriptions, podcast episodes, and training course materials — so you can pull in an expert's full body of work from a single interface.
+Mega Brain accepts expert content in virtually any format and transforms it into structured, queryable knowledge. Before the pipeline can extract insights and build agent memories, you need to bring your source materials in. The `/ingest` command handles everything from downloading YouTube transcripts to registering local audio files — and lands every piece of content in the `inbox/` directory, organized and ready to process.
 
-## Supported Formats
+## How Ingestion Works
 
-Mega Brain accepts the following source types through the `/ingest` command:
+When you run `/ingest`, the system automatically:
 
-| Format | How to Reference |
-|---|---|
-| YouTube video | Full URL (e.g. `https://youtube.com/watch?v=...`) |
-| PDF document | Local file path (e.g. `./materials/book.pdf`) |
-| Audio file | Local file path — MP3 and WAV supported |
-| Text transcription | Local file path — TXT files |
-| Podcast episode | URL or local file path |
-| Training course materials | Local file path or URL |
+- Downloads and transcribes the content (video, audio, or document)
+- Extracts metadata including author, title, and date
+- Saves the file with full source traceability
+- Runs 6-level duplicate detection to prevent reprocessing
+- Prepares the material for the JARVIS processing pipeline
 
-## How to Ingest
+All ingested materials are saved to `inbox/` organized by person and content type, for example: `inbox/alex-hormozi/MASTERCLASS/offer-creation-framework.txt`.
 
-<Steps>
-  <Step title="Open Claude Code in your project directory">
-    Launch Claude Code and navigate to the directory where your Mega Brain project lives. All ingested materials and extracted knowledge are stored relative to this project root.
-  </Step>
-  <Step title="Run the /ingest command">
-    Type `/ingest` in the Claude Code interface. JARVIS will prompt you to provide the source — paste a URL or enter the file path of the material you want to ingest.
+## Ingesting by Source Type
+
+<Tabs>
+  <Tab title="YouTube Video">
+    YouTube is the most common source. Mega Brain automatically downloads transcriptions using the YouTube Transcript API.
 
     ```bash
-    /ingest
+    /ingest https://www.youtube.com/watch?v=EXAMPLE_ID
     ```
 
-    When prompted, enter your source:
+    After ingestion, you'll see a confirmation like this:
 
-    ```text
-    Source: https://www.youtube.com/watch?v=dQw4w9WgXcQ
+    ```
+    JARVIS: Material received.
+
+      Source:    YouTube
+      Title:     "How to Create Irresistible Offers"
+      Author:    Alex Hormozi
+      Duration:  42:15
+      Words:     6,230
+
+      Saved to: inbox/alex-hormozi/MASTERCLASS/how-to-create-irresistible-offers.txt
+
+      Next step: execute /process-jarvis to process.
+    ```
+  </Tab>
+  <Tab title="PDF or Document">
+    Upload local files including PDFs, Word documents, and plain text files using a file path.
+
+    ```bash
+    /ingest /path/to/playbook-vendas.pdf
     ```
 
-    Or for a local file:
+    **Supported formats:**
+    - PDF documents (`.pdf`)
+    - Microsoft Word (`.doc`, `.docx`)
+    - Plain text (`.txt`, `.md`)
+    - Google Docs (via URL)
 
-    ```text
-    Source: ./materials/expert-interview.pdf
+    <Tip>
+      For best results, ensure PDFs have a text layer rather than scanned images. Image-only PDFs require OCR preprocessing before ingestion.
+    </Tip>
+  </Tab>
+  <Tab title="Podcast or Audio">
+    Process audio content through automatic transcription powered by OpenAI Whisper.
+
+    ```bash
+    /ingest https://podcast-url.com/episode-123
     ```
-  </Step>
-  <Step title="JARVIS validates and normalizes the material">
-    JARVIS automatically validates the source format, downloads or reads the content, and normalizes it into a consistent internal representation. For YouTube videos and audio files, transcription happens at this stage.
-  </Step>
-  <Step title="Monitor progress through automation hooks">
-    JARVIS reports real-time status updates as it works through the ingestion pipeline. Watch the output in Claude Code — each automation hook fires in sequence and logs its result, so you always know where the process stands.
-  </Step>
-  <Step title="Confirm ingestion is complete">
-    Wait for the final confirmation message before moving on to DNA extraction or agent creation. Attempting to extract DNA from a partially ingested source produces incomplete results.
 
-    ```text
-    ✓ Ingestion complete: expert-interview.pdf
-      → 3,847 content segments indexed
-      → Ready for /extract-dna
+    **Requirement:** Configure `OPENAI_API_KEY` in your environment before ingesting audio.
+  </Tab>
+  <Tab title="Course Material">
+    Process structured training courses with multiple modules by pointing to each file individually.
+
+    ```bash
+    /ingest /path/to/course-module-1.pdf --type COURSE
     ```
-  </Step>
-</Steps>
 
-## Ingesting Multiple Materials
+    Course materials are automatically tagged and grouped by corpus:
 
-You are not limited to a single source. Run `/ingest` as many times as needed — each ingested piece contributes to the same shared knowledge base in your project. When you later run `/extract-dna` or `/create-agent`, JARVIS draws on every ingested source simultaneously, building a richer and more complete picture of the expert's thinking.
+    ```
+    inbox/
+    └── setterlun/
+        └── COURSES/
+            ├── module-01-foundation.txt
+            ├── module-02-strategy.txt
+            └── module-03-execution.txt
+    ```
+  </Tab>
+</Tabs>
 
-This means you can combine an expert's YouTube channel, their published PDF guides, and a recorded course into one unified knowledge base before you ever create an agent. The more material you ingest, the more nuanced and accurate the downstream outputs become.
+## Content Type Classification
 
-<Tip>
-  Organize your materials by expert or topic before ingesting. Create subdirectories like `./materials/alex-hormozi/` or `./materials/sales-frameworks/` so your project stays navigable as your knowledge base grows. JARVIS preserves the file path as part of each source's provenance record, making it easy to trace any extracted insight back to its origin.
-</Tip>
+Mega Brain automatically classifies content based on keywords in the file name, URL, or metadata. You can set the type manually using the `--type` flag.
 
-<Note>
-  Full pipeline processing — including automated transcription, multi-stage normalization, and hook-driven enrichment — requires the **Pro edition** of Mega Brain. Community edition users can ingest text-based materials (PDFs and TXT files) but will not have access to video/audio transcription or the complete JARVIS automation pipeline. See [Community vs Pro](/configuration/community-vs-pro) for a full comparison.
-</Note>
+| Type | Auto-Detection Keywords | Use Case |
+|------|------------------------|----------|
+| `PODCAST` | "podcast", "episode", "interview" | Conversational content |
+| `MASTERCLASS` | "masterclass", "mastermind", "training" | Expert workshops |
+| `COURSE` | "course", "module", "lesson" | Structured programs |
+| `BLUEPRINT` | "blueprint", "pdf", "playbook" | Strategic documents |
+| `VSL` | "vsl", "webinar", "sales letter" | Sales presentations |
+| `SCRIPT` | "script", "template", "copy" | Templates and frameworks |
+
+## Advanced Ingestion Options
+
+You can override auto-detected metadata or combine ingestion with immediate processing:
+
+```bash
+# Specify the expert explicitly
+/ingest https://youtube.com/watch?v=abc123 --person "Cole Gordon"
+
+# Force a specific content type
+/ingest /path/to/file.txt --type MASTERCLASS
+
+# Ingest and immediately run the pipeline
+/ingest https://youtube.com/watch?v=abc123 --process
+```
+
+## Known Source Detection
+
+Mega Brain recognizes major expert sources automatically:
+
+| Detected Pattern | Person | Corpus |
+|-----------------|--------|--------|
+| "hormozi", "acquisition" | Alex Hormozi | acquisition_com |
+| "cole gordon", "closers" | Cole Gordon | closers_io |
+| "leila" | Leila Hormozi | acquisition_com |
+| "setterlun", "sam ovens" | Sam Ovens | setterlun |
+
+## Duplicate Detection
+
+Mega Brain runs 6 levels of duplicate detection before accepting any material:
+
+1. **Exact MD5 Match** — Same file already in the registry
+2. **Content Hash** — Different file, identical content
+3. **Partial Match** — Content is a substring of a processed material
+4. **YouTube ID** — Same video from a different URL
+5. **File Registry** — Cross-reference with processing history
+6. **Chunk Fingerprint** — First 1,000 characters comparison
+
+## Batch Ingestion
+
+Queue multiple sources by running `/ingest` once per URL or file. Each call is independent:
+
+```bash
+/ingest https://youtube.com/watch?v=video1
+/ingest https://youtube.com/watch?v=video2
+/ingest https://youtube.com/watch?v=video3
+```
+
+## Verifying Your Inbox
+
+After ingesting, confirm that your materials are queued correctly before running the pipeline.
+
+```bash
+/inbox
+```
+
+```
+═══════════════════════════════════════════════
+                INBOX STATUS
+═══════════════════════════════════════════════
+
+📥 PENDING: 3 files
+
+  Cole Gordon (2 files)
+  ├─ masterclass-closing.txt (6,234 words)
+  └─ podcast-interview.txt (8,901 words)
+
+  Alex Hormozi (1 file)
+  └─ offer-creation-framework.txt (4,567 words)
+
+⭐ NEXT: /process-jarvis to process pending files
+```
 
 ## Next Steps
 
-Once your materials are ingested, you're ready to extract structured knowledge from them:
-
-- **[Knowledge Pipeline](/concepts/knowledge-pipeline)** — Understand how JARVIS processes ingested material through each pipeline stage.
-- **[Build an Expert Mind Clone](/guides/building-mind-clones)** — Use your ingested materials to create an AI agent that reasons like a specific expert.
+<CardGroup cols={2}>
+  <Card title="Processing Pipeline" icon="gear" href="/guides/processing-pipeline">
+    Run the 5-phase JARVIS pipeline to transform your ingested materials into structured knowledge.
+  </Card>
+  <Card title="Session Management" icon="floppy-disk" href="/guides/session-management">
+    Save your ingestion progress and resume later with full context preservation.
+  </Card>
+</CardGroup>

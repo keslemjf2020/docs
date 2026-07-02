@@ -3,11 +3,27 @@
   "theme": "luma",
   "name": "Mega Brain",
   "colors": {
-    "primary": "#7C3AED",
-    "light": "#A78BFA",
-    "dark": "#5B21B6"
+    "primary": "#6366F1",
+    "light": "#818CF8",
+    "dark": "#4F46E5"
   },
-  "favicon": "https://icons.duckduckgo.com/ip3/thiagofinch-mega-brain.mintlify.app.ico",
+  "favicon": "/favicon.svg",
+  "logo": {
+    "light": "https://mintcdn.com/thiagofinch-mega-brain/r4cFfi3g-y6r2R4L/logo.png?fit=max&auto=format&n=r4cFfi3g-y6r2R4L&q=85&s=0ec48f4a4a3e2f1e4d5e7509340fce5e",
+    "dark": "https://mintcdn.com/thiagofinch-mega-brain/r4cFfi3g-y6r2R4L/logo.png?fit=max&auto=format&n=r4cFfi3g-y6r2R4L&q=85&s=0ec48f4a4a3e2f1e4d5e7509340fce5e"
+  },
+  "navbar": {
+    "links": [
+      {
+        "label": "GitHub",
+        "href": "https://github.com/thiagofinch/mega-brain"
+      }
+    ],
+    "primary": {
+      "type": "github",
+      "href": "https://github.com/thiagofinch/mega-brain"
+    }
+  },
   "navigation": {
     "tabs": [
       {
@@ -18,55 +34,76 @@
             "pages": [
               "introduction",
               "installation",
-              "quickstart"
+              "quickstart",
+              "configuration"
             ]
           },
           {
             "group": "Core Concepts",
             "pages": [
+              "concepts/architecture",
               "concepts/knowledge-pipeline",
-              "concepts/dna-extraction",
-              "concepts/agents",
-              "concepts/conclave"
+              "concepts/dna-schema",
+              "concepts/layer-system",
+              "concepts/agents"
             ]
           },
           {
             "group": "Guides",
             "pages": [
               "guides/ingesting-materials",
-              "guides/building-mind-clones",
-              "guides/running-conclave",
-              "guides/playbooks"
+              "guides/processing-pipeline",
+              "guides/creating-mind-clones",
+              "guides/using-conclave",
+              "guides/working-with-agents",
+              "guides/session-management"
             ]
           },
           {
-            "group": "CLI Reference",
+            "group": "Advanced",
             "pages": [
-              "cli/overview",
-              "cli/slash-commands",
-              "cli/jarvis"
+              "advanced/hooks-system",
+              "advanced/skills-routing",
+              "advanced/agent-creation",
+              "advanced/validation",
+              "advanced/layer-management"
             ]
           },
           {
-            "group": "Configuration",
+            "group": "Community",
             "pages": [
-              "configuration/api-keys",
-              "configuration/hooks",
-              "configuration/community-vs-pro"
+              "community/community-vs-pro",
+              "community/faq",
+              "community/troubleshooting",
+              "community/changelog",
+              "community/contributing"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "CLI Reference",
+        "groups": [
+          {
+            "group": "Commands",
+            "pages": [
+              "commands/overview",
+              "commands/setup",
+              "commands/ingest",
+              "commands/process-jarvis",
+              "commands/jarvis-briefing",
+              "commands/extract-dna",
+              "commands/conclave",
+              "commands/save-resume"
             ]
           }
         ]
       }
     ]
   },
-  "navbar": {
-    "primary": {
-      "type": "button",
-      "label": "Get Started",
-      "href": "/introduction"
-    }
-  },
   "footer": {
-    "socials": {}
+    "socials": {
+      "github": "https://github.com/thiagofinch/mega-brain"
+    }
   }
 }

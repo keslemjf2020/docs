@@ -1,95 +1,249 @@
 ---
-title: "Mega Brain Quickstart: From Ingestion to Mind-Clone Agent"
-sidebarTitle: "Quickstart"
-description: "Ingest your first expert material, run the knowledge pipeline, extract a DNA schema, and create a mind-clone agent — all in one session."
+title: "Quick Start: First Insight with Mega Brain in 5 Minutes"
+sidebarTitle: "Quick Start"
+description: "Go from zero to your first structured knowledge artifact — ingest a YouTube video or PDF, run the JARVIS pipeline, extract DNA, and query a mind-clone agent."
 ---
 
-This tutorial gets you from a fresh installation to a working mind-clone agent in one session. You'll ingest a real piece of expert material, run it through the knowledge pipeline, extract a structured DNA schema, and create an AI agent that reasons from that knowledge. Follow the steps in order — each one builds on the last.
+This guide gets you from a fresh Mega Brain installation to a queryable mind-clone agent in about five minutes. You'll ingest one expert material, run it through the 5-phase JARVIS pipeline, extract a cognitive DNA profile, and ask your first question of an agent grounded in that expert's actual work.
 
-<Tip>
-  Some steps in this guide — specifically DNA extraction, agent creation, and the Conclave — require the **Pro (L2)** edition. Community (L1) users can follow steps 1 through 4 to ingest materials and explore the core pipeline. See [Community vs Pro](/configuration/community-vs-pro) for a full breakdown.
-</Tip>
+<Note>
+  This guide assumes you've completed [installation](/installation) and run the setup wizard. If you haven't, run `npx mega-brain-ai setup` first and confirm your `OPENAI_API_KEY` is in `.env` — it's required for video and audio transcription.
+</Note>
+
+## Prerequisites check
+
+Before you begin, confirm you have:
+
+- Mega Brain installed and `.env` configured
+- Claude Code open with your Mega Brain project loaded
+- At least one expert material ready: a YouTube URL, a local PDF, or a text transcription
+
+## Step 1: Open Claude Code
 
 <Steps>
-  <Step title="Complete installation">
-    If you haven't set up Mega Brain yet, follow the [Installation guide](/installation) to install dependencies, run the setup wizard, and configure your `OPENAI_API_KEY`. Return here once `/jarvis-briefing` runs successfully in Claude Code.
+  <Step title="Launch Claude Code">
+    Open Claude Code and navigate to your Mega Brain project directory. All Mega Brain slash commands run inside the Claude Code chat interface.
   </Step>
-  <Step title="Open Claude Code">
-    Claude Code is your primary interface for everything in Mega Brain. Open it in your project directory — this is where you'll run all slash commands and interact with the JARVIS orchestrator throughout this tutorial.
+  <Step title="Confirm JARVIS is active">
+    Run a quick health check to confirm everything is wired up correctly:
 
-    All Mega Brain commands use the `/` prefix and run directly inside Claude Code's command input. You don't need a separate terminal for the steps that follow.
-  </Step>
-  <Step title="Run /jarvis-briefing">
-    Start every session by checking system status with the JARVIS briefing:
-
-    ```text
+    ```bash
     /jarvis-briefing
     ```
 
-    JARVIS responds with a summary of your pipeline configuration, available slash commands, active hooks, and the current state of your knowledge base. Read through the output to confirm everything is operational and to orient yourself before ingesting new material.
-  </Step>
-  <Step title="Ingest your first material">
-    Bring your first piece of expert content into Mega Brain using the `/ingest` command. You can provide a YouTube URL, a local PDF path, or a plain text transcription:
-
-    ```text
-    /ingest
-    ```
-
-    When prompted, paste a YouTube URL or provide a file path to a PDF or transcript. Mega Brain fetches or reads the content, queues it for processing, and confirms the ingestion. JARVIS then runs its automation hooks to clean and structure the raw material for the next phase.
-  </Step>
-  <Step title="Extract DNA">
-    Once ingestion completes, extract a structured knowledge profile from the material:
-
-    ```text
-    /extract-dna
-    ```
-
-    Mega Brain analyzes the ingested content and builds a DNA schema across five knowledge layers — Philosophies, Mental Models, Heuristics, Frameworks, and Methodologies. Every item in the schema links back to the specific source passage it came from, giving you full provenance on all extracted knowledge.
-  </Step>
-  <Step title="Create a mind-clone agent">
-    With a DNA schema in place, generate an AI agent that reasons from the extracted knowledge:
-
-    ```text
-    /create-agent
-    ```
-
-    Follow the prompts to name your agent and confirm the source DNA. Mega Brain compiles the schema into an agent definition and registers it in your knowledge base. You can then invoke the agent directly in Claude Code to ask questions, generate advice, or pull it into a Conclave session with other agents.
-  </Step>
-  <Step title="Run a Conclave session">
-    Bring multiple agents together for structured, evidence-based deliberation:
-
-    ```text
-    /conclave
-    ```
-
-    Select the agents you want to include and provide a decision or topic to deliberate on. JARVIS orchestrates the session, captures each agent's reasoning, and produces a documented output with the key conclusions and supporting evidence from each perspective.
-  </Step>
-  <Step title="Generate a playbook">
-    Synthesize the knowledge from your ingested materials into a structured, step-by-step guide:
-
-    ```text
-    /playbook
-    ```
-
-    Follow the prompts to specify the topic and source materials. Mega Brain combines insights from your DNA schemas and knowledge base into a reusable playbook tailored to your workflow. Playbooks are the shareable end-product of the full pipeline.
+    You should see a health score and a summary of your current knowledge base (empty on first run).
   </Step>
 </Steps>
 
-## Next Steps
+## Step 2: Ingest your first material
 
-You've completed the core workflow. From here, explore the guides and reference docs below to go deeper into each part of the system.
+Mega Brain accepts YouTube URLs, local PDF paths, Word documents, audio files, and plain text transcripts.
+
+<Tabs>
+  <Tab title="YouTube Video">
+    In the Claude Code chat, run:
+
+    ```bash
+    /ingest https://www.youtube.com/watch?v=YOUR_VIDEO_ID
+    ```
+
+    JARVIS downloads the audio, transcribes it using the Whisper API, extracts metadata, and saves the result to `inbox/`. Expected output:
+
+    ```
+    JARVIS: Material received.
+
+      Source:    YouTube
+      Title:     "How to Create Irresistible Offers"
+      Author:    Alex Hormozi
+      Duration:  42:15
+      Words:     6,230
+
+      Saved in: inbox/alex-hormozi/how-to-create-irresistible-offers.md
+
+      Next step: execute /process-jarvis to process.
+    ```
+  </Tab>
+  <Tab title="Local PDF">
+    Provide the path to a PDF on your machine:
+
+    ```bash
+    /ingest /path/to/your/expert-material.pdf
+    ```
+
+    JARVIS extracts the text content, identifies metadata where available, and saves the material to `inbox/`. PDF ingestion does not require an OpenAI key.
+  </Tab>
+  <Tab title="Text Transcript">
+    If you already have a transcription as a `.txt` or `.md` file, copy it directly into the `inbox/` directory under the expert's name, then run:
+
+    ```bash
+    /ingest
+    ```
+  </Tab>
+</Tabs>
+
+<Info>
+  Materials are automatically organized by author in the `inbox/` directory. You can queue multiple materials before running the pipeline — JARVIS will process them all in one pass.
+</Info>
+
+## Step 3: Run the JARVIS pipeline
+
+With your material in `inbox/`, trigger the 5-phase processing pipeline:
+
+```bash
+/process-jarvis
+```
+
+JARVIS works through five sequential phases and reports progress as it goes:
+
+```
+JARVIS: Pipeline initiated.
+
+  Phase 1/5 - Chunking .............. OK (23 chunks)
+  Phase 2/5 - Resolution ............ OK (8 entities)
+  Phase 3/5 - Extraction ............ OK (12 insights)
+  Phase 4/5 - Synthesis ............. OK (3 narratives)
+  Phase 5/5 - Compilation ........... OK
+
+  Result:
+    Dossier:   knowledge/dossiers/alex-hormozi.md
+    Playbook:  knowledge/playbooks/irresistible-offers.md
+    Insights:  12 new insights indexed
+
+  Time total: 2m 34s
+```
+
+| Phase | Purpose | Output location |
+|---|---|---|
+| **Chunking** | Breaks content into semantic segments | `artifacts/chunks/` |
+| **Resolution** | Identifies people, concepts, and entities | `artifacts/insights/` |
+| **Extraction** | Extracts frameworks, heuristics, and key ideas | `artifacts/insights/` |
+| **Synthesis** | Consolidates narratives by theme | `artifacts/narratives/` |
+| **Compilation** | Generates dossiers and playbooks | `knowledge/` |
+
+## Step 4: Extract DNA
+
+DNA extraction builds a deep cognitive profile of the expert — the five layers that describe how they think.
+
+```bash
+/extract-dna alex-hormozi
+```
+
+```
+JARVIS: DNA extraction initiated.
+
+  Expert: Alex Hormozi
+  Materials analyzed: 1
+
+  Layer L1 - Philosophies .......... OK (5 beliefs extracted)
+  Layer L2 - Mental Models ......... OK (3 frameworks)
+  Layer L3 - Heuristics ............. OK (8 practical rules)
+  Layer L4 - Frameworks ............. OK (2 methodologies)
+  Layer L5 - Methodologies .......... OK (1 complete process)
+
+  DNA saved in: knowledge/dna/alex-hormozi-dna.md
+  Agent created: agents/persons/alex-hormozi.md
+```
+
+<Note>
+  DNA extraction produces richer results when you have 3–5 or more materials from the same expert. Keep ingesting and re-running `/extract-dna` as you add more sources.
+</Note>
+
+## Step 5: Query your agent
+
+Your mind-clone agent is ready.
+
+### Ask a mind-clone directly
+
+```bash
+/ask alex-hormozi "How should I structure my offer to maximize perceived value?"
+```
+
+### Run a Conclave session
+
+For decisions that benefit from multiple perspectives:
+
+```bash
+/conclave "Should I launch my product at $2,997 or $4,997?"
+```
+
+```
+CONCLAVE: Session initiated.
+
+  ── METHODICAL CRITIC ──
+  "Before deciding on price, we need to validate the Value Equation
+  (Hormozi). What's the dream outcome, time delay, effort, and sacrifice?"
+
+  ── SYNTHESIZER ──
+  "Recommendation: Launch at $2,997 with an upgrade path to $4,997.
+  Validate conversion at the lower price, build case studies, then
+  raise price with social proof."
+
+  Consensus: 2/3 recommend starting at $2,997
+  Confidence: 78%
+```
+
+## Common workflows
+
+### Batch ingest from one expert
+
+```bash
+/ingest https://www.youtube.com/watch?v=VIDEO_1
+/ingest https://www.youtube.com/watch?v=VIDEO_2
+/ingest /path/to/expert-book.pdf
+/process-jarvis
+```
+
+### Save and resume sessions
+
+<CodeGroup>
+```bash Save
+/save
+```
+
+```bash Resume
+/resume
+```
+</CodeGroup>
+
+## Troubleshooting
+
+<AccordionGroup>
+  <Accordion title="Ingestion failed">
+    1. **Check your `OPENAI_API_KEY`** in `.env` — it must be valid for video/audio sources
+    2. **Verify the URL** is publicly accessible and the video isn't region-locked
+    3. **Check logs** in `logs/sessions/` for the specific error message
+  </Accordion>
+
+  <Accordion title="Processing pipeline stalled">
+    1. Check that Claude Code is still responsive
+    2. Review `logs/sessions/` for error or timeout messages
+    3. Run `/process-jarvis` again — the pipeline is idempotent for completed phases
+  </Accordion>
+
+  <Accordion title="No insights extracted after processing">
+    1. **Check material quality** — very short content may not yield extractable insights
+    2. **Review the source file** in `inbox/` to confirm the transcription is correct
+    3. **Try a different material** — audio quality affects extraction rates
+  </Accordion>
+</AccordionGroup>
+
+## Next steps
 
 <CardGroup cols={2}>
-  <Card title="Ingesting Materials" icon="file-import" href="/guides/ingesting-materials">
-    Learn how to ingest videos, PDFs, podcasts, and transcriptions at scale with advanced options.
+  <Card title="Configuration Guide" icon="sliders" href="/configuration">
+    Add Voyage AI for semantic search, Google OAuth for Drive ingestion, and other optional integrations.
   </Card>
-  <Card title="Knowledge Pipeline" icon="brain" href="/concepts/knowledge-pipeline">
-    Understand how JARVIS orchestrates the 5-phase pipeline and what happens at each stage.
+  <Card title="CLI Commands" icon="terminal" href="/commands/overview">
+    Explore every available slash command, including advanced options for each pipeline stage.
   </Card>
-  <Card title="Building Mind Clones" icon="robot" href="/guides/building-mind-clones">
-    Go deep on agent creation: customize DNA schemas, tune reasoning behavior, and manage your agent library.
+  <Card title="DNA Schema" icon="dna" href="/concepts/dna-schema">
+    Deep dive into the 5-layer DNA extraction system and how cognitive profiles are structured.
   </Card>
-  <Card title="Slash Commands" icon="terminal" href="/cli/slash-commands">
-    Browse the full reference for every slash command available in the Mega Brain CLI.
+  <Card title="Agent System" icon="robot" href="/concepts/agents">
+    Learn about Cargo Agents (CRO, CFO, CMO, COO), Mind Clones, and how to create custom agents.
   </Card>
 </CardGroup>
+
+<Tip>
+  The richer your knowledge base, the more reliable your Conclave sessions become. Aim for 3–5 materials per expert before running DNA extraction for production-quality results.
+</Tip>

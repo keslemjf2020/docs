@@ -1,43 +1,258 @@
 ---
-title: "How the Mega Brain Knowledge Pipeline Works End to End"
+title: "Knowledge Pipeline: From Raw Material to Structured Insight"
 sidebarTitle: "Knowledge Pipeline"
-description: "Trace how raw expert materials become structured playbooks, DNA schemas, and AI agents through Mega Brain's five-phase automated pipeline."
+description: "Learn how Mega Brain's 8-phase JARVIS pipeline transforms raw expert materials into traceable knowledge, DNA schemas, and enriched AI agents."
 ---
 
-Mega Brain transforms unstructured expert materials — videos, PDFs, audio files, podcasts, and training courses — into actionable intelligence through a five-phase pipeline. Each phase builds on the last, so by the time you reach the end, you have a fully populated knowledge base, a cognitive profile of your chosen expert, and AI agents ready to reason on your behalf.
+When you drop a transcript, PDF, or course recording into your inbox and run `/process-jarvis`, Mega Brain puts it through a rigorous 8-phase semantic processing pipeline. Each phase has a specific job — chunking content, resolving entity names, extracting insights, synthesizing narratives, compiling dossiers, and enriching your agents — and every output traces back to the exact source passage it came from. Nothing gets summarized away or omitted.
 
-## The Five Phases
+<Note>
+  **Core constraint:** The pipeline processes 100% of your content. Every insight must carry full lineage back to its source chunk and original file.
+</Note>
+
+## Pipeline at a Glance
+
+```
+PIPELINE JARVIS v2.1
+├── Phase 1: Initialization + Validation
+├── Phase 2: Chunking
+├── Phase 3: Entity Resolution
+├── Phase 4: Insight Extraction
+├── Phase 5: Narrative Synthesis
+├── Phase 6: Dossier Compilation
+├── Phase 7: Agent Enrichment
+└── Phase 8: Finalization + Execution Report
+```
+
+## The 8 Phases
 
 <Steps>
-  <Step title="Ingest">
-    Import materials from any supported source: YouTube URLs, PDFs, audio files, or plain text transcriptions. Run `/ingest` from the CLI and point it at your material. JARVIS automatically detects the format, normalizes the content into a consistent internal representation, and queues it for processing. You never need to pre-format or convert files by hand.
+  <Step title="Phase 1 — Initialization + Validation">
+    Before any processing begins, the pipeline validates your input and loads all state files.
+
+    **What happens:**
+    - Confirms the source file exists and contains content
+    - Parses the file path to extract metadata: source person, company, material type, unique source ID, and scope
+    - Loads or creates the four core state files: `CHUNKS-STATE.json`, `CANONICAL-MAP.json`, `INSIGHTS-STATE.json`, and `NARRATIVES-STATE.json`
+    - Checks whether this source ID has already been processed and asks you whether to reprocess if so
+
+    **Output:** Validated input with full metadata, state files ready for writing
   </Step>
-  <Step title="Process">
-    JARVIS runs the ingested material through its quality control layer before any knowledge extraction begins. More than 20 automation hooks fire at this stage — checking for transcript accuracy, deduplicating content, flagging low-confidence segments, and structuring the raw text into processable units. This step protects the integrity of everything that comes after it.
+
+  <Step title="Phase 2 — Chunking">
+    The source material is segmented into semantic chunks that preserve meaning, timing, and speaker context.
+
+    **What happens:**
+    - Reads the entire source file
+    - Splits content into ~300-word semantic segments that respect topic boundaries
+    - Preserves timestamps, speaker labels, and formatting
+    - Extracts raw entity mentions (people and themes) from each chunk
+    - Assigns a sequential `chunk_id` (e.g., `CG003-001`)
+
+    **Example chunk:**
+    ```json
+    {
+      "chunk_id": "CG003-001",
+      "content": "[chunk text here]",
+      "meta": {
+        "source_id": "CG003",
+        "source_person": "Cole Gordon",
+        "timestamp": "00:05:23",
+        "word_count": 287
+      },
+      "entities": {
+        "pessoas": ["Cole Gordon", "Alex Hormozi"],
+        "temas": ["Sales", "Closing Techniques"]
+      }
+    }
+    ```
+
+    **Output:** New chunks merged into `CHUNKS-STATE.json`, deduplicated by `chunk_id`
   </Step>
-  <Step title="Extract DNA">
-    With clean, structured content in hand, Mega Brain builds a cognitive profile of the expert across five knowledge layers: Philosophies, Mental Models, Heuristics, Frameworks, and Methodologies. The result is a DNA Schema — a machine-readable map of how this expert thinks, decides, and operates. Run `/extract-dna` to trigger this phase manually, or let JARVIS advance the pipeline automatically.
+
+  <Step title="Phase 3 — Entity Resolution">
+    Raw entity mentions across all chunks are normalized to a single canonical form per real-world entity.
+
+    **What happens:**
+    - Compares all raw entity mentions against existing canonical entries
+    - Merges variations with ≥0.85 confidence
+    - Flags ambiguous collisions for your review
+    - Never merges entities across different source corpora
+
+    **Example resolutions:**
+
+    | Raw Mentions | Canonical Form |
+    |---|---|
+    | "Cole", "Cole G", "Cole Gordon" | **Cole Gordon** |
+    | "Hormozi", "Alex H", "Alex Hormozi" | **Alex Hormozi** |
+    | "TSC", "The Scalable Company" | **The Scalable Company** |
+
+    **Output:** Canonicalized chunks, updated `CANONICAL-MAP.json`, review queue for ambiguous cases
   </Step>
-  <Step title="Create Agents">
-    Generate AI agents directly from the extracted DNA. Mind Clone Agents reason like the specific expert whose materials you ingested, citing their actual source material as evidence. Cargo Agents are role-based alternatives — think "Marketing Strategist" or "Financial Analyst" — built from the same knowledge base but oriented around a function rather than a person. Run `/create-agent` to build either type.
+
+  <Step title="Phase 4 — Insight Extraction">
+    Every chunk is analyzed for actionable insights, which are extracted, classified by priority, and checked for contradictions.
+
+    **What happens:**
+    - Reads each chunk and identifies discrete actionable insights
+    - Classifies each insight as `high`, `medium`, or `low` priority
+    - Records confidence scores (0.0–1.0) and links back to `chunk_id` and source metadata
+    - Flags contradictions between insights from different sources
+
+    **Example insight:**
+    ```json
+    {
+      "chunk_id": "CG003-042",
+      "insight": "Respond to leads within 5 minutes to capture 80% higher conversion rate",
+      "priority": "high",
+      "confidence": 0.92,
+      "source": {
+        "source_id": "CG003",
+        "source_title": "NEPQ Masterclass Session 3",
+        "source_type": "MASTERMINDS"
+      }
+    }
+    ```
+
+    **Priority levels:**
+
+    <CardGroup cols={3}>
+      <Card title="High" icon="circle-exclamation">
+        Immediately actionable, high-impact insights ready to apply now
+      </Card>
+      <Card title="Medium" icon="circle-dot">
+        Important strategic guidance and supporting context
+      </Card>
+      <Card title="Low" icon="circle">
+        Background details that reinforce the bigger picture
+      </Card>
+    </CardGroup>
+
+    **Output:** All insights organized by person and theme in `INSIGHTS-STATE.json`
   </Step>
-  <Step title="Deliberate">
-    Bring your agents together in a Conclave — a structured multi-agent deliberation session. Each agent argues from its own expert perspective and cites evidence from the source materials. The session closes with a structured output summarizing the debate and producing actionable recommendations. Run `/conclave` to open a session.
+
+  <Step title="Phase 5 — Narrative Synthesis">
+    Insights are woven into coherent, cumulative narratives for each expert and theme.
+
+    **What happens:**
+    - Groups insights by person and by theme
+    - Synthesizes a running narrative that evolves with each new material batch
+    - Tracks tensions (conflicting insights) and open loops (unanswered questions)
+
+    <Warning>
+      The pipeline **never replaces** existing narratives — it always appends. The only exception is `next_questions`, which is replaced with updated forward-looking queries.
+    </Warning>
+
+    | Field | Merge Behavior |
+    |---|---|
+    | `narrative` | Concatenate with update separator |
+    | `insights_included[]` | Append (never replace) |
+    | `tensions[]` | Append new tensions |
+    | `open_loops[]` | Append new; mark RESOLVED when answered |
+    | `next_questions[]` | Replace with latest questions |
+
+    **Output:** Updated `NARRATIVES-STATE.json` with synthesized narratives per person and theme
+  </Step>
+
+  <Step title="Phase 6 — Dossier Compilation">
+    Narratives and insights are compiled into comprehensive Markdown dossiers — one per expert, one per theme — with full source traceability.
+
+    <Tabs>
+      <Tab title="Person Dossiers">
+        ```markdown
+        # DOSSIER: Cole Gordon
+
+        ## Core Philosophy
+        - L1: Philosophies extracted from sources
+        - L2: Mental models
+        - L3: Heuristics
+
+        ## Key Insights
+        [HIGH] Respond to leads in <5 min (Source: CG003)
+        [HIGH] Use NEPQ framework for qualification (Source: CG001)
+        ```
+      </Tab>
+      <Tab title="Theme Dossiers">
+        ```markdown
+        # DOSSIER: Sales - Closing Techniques
+
+        ## Consensus
+        - All experts agree: qualification beats persuasion
+
+        ## Contributors
+        - Cole Gordon (8 insights)
+        - Alex Hormozi (12 insights)
+        ```
+      </Tab>
+    </Tabs>
+
+    **Output:** Markdown dossiers written to `knowledge/dossiers/persons/` and `knowledge/dossiers/themes/`
+  </Step>
+
+  <Step title="Phase 7 — Agent Enrichment">
+    New knowledge discovered in this batch is offered to relevant agents for memory and definition updates.
+
+    **Threshold rules:**
+    - **≥10 mentions** → 🔴 Flag to create a new agent
+    - **≥5 mentions** → 🟡 Flag to monitor the role
+
+    **Your approval options:**
+    ```
+    1. ✅ YES  — Update AGENT.md + MEMORY.md
+    2. 📝 MEMORY ONLY — Update episodic memory only
+    3. ⏭️ SKIP — Skip for now
+    ```
+
+    **Output:** Updated agent memory files, optionally updated agent definitions
+  </Step>
+
+  <Step title="Phase 8 — Finalization + Execution Report">
+    The pipeline closes out by running automated maintenance tasks and generating a full execution report.
+
+    **Automatic actions:**
+    1. Rebuild the RAG index to include new knowledge files
+    2. Scan and update the file registry
+    3. Update `SESSION-STATE.md` with the processed file
+    4. Append an entry to `logs/AUDIT/audit.jsonl`
+
+    **Example execution report:**
+    ```
+    ═══════════════════════════════════════════════════════
+                       EXECUTION REPORT
+                       Pipeline Jarvis v2.1
+    ═══════════════════════════════════════════════════════
+    📅 Date: 2026-03-06
+    📁 Source: Cole Gordon (CG003)
+
+    ┌─────────────────────────────────────────────────────┐
+    │ Chunks created:       87                            │
+    │ Entities resolved:    23                            │
+    │ Insights extracted:   156 (42 HIGH, 89 MED, 25 LOW) │
+    │ Dossiers compiled:    2 created, 1 updated          │
+    │ Agents enriched:      Sales-Lead, NEPQ-Specialist   │
+    └─────────────────────────────────────────────────────┘
+
+    ✅ PIPELINE JARVIS v2.1 COMPLETE
+    ```
   </Step>
 </Steps>
 
-## Full Provenance
+## Pipeline Commands
 
-Every insight Mega Brain extracts — every heuristic, framework, or philosophy — carries a citation back to the exact moment in the source material where it originated. If a mental model came from minute 34 of a YouTube video, or page 12 of a PDF, Mega Brain records that link and surfaces it whenever an agent draws on that knowledge.
+| Command | Description |
+|---|---|
+| `/process-jarvis` | Run the full 8-phase pipeline on a specified file |
+| `/ingest` | Add new material to your inbox |
+| `/save` | Save current pipeline state mid-run |
+| `/resume` | Resume an interrupted pipeline session |
 
-This means you can always audit what your agents know and where they learned it. You are never trusting a black box. When an agent makes a recommendation, you can follow the evidence trail all the way back to the original expert speaking or writing in their own words.
+## Next Steps
 
-<Note>
-  **Community vs Pro editions:** Ingestion (Phase 1) and basic processing (Phase 2) are available to all users. DNA Extraction (Phase 3), Mind Clone Agent creation (Phase 4), and the Conclave (Phase 5) require a **Pro** subscription. Cargo Agent creation is available on the Community plan. See [Community vs Pro](/configuration/community-vs-pro) for a full feature comparison.
-</Note>
-
-## Related Pages
-
-- [JARVIS Orchestrator](/cli/jarvis) — Learn how JARVIS manages automation hooks across the pipeline
-- [DNA Extraction](/concepts/dna-extraction) — Understand the five knowledge layers in depth
-- [Agents](/concepts/agents) — Explore Mind Clone and Cargo Agent capabilities
+<CardGroup cols={2}>
+  <Card title="DNA Schema" href="/concepts/dna-schema" icon="dna">
+    Learn how the 5-layer DNA framework is built from pipeline output
+  </Card>
+  <Card title="Architecture" href="/concepts/architecture" icon="sitemap">
+    See how pipeline artifacts fit into the overall system structure
+  </Card>
+</CardGroup>

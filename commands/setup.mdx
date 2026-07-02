@@ -1,0 +1,272 @@
+---
+title: "/setup: Configure Mega Brain Environment and API Keys"
+sidebarTitle: "/setup"
+description: "Run the interactive setup wizard to verify dependencies, configure API keys, and generate your .env file before using any other Mega Brain command."
+---
+
+Before you can ingest content or run the knowledge pipeline, Mega Brain needs to know where your API keys live and which dependencies are available on your machine. The `/setup` command walks you through all of this in a single interactive session — verifying Python and Node.js versions, installing Python packages, prompting for each API key, testing connections, and writing your `.env` file when everything checks out.
+
+<Note>
+`/setup` runs automatically the first time you use Mega Brain if a `.env` file is not found. You can also run it manually at any time to update your configuration.
+</Note>
+
+## Syntax
+
+```bash
+/setup
+```
+
+No arguments or flags required. The command is fully interactive.
+
+## What It Does
+
+The setup wizard performs 7 sequential steps:
+
+1. **Python verification** — checks for Python 3.10 or higher
+2. **Node.js verification** — checks for Node.js 18 or higher
+3. **Python dependencies** — installs packages from `requirements.txt`
+4. **API key configuration** — interactive prompts for each service
+5. **Connection validation** — tests each API endpoint live
+6. **Generate `.env` file** — writes your configuration to disk
+7. **Onboarding dashboard** — displays the JARVIS operational briefing
+
+## Step-by-Step Process
+
+<Steps>
+  <Step title="Python Verification">
+    Setup checks for Python 3.10 or higher on your system.
+
+    ```bash
+    ✓ Python 3.10.5 found
+    ```
+
+    If Python is missing, setup stops immediately:
+
+    ```bash
+    ✗ Python 3.10+ required
+      Install from: https://python.org
+    ```
+
+    <Warning>
+      Python 3.10+ is a hard requirement. Setup will not continue without it.
+    </Warning>
+  </Step>
+
+  <Step title="Node.js Verification">
+    Setup checks for Node.js 18 or higher.
+
+    ```bash
+    ✓ Node.js v18.17.0 found
+    ```
+  </Step>
+
+  <Step title="Python Dependencies">
+    Required Python packages are installed automatically:
+
+    ```bash
+    pip install -r requirements.txt
+    ```
+
+    Key packages installed include:
+    - `youtube-transcript-api` — for YouTube video transcription
+    - `voyageai` — for semantic embeddings
+    - `anthropic` — for Claude API (optional)
+    - `PyYAML` — for configuration parsing
+  </Step>
+
+  <Step title="API Key Configuration">
+    Setup prompts you for each service in turn. You can skip optional keys by pressing Enter.
+
+    <ParamField body="OPENAI_API_KEY" type="string" required>
+      OpenAI API key for Whisper transcription. Required for `/ingest` to work with YouTube videos. Get yours at [platform.openai.com/api-keys](https://platform.openai.com/api-keys).
+    </ParamField>
+
+    <ParamField body="VOYAGE_API_KEY" type="string">
+      Voyage AI key for semantic embeddings and search. Enables Conclave agents to find evidence in your knowledge base. Get yours at [dash.voyageai.com/api-keys](https://dash.voyageai.com/api-keys).
+    </ParamField>
+
+    <ParamField body="ANTHROPIC_API_KEY" type="string">
+      Anthropic API key for Claude access. **Not needed** if you are already using Claude Code with a Max or Pro plan. Only required for standalone scripts outside Claude Code. Get yours at [console.anthropic.com](https://console.anthropic.com/settings/keys).
+    </ParamField>
+
+    <ParamField body="GOOGLE_CLIENT_ID" type="string">
+      Google OAuth client ID for importing content directly from Google Drive. Configure at [console.cloud.google.com](https://console.cloud.google.com/apis/credentials).
+    </ParamField>
+
+    <ParamField body="GOOGLE_CLIENT_SECRET" type="string">
+      Google OAuth client secret, paired with `GOOGLE_CLIENT_ID` for Drive access.
+    </ParamField>
+  </Step>
+
+  <Step title="Connection Validation">
+    Setup tests each configured API to confirm your keys work:
+
+    ```
+    ═══════════════════════════════════════════════════════════════
+     🔌 CONNECTION VALIDATION
+    ═══════════════════════════════════════════════════════════════
+
+      OpenAI (Whisper):  ✓ Connected (gpt-3.5-turbo available)
+      Voyage AI (RAG):   ✓ Connected (voyage-2 model ready)
+      Anthropic API:     ⏭️  Skipped
+      Google Drive:      ⏭️  Skipped
+
+    ═══════════════════════════════════════════════════════════════
+    ```
+
+    If an optional key fails validation, setup asks whether you want to continue without it.
+  </Step>
+
+  <Step title="Generate .env File">
+    A `.env` file is written to the project root with your configuration:
+
+    ```bash
+    # Mega Brain Configuration
+    # Generated: 2026-03-06T10:30:00Z
+
+    # OpenAI API (REQUIRED)
+    OPENAI_API_KEY=sk-...
+
+    # Voyage AI API (RECOMMENDED)
+    VOYAGE_API_KEY=pa-...
+
+    # Anthropic API (OPTIONAL)
+    # ANTHROPIC_API_KEY=
+
+    # Google Drive (OPTIONAL)
+    # GOOGLE_CLIENT_ID=
+    # GOOGLE_CLIENT_SECRET=
+    ```
+
+    If a `.env` file already exists, setup asks before overwriting:
+
+    ```
+    ⚠️  .env file already exists
+    Overwrite existing configuration? [y/N]
+    ```
+  </Step>
+
+  <Step title="Onboarding Dashboard">
+    Setup closes with the JARVIS operational briefing, showing your system status and suggesting the next command to run.
+  </Step>
+</Steps>
+
+## Configuration File Location
+
+```
+mega-brain/
+├── .env                    # Your configuration (gitignored)
+├── .env.example            # Template with descriptions
+└── bin/templates/
+    └── env.example         # Used by setup wizard
+```
+
+## Reconfiguration
+
+You can re-run `/setup` at any time to update your API keys or add new services. When a `.env` already exists, setup detects it and asks whether to overwrite.
+
+```bash
+/setup
+```
+
+## Error Handling
+
+<Tabs>
+  <Tab title="Required Steps Fail">
+    If Python or Node.js are missing, setup stops immediately and shows installation instructions.
+
+    ```
+    ✗ SETUP FAILED
+
+    Python 3.10+ is required but not found.
+
+    Please install Python from https://python.org
+    Then run /setup again.
+    ```
+  </Tab>
+  <Tab title="Optional Steps Fail">
+    If an optional API key fails validation, setup continues with a warning:
+
+    ```
+    ⚠️  Voyage AI connection failed: Invalid API key
+
+    You can continue without Voyage AI, but semantic
+    search will not be available.
+
+    Reconfigure later by running /setup again.
+
+    Continue? [Y/n]
+    ```
+  </Tab>
+  <Tab title="Partial Configuration">
+    If you cancel mid-setup, your partial progress is saved:
+
+    ```
+    ⚠️  Setup cancelled by user
+
+    Partial configuration saved to .env:
+      ✓ OPENAI_API_KEY
+      ✗ VOYAGE_API_KEY (not configured)
+
+    Run /setup again to complete configuration.
+    ```
+  </Tab>
+</Tabs>
+
+## Troubleshooting
+
+<AccordionGroup>
+  <Accordion title="Python Not Found">
+    **Error:** `python: command not found`
+
+    ```bash
+    # macOS / Linux
+    brew install python3
+
+    # Windows
+    winget install Python.Python.3.11
+    ```
+  </Accordion>
+
+  <Accordion title="pip Install Fails">
+    **Error:** `Permission denied` during `pip install`
+
+    ```bash
+    pip install --user -r requirements.txt
+    ```
+  </Accordion>
+
+  <Accordion title="API Key Invalid">
+    **Error:** `Invalid API key` during connection validation
+
+    1. Check for extra spaces copied with the key
+    2. Verify the key is active in your provider dashboard
+    3. Confirm the key has the correct permissions
+    4. Re-run `/setup` to enter the correct key
+  </Accordion>
+
+  <Accordion title=".env Permission Issues">
+    **Error:** `Cannot write .env file`
+
+    ```bash
+    # Check current permissions
+    ls -la .env
+
+    # Fix permissions
+    chmod 600 .env
+    ```
+  </Accordion>
+</AccordionGroup>
+
+## Security Notes
+
+<Warning>
+**Never commit `.env` to version control.** The file contains sensitive API keys. It is automatically gitignored by default, but double-check your `.gitignore` if you are working in a fork.
+</Warning>
+
+Follow these best practices to keep your keys safe:
+
+1. **Use environment-specific keys** — separate keys for development and production
+2. **Rotate keys regularly** — update every 90 days
+3. **Limit key permissions** — grant only the scopes each service requires
+4. **Monitor usage** — check API dashboards periodically for unusual activity

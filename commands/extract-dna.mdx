@@ -1,0 +1,314 @@
+---
+title: "/extract-dna: Generate 5-Layer Cognitive Knowledge Profiles"
+sidebarTitle: "/extract-dna"
+description: "Generate a cognitive DNA schema — five YAML files covering philosophies, mental models, heuristics, frameworks, and methodologies — from 3 or more processed expert sources."
+---
+
+Once you've processed three or more sources from the same expert through `/process-jarvis`, you have enough material for Mega Brain to identify patterns. `/extract-dna` reads across all that accumulated knowledge — chunks, insights, narratives, and dossiers — and distills it into a structured 5-layer cognitive profile. This DNA schema is what powers mind clone agents and enables Conclave to reason as if drawing on the expert's own thinking.
+
+<Note>
+You must have processed at least 3 sources for a person before running `/extract-dna`. Running it earlier will fail with an "Insufficient sources" error.
+</Note>
+
+## Syntax
+
+```bash
+/extract-dna [PERSON_NAME]
+```
+
+<ParamField body="PERSON_NAME" type="string" required>
+  The canonical slug for the person whose DNA you want to extract.
+
+  **Examples:** `cole-gordon`, `alex-hormozi`, `sam-ovens`
+</ParamField>
+
+## Examples
+
+<CodeGroup>
+  ```bash Cole Gordon
+  /extract-dna cole-gordon
+  ```
+  ```bash Alex Hormozi
+  /extract-dna alex-hormozi
+  ```
+  ```bash Sam Ovens
+  /extract-dna sam-ovens
+  ```
+</CodeGroup>
+
+## Prerequisites
+
+Before running `/extract-dna`, confirm that all four of the following are true:
+
+1. **Dossier exists** — `knowledge/dossiers/persons/DOSSIER-{PERSON}.md`
+2. **3+ sources processed** — at least 3 files run through `/process-jarvis`
+3. **Insights available** — `INSIGHTS-STATE.json` contains data for this person
+4. **Chunks indexed** — `CHUNKS-STATE.json` has chunks for this person
+
+If any prerequisite is missing, the command tells you exactly what to fix:
+
+```
+[✗] EXTRACTION FAILED
+
+Person "Sam Ovens" does not have sufficient data:
+  ✗ DOSSIER: Not found
+  ✗ Sources processed: 0 (minimum: 3)
+  ✗ Insights: 0
+
+Action required:
+  1. Ingest 3+ materials for Sam Ovens
+  2. Process each file with /process-jarvis
+  3. Retry /extract-dna sam-ovens
+```
+
+## The 5-Layer DNA Schema
+
+Mega Brain structures expert knowledge into five distinct, ordered layers.
+
+<Tabs>
+  <Tab title="Layer 1: Philosophies">
+    **Core beliefs and worldview** — fundamental convictions that appear in three or more contexts across the source material, with no numeric thresholds.
+
+    ```yaml
+    - "Philosophy beats tactics"
+    - "Speed matters more than perfection"
+    - "Test everything, assume nothing"
+    ```
+
+    **Weight bonuses:** direct quote with chunk ID (+0.15), appears in 2+ sources (+0.15), appears in 3+ sources (+0.10), narrative context (+0.05).
+    **Weight penalties:** inferred, not direct (−0.20).
+  </Tab>
+  <Tab title="Layer 2: Mental Models">
+    **Thinking frameworks and analytical lenses** — tools that change how you *see* a problem, not what you *do* about it. These generate specific diagnostic questions.
+
+    ```yaml
+    - "Pareto Principle (80/20)"
+    - "Inversion: What would cause failure?"
+    - "Second-order thinking"
+    ```
+
+    Same weight formula as philosophies, with an additional +0.10 for prescriptive language.
+  </Tab>
+  <Tab title="Layer 3: Heuristics">
+    **Practical decision shortcuts with numeric thresholds** — actionable "if X then Y" rules. This is the **most valuable layer** because heuristics carry specific, measurable criteria.
+
+    ```yaml
+    - "If show rate < 60%, deploy Email Hammer (12 emails in 48h)"
+    - "Close rate drops 40% without proper qualification"
+    - "10% commission base + 5% accelerator at 80% quota"
+    ```
+
+    **All heuristics must contain a numeric threshold.** Extraction actively scans for numbers and flags any rule missing one. Additional weight bonus: +0.10 for a specific threshold.
+
+    <Tip>
+      Review `HEURISTICAS.yaml` first after every extraction. These rules are the highest-ROI output of the entire pipeline.
+    </Tip>
+  </Tab>
+  <Tab title="Layer 4: Frameworks">
+    **Named structures with defined components** — modular systems you can apply in any order. Unlike methodologies, frameworks don't have a rigid sequence.
+
+    ```yaml
+    - name: "STAR Qualification"
+      components:
+        - Situation
+        - Timing
+        - Authority
+        - Resources
+
+    - name: "3 Audience Buckets"
+      components:
+        - YES (ready buyers)
+        - NO (not qualified)
+        - MAYBE (nurture needed)
+    ```
+
+    Additional weight bonus: +0.10 if all components are defined.
+  </Tab>
+  <Tab title="Layer 5: Methodologies">
+    **Step-by-step processes with a rigid sequence** — unlike frameworks, you cannot skip or reorder steps. Each step has defined success criteria.
+
+    ```yaml
+    - name: "Email Hammer (12 emails, 48h)"
+      steps:
+        - "Email 1-3: Day 1 morning"
+        - "Email 4-6: Day 1 afternoon"
+        - "Email 7-9: Day 2 morning"
+        - "Email 10-12: Day 2 afternoon"
+      success_criteria: ">= 60% show rate"
+    ```
+
+    Additional weight bonus: +0.10 if success criteria are defined.
+  </Tab>
+</Tabs>
+
+## Execution Process
+
+<Steps>
+  <Step title="Validate Prerequisites">
+    The command checks all four prerequisites before doing any work, and prints a clear failure message if any are missing.
+
+    ```
+    [✓] DOSSIER exists: knowledge/dossiers/persons/DOSSIER-COLE-GORDON.md
+    [✓] INSIGHTS-STATE.json has insights for Cole Gordon
+    [✓] CHUNKS-STATE.json has chunks for Cole Gordon
+    [✓] Sources processed: 5 (CG001, CG002, CG003, CG004, CG005)
+
+    All prerequisites met. Proceeding...
+    ```
+  </Step>
+
+  <Step title="Load Source Data">
+    All accumulated insights, narratives, chunks, and dossier content for the person are loaded into memory.
+
+    ```
+    • Insights: 247 found
+    • Narratives: 18 found
+    • Chunks: 487 indexed
+    • DOSSIER: 1,834 lines
+    ```
+  </Step>
+
+  <Step title="Extract by Layer">
+    Classification rules are applied to identify items for each of the five layers. The extraction reports progress as it completes each layer.
+
+    ```
+    Layer 3: HEURISTICS (PRIORITY LAYER)
+
+    Scanning for rules with numeric thresholds...
+
+      ✓ Extracted: 23 heuristics (18 with thresholds)
+      → Output: knowledge/dna/persons/cole-gordon/HEURISTICAS.yaml
+    ```
+  </Step>
+
+  <Step title="Calculate Weights">
+    Every extracted item receives a confidence weight using the formula:
+
+    ```
+    BASE: 0.50
+
+    Bonuses:
+      + 0.15  Direct quote with chunk_id
+      + 0.15  Appears in 2+ sources
+      + 0.10  Numeric threshold (heuristics only)
+      + 0.10  Appears in 3+ sources
+      + 0.05  Narrative context
+      + 0.05  Prescriptive language
+
+    Penalties:
+      − 0.20  Inferred (not direct)
+      − 0.15  Contradicts another item
+      − 0.10  Ambiguous context
+
+    Usage Threshold: 0.70
+    ```
+
+    Items with weight below `0.70` are extracted but not used in agent responses.
+  </Step>
+
+  <Step title="Generate CONFIG.yaml">
+    A summary file is created alongside the five layer files, capturing person metadata, source IDs, DNA statistics, and behavioural patterns identified across all sources.
+  </Step>
+
+  <Step title="Completion Report">
+    ```
+    EXTRACTION COMPLETE: COLE GORDON
+
+    FILES GENERATED:
+      • FILOSOFIAS.yaml        - 12 items
+      • MODELOS-MENTAIS.yaml   - 8 items
+      • HEURISTICAS.yaml       - 23 items (18 with numeric thresholds)
+      • FRAMEWORKS.yaml        - 15 items
+      • METODOLOGIAS.yaml      - 7 items
+      • CONFIG.yaml            - 1 file
+
+    STATISTICS:
+      • Total items: 65
+      • Items with weight >= 0.70: 58 (89%)
+      • Average weight: 0.82
+    ```
+  </Step>
+</Steps>
+
+## Output Location
+
+```
+knowledge/dna/persons/{person-name}/
+├── FILOSOFIAS.yaml        # Layer 1: Philosophies
+├── MODELOS-MENTAIS.yaml   # Layer 2: Mental Models
+├── HEURISTICAS.yaml       # Layer 3: Heuristics (most valuable)
+├── FRAMEWORKS.yaml        # Layer 4: Frameworks
+├── METODOLOGIAS.yaml      # Layer 5: Methodologies
+└── CONFIG.yaml            # Metadata and statistics
+```
+
+## Genealogy Tracking
+
+Every DNA item must trace back to its original source material. The full chain is:
+
+```
+DNA Item
+  ↓
+insight_origin (insight ID)
+  ↓
+chunks[] (chunk IDs)
+  ↓
+sources[] (SOURCE_IDs)
+  ↓
+Original file path in inbox/
+```
+
+For example, the "Email Hammer" heuristic traces: `heuristic_cg_001` → `insight_CG003_042` → `chunk_CG003_089` → `CG003` → `inbox/COLE GORDON/MASTERMINDS/scaling-masterclass.txt`.
+
+<Warning>
+DNA items without chunk IDs are invalid and must not be used in agent responses. If you find items with empty `chunks: []`, re-run extraction after investigating the pipeline.
+</Warning>
+
+## What Gets Created After Extraction
+
+<CardGroup cols={2}>
+  <Card title="Mind Clone Agent" icon="robot">
+    DNA enables creation of a `agents/persons/{name}/` agent with a SOUL file and MEMORY file.
+  </Card>
+  <Card title="Agent Enrichment" icon="brain">
+    Cargo agents are updated with the person's frameworks and heuristics so they can cite them in Conclave deliberations.
+  </Card>
+  <Card title="RAG Index" icon="magnifying-glass">
+    DNA files are indexed for semantic search, making them retrievable during Conclave evidence gathering.
+  </Card>
+  <Card title="Dossier Updates" icon="file">
+    The person's dossier is annotated with DNA references linking sections back to the schema.
+  </Card>
+</CardGroup>
+
+## Troubleshooting
+
+<AccordionGroup>
+  <Accordion title='"Insufficient sources"'>
+    You need at least 3 processed sources. Check what's been processed:
+
+    ```bash
+    cat system/SESSION-STATE.md | grep "Cole Gordon"
+    ```
+
+    Then ingest and process more materials before retrying.
+  </Accordion>
+
+  <Accordion title='"No heuristics found"'>
+    Heuristics require numeric thresholds. If none are found, your source materials may lack specific metrics. Ingest more quantitative content (courses, blueprints, frameworks) rather than general interviews or podcasts.
+  </Accordion>
+
+  <Accordion title='"Missing chunk_ids"'>
+    This indicates a pipeline issue. Do not use DNA items without chunk IDs in agent responses. Re-run extraction after investigating the Phase 6 dossier compilation output.
+  </Accordion>
+
+  <Accordion title="Low weight items (below 0.70)">
+    Items below the 0.70 threshold need more evidence to be considered reliable. Either find additional sources that corroborate the item, or remove it if the evidence is genuinely weak.
+
+    ```bash
+    # Find low-weight heuristics
+    yq '.heuristics[] | select(.weight < 0.70)' \
+      knowledge/dna/persons/cole-gordon/HEURISTICAS.yaml
+    ```
+  </Accordion>
+</AccordionGroup>

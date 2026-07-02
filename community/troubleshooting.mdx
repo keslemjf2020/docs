@@ -1,0 +1,499 @@
+---
+title: "Troubleshooting Common Mega Brain Issues"
+sidebarTitle: "Troubleshooting"
+description: "Diagnose and fix common Mega Brain issues — setup errors, hook failures, skill routing problems, pipeline stalls, and agent command errors."
+---
+
+Most issues with Mega Brain fall into a small number of categories: environment configuration, Python and hook execution, skill auto-routing, pipeline processing, and agent commands. Work through the relevant section below, and run `/jarvis-briefing` at any point to get an instant health score and surface active errors.
+
+## Common Issues
+
+<AccordionGroup>
+
+  <Accordion title="Environment Setup">
+
+    ### `.env not found` error
+
+    **Problem:** The system can't find your environment configuration file.
+
+    **Solution:** Run the setup wizard — it creates your `.env`, prompts for required API keys, and validates your environment:
+
+    ```bash
+    npx mega-brain-ai setup
+    ```
+
+    The setup wizard also auto-triggers on first use if `.env` is missing, so you may not need to run this manually.
+
+    ---
+
+    ### API key not working
+
+    **Problem:** Commands fail with authentication errors.
+
+    **Steps to check:**
+    1. Verify your `.env` file exists in the project root
+    2. Confirm `OPENAI_API_KEY` is set (required for transcription)
+    3. Check for extra quotes or spaces around the key value
+    4. Restart Claude Code after modifying `.env`
+
+    **Correct format:**
+    ```bash
+    # Correct
+    OPENAI_API_KEY=sk-proj-...
+
+    # Wrong — extra quotes
+    OPENAI_API_KEY="sk-proj-..."
+
+    # Wrong — leading space
+    OPENAI_API_KEY= sk-proj-...
+    ```
+
+    Run `/setup` to reconfigure keys interactively and validate their format.
+
+    ---
+
+    ### Node version issues
+
+    **Problem:** CLI commands fail with version-related errors.
+
+    **Check your Node version:**
+    ```bash
+    node --version  # Must be >= 18.0.0
+    ```
+
+    If you're on an older version, install Node 18 or later from [nodejs.org](https://nodejs.org).
+
+  </Accordion>
+
+  <Accordion title="Python & Hooks">
+
+    ### `Hook failed` errors
+
+    **Problem:** Hooks fail to execute with Python errors.
+
+    **Solutions:**
+
+    1. Check your Python version:
+    ```bash
+    python --version  # Must be 3.10 or higher
+    ```
+
+    2. Verify Python is in your PATH:
+    ```bash
+    which python   # Unix/Mac
+    where python   # Windows
+    ```
+
+    3. Install PyYAML (the only external hook dependency):
+    ```bash
+    pip install pyyaml
+    ```
+
+    4. Fix hook file permissions on Unix/Mac:
+    ```bash
+    chmod +x .claude/hooks/*.py
+    ```
+
+    Hooks intentionally use only stdlib + PyYAML to minimize dependency issues.
+
+    ---
+
+    ### Hook runs but doesn't work as expected
+
+    **Problem:** A hook executes without errors, but behavior is incorrect.
+
+    **Debug steps:**
+
+    1. Check the hook configuration in `settings.json`:
+    ```json
+    {
+      "hooks": {
+        "SessionStart": [".claude/hooks/session_start.py"],
+        "UserPromptSubmit": [".claude/hooks/skill_router.py"]
+      }
+    }
+    ```
+
+    2. Add debug output to the hook:
+    ```python
+    import sys
+    print(f"DEBUG: Hook triggered with {len(sys.argv)} args", file=sys.stderr)
+    ```
+
+    3. Verify you're using the right hook event. Events fire in this order:
+       - `SessionStart` — once when Claude starts
+       - `UserPromptSubmit` — before each user message
+       - `PreToolUse` — before tool execution
+       - `PostToolUse` — after tool execution
+       - `Stop` — when the session ends
+
+  </Accordion>
+
+  <Accordion title="Skills & Auto-Routing">
+
+    ### Skills not auto-activating
+
+    **Problem:** Skills don't activate when you expect them to.
+
+    **Steps to check:**
+
+    1. Verify `SKILL-INDEX.json` exists (generated on `SessionStart` by `skill_indexer.py`):
+    ```bash
+    ls .claude/SKILL-INDEX.json
+    ```
+
+    2. Check that your skill description is specific enough to trigger routing:
+    ```markdown
+    # Too vague — won't trigger
+    description: Helps with files
+
+    # Specific — will trigger reliably
+    description: Extract DNA from expert materials. Use when processing videos, PDFs, or transcriptions.
+    ```
+
+    3. Confirm the skill file structure is correct:
+    ```
+    .claude/skills/skill-name/
+    ├── SKILL.md          # Must be exactly this name (case-sensitive)
+    └── resources/
+    ```
+
+    4. Validate your YAML frontmatter:
+    ```markdown
+    ---
+    name: skill-name      # Must match directory name exactly
+    description: Clear description with trigger words
+    ---
+    ```
+
+    <Tip>
+    Include "Use when…" context in your skill description with the specific words a user would naturally say to trigger that skill.
+    </Tip>
+
+    ---
+
+    ### Skill not found error
+
+    **Problem:** A skill doesn't appear in the available skills list.
+
+    **Steps to check:**
+
+    1. Confirm the file location:
+    ```bash
+    ls .claude/skills/skill-name/SKILL.md
+    ```
+
+    2. The filename is case-sensitive — it must be exactly `SKILL.md`:
+       - ✓ Correct: `SKILL.md`
+       - ✗ Wrong: `skill.md`, `Skill.md`, `SKILL.MD`
+
+    3. The directory name must match the `name` field in frontmatter:
+    ```
+    Directory:    knowledge-extraction/
+    Frontmatter:  name: knowledge-extraction
+    ```
+
+    4. Restart Claude Code to reload the skill index.
+
+    ---
+
+    ### YAML parsing errors in skills
+
+    **Problem:** A skill fails to load with YAML parsing errors.
+
+    **Common causes:**
+
+    1. Tabs in YAML (use spaces only):
+    ```yaml
+    # Wrong — contains tabs
+    name:	skill-name
+
+    # Correct — spaces only
+    name: skill-name
+    ```
+
+    2. Missing or malformed frontmatter delimiters:
+    ```markdown
+    ---
+    name: skill-name
+    description: ...
+    ---
+
+    # Content starts here (after the closing delimiter)
+    ```
+
+    3. Validate your YAML with:
+    ```bash
+    head -n 10 .claude/skills/skill-name/SKILL.md
+
+    # Check for hidden tabs (returns nothing if clean)
+    grep -P '\t' .claude/skills/skill-name/SKILL.md
+    ```
+
+  </Accordion>
+
+  <Accordion title="Pipeline Processing">
+
+    ### Pipeline fails at Phase 1 (Chunking)
+
+    **Problem:** `/process-jarvis` fails during the chunking phase.
+
+    **Common causes:**
+
+    1. File not in inbox — make sure you ran `/ingest` first:
+    ```bash
+    ls inbox/
+    ```
+
+    2. File format not supported:
+       - ✓ Supported: `.md`, `.txt`, `.pdf`, `.mp4`, `.mp3`
+       - ✗ Not supported: Binary formats without extractors
+
+    3. OpenAI API key missing (required for transcription):
+    ```bash
+    grep OPENAI_API_KEY .env
+    ```
+
+    4. File too large — consider splitting files over 2GB before ingesting.
+
+    ---
+
+    ### Pipeline completes but produces no output
+
+    **Problem:** The pipeline runs successfully but doesn't generate expected artifacts.
+
+    **Check each output directory:**
+    ```bash
+    ls -la artifacts/chunks/
+    ls -la artifacts/insights/
+    ls -la artifacts/narratives/
+    ls -la knowledge/dossiers/
+    ls -la knowledge/playbooks/
+    ```
+
+    **Check the session logs for errors:**
+    ```bash
+    ls -la logs/sessions/
+    ```
+
+    Then run `/jarvis-briefing` for a health score and a summary of any active issues.
+
+    ---
+
+    ### JARVIS pipeline stalling mid-run
+
+    **Problem:** Processing starts but hangs without completing.
+
+    **Steps to diagnose:**
+    1. Check API rate limits — OpenAI Whisper may be throttling large batches
+    2. Verify disk space is not exhausted (`df -h` on Unix/Mac)
+    3. Review the latest session log in `logs/sessions/` for the last completed step
+    4. Try processing a smaller batch (3–5 files) to isolate the issue
+
+  </Accordion>
+
+  <Accordion title="Agent & Conclave">
+
+    ### Agent commands not working
+
+    **Problem:** Slash commands for agents return errors.
+
+    **Steps to check:**
+
+    1. Verify the agent is registered in `AGENT-INDEX.yaml`:
+    ```bash
+    grep "name: agent-name" agents/AGENT-INDEX.yaml
+    ```
+
+    2. Check that the agent files are present:
+    ```bash
+    ls agents/cargo/agent-name/
+    ls agents/persons/agent-name/
+    ```
+
+    3. Confirm the agent memory directory exists:
+    ```bash
+    ls .claude/agent-memory/agent-name/
+    ```
+
+    4. Check your command syntax — arguments require quotes:
+    ```bash
+    # Correct
+    /conclave "Should I hire a CMO or outsource marketing?"
+
+    # Wrong — missing quotes
+    /conclave Should I hire a CMO?
+    ```
+
+    ---
+
+    ### Mind clone not responding as expected
+
+    **Problem:** A mind clone gives generic answers instead of expert-specific reasoning.
+
+    **Most likely causes:**
+    - Too few source materials processed (aim for at least 3–5 per expert)
+    - DNA extraction incomplete — check the dossier in `knowledge/dossiers/`
+    - Question is outside the scope of the processed materials
+
+    Process additional materials from the same expert and re-run the pipeline to enrich the mind clone's knowledge base before consulting it again.
+
+    ---
+
+    ### Conclave returns low confidence
+
+    **Problem:** Council sessions show low confidence scores.
+
+    This behavior is expected and intentional when:
+    - Your knowledge base has limited relevant content
+    - Few experts cover the topic in question
+    - The question requires context not yet in your knowledge base
+
+    **Improve confidence by:**
+    1. Processing more expert materials on the relevant topic
+    2. Creating DNA extractions from additional specialists
+    3. Providing more context directly in your question
+    4. Building up relevant playbooks over time
+
+    <Info>
+    Low confidence scores are honest feedback — they mean "I don't have enough data to be certain," which is more useful than a confident answer based on insufficient evidence.
+    </Info>
+
+  </Accordion>
+
+  <Accordion title="Git & Version Control">
+
+    ### `Permission denied on git push`
+
+    **Problem:** Git push is blocked.
+
+    This is intentional. Direct pushes to `main` are prohibited by `settings.json` deny rules. You must use the branch and PR workflow:
+
+    ```bash
+    # 1. Create a feature branch
+    git checkout -b feat/my-feature
+
+    # 2. Make changes and commit
+    git add .
+    git commit -m "feat: add new feature"
+
+    # 3. Push the branch (not main)
+    git push origin feat/my-feature
+
+    # 4. Open a PR on GitHub
+    ```
+
+    If you have a legitimate reason to push to `main`, contact the maintainer (@thiagofinch).
+
+  </Accordion>
+
+</AccordionGroup>
+
+## Installation Issues
+
+<AccordionGroup>
+
+  <Accordion title="npm install fails">
+    **Check your Node version first:**
+    ```bash
+    node --version  # Must be >= 18.0.0
+    ```
+
+    **Clear cache and reinstall:**
+    ```bash
+    npm cache clean --force
+    rm -rf node_modules package-lock.json
+    npm install
+    ```
+
+    **Fix permission issues on Unix/Mac (global installs):**
+    ```bash
+    sudo npm install -g mega-brain-ai
+    ```
+  </Accordion>
+
+  <Accordion title="Python dependencies missing">
+    **Install all Python dependencies:**
+    ```bash
+    pip install -r requirements.txt
+    ```
+
+    **Or install the key dependency individually:**
+    ```bash
+    pip install pyyaml
+    ```
+
+    Python 3.10 or later is required. Earlier versions may have compatibility issues with the intelligence scripts.
+  </Accordion>
+
+</AccordionGroup>
+
+## Performance & Session Issues
+
+<AccordionGroup>
+
+  <Accordion title="Slow processing times">
+    **Optimize your workflow:**
+    1. Large video files take longer to transcribe — consider processing audio separately
+    2. Space out large batch processing to stay under OpenAI Whisper rate limits
+    3. Monitor system resource usage:
+    ```bash
+    top      # Unix/Mac
+    taskmgr  # Windows
+    ```
+    4. Process in smaller batches of 3–5 files, then review before continuing
+  </Accordion>
+
+  <Accordion title="Session won't save">
+    **Problem:** `/save` command fails.
+
+    1. Verify the logs directory exists:
+    ```bash
+    mkdir -p logs/sessions
+    ```
+
+    2. Check permissions on Unix/Mac:
+    ```bash
+    chmod 755 logs/sessions
+    ```
+
+    3. Check available disk space:
+    ```bash
+    df -h  # Unix/Mac
+    ```
+  </Accordion>
+
+  <Accordion title="Can't resume previous session">
+    **Problem:** `/resume` doesn't restore your previous session.
+
+    1. Verify session files exist:
+    ```bash
+    ls -la logs/sessions/
+    ```
+
+    2. Sessions are stored as JSON — check for file corruption if a specific session fails to load
+    3. Try listing available sessions before resuming
+  </Accordion>
+
+</AccordionGroup>
+
+## Getting Help
+
+If you've worked through the relevant section above and the issue persists, follow these steps before opening a GitHub issue:
+
+**Run these diagnostic commands and include the output in your report:**
+```bash
+node --version
+python --version
+npm list mega-brain-ai
+ls -la .env
+/jarvis-briefing
+```
+
+Then open an issue on GitHub with:
+- The full error message
+- The exact command you ran
+- Your system info (OS, Node version, Python version)
+- Relevant log files from `logs/sessions/`
+
+You can also reach out directly to **@thiagofinch** on the project repository.

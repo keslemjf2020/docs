@@ -1,0 +1,377 @@
+---
+title: "/save and /resume: Persist and Restore Work Sessions"
+sidebarTitle: "/save & /resume"
+description: "Save your current Mega Brain work context — tasks, pending files, notes, and next steps — and restore it seamlessly at the start of your next Claude Code session."
+---
+
+Claude Code sessions don't persist context automatically. When you close a session and come back the next day, Mega Brain won't know where you left off — unless you saved first. `/save` captures your current task, status, pending items, and next steps into two files. `/resume` reads those files at the start of your next session and picks up exactly where you stopped. Together, they make multi-day and multi-session projects feel seamless.
+
+<Tip>
+Mega Brain includes session hooks that auto-prompt you to save before closing and auto-offer to resume when you start a new session. You can still run `/save` and `/resume` manually at any time.
+</Tip>
+
+## Commands
+
+```bash
+/save     # Save current session context
+/resume   # Restore last saved context
+```
+
+Neither command takes arguments. Both are interactive.
+
+---
+
+## /save
+
+### What It Captures
+
+When you run `/save`, you describe your current state in plain language. Mega Brain parses your description and stores:
+
+- **Last task description** — what you're working on
+- **Status** — `in_progress`, `completed`, or `blocked`
+- **Pending items** — what still needs to be done
+- **Next steps** — specific commands to run next
+- **Important file paths** — files you'll need to reference
+- **Notes** — anything worth remembering about this session
+- **Timestamp** — when the save occurred
+
+### Execution Flow
+
+<Steps>
+  <Step title="Run /save">
+    ```bash
+    /save
+    ```
+  </Step>
+
+  <Step title="Describe your context">
+    JARVIS asks what you want to save. Respond in plain language:
+
+    ```
+    What do you want me to save as context?
+
+    Examples:
+    - "Processing Alex Hormozi materials, 3 of 5 files done"
+    - "Fixing DNA extraction bug, need to test with Cole Gordon"
+    - "Setting up new expert: Sam Ovens"
+    ```
+  </Step>
+
+  <Step title="Context is written to disk">
+    Two files are updated:
+
+    **`CURRENT-SESSION.md`** (human-readable):
+
+    ```markdown
+    # Session: 2026-03-06
+
+    ## Current Task
+    Processing Alex Hormozi materials through pipeline
+
+    ## Status
+    IN_PROGRESS
+
+    ## Completed
+    - ✓ Ingested AH024 (VSL on scaling)
+    - ✓ Processed AH024 through all 8 phases
+
+    ## Pending
+    - [ ] Process AH025
+    - [ ] Process AH026
+    - [ ] Extract DNA after 3rd file
+
+    ## Next Steps
+    1. /process-jarvis "inbox/ALEX HORMOZI/PODCASTS/AH025.txt"
+    2. /process-jarvis "inbox/ALEX HORMOZI/MASTERCLASSES/AH026.txt"
+    3. /extract-dna alex-hormozi
+
+    ## Notes
+    AH024 had excellent heuristics on pricing — review HEURISTICAS.yaml
+    after DNA extraction.
+
+    ---
+    Saved: 2026-03-06T15:30:00Z
+    ```
+
+    **`CONTEXT.json`** (machine-readable, used by `/resume`):
+
+    ```json
+    {
+      "last_task": "Processing Alex Hormozi materials through pipeline",
+      "status": "in_progress",
+      "pending": ["Process AH025", "Process AH026", "Extract DNA"],
+      "next_steps": [
+        "/process-jarvis \"inbox/ALEX HORMOZI/PODCASTS/AH025.txt\"",
+        "/extract-dna alex-hormozi"
+      ],
+      "important_files": [
+        "inbox/ALEX HORMOZI/VSL/AH024.txt",
+        "inbox/ALEX HORMOZI/PODCASTS/AH025.txt"
+      ],
+      "notes": "AH024 had excellent pricing heuristics.",
+      "timestamp": "2026-03-06T15:30:00Z"
+    }
+    ```
+  </Step>
+
+  <Step title="Confirmation">
+    ```
+    [SAVED] Context saved in:
+    - /logs/LIVE-SESSION/CURRENT-SESSION.md
+    - /logs/LIVE-SESSION/CONTEXT.json
+
+    Next session: run /resume to load context.
+    ```
+  </Step>
+</Steps>
+
+### Example Interaction
+
+```
+User: /save
+
+JARVIS: What do you want me to save as context?
+
+User: I'm halfway through processing Cole Gordon materials.
+      Processed CG003 and CG004. Still need to do CG005,
+      then extract DNA. CG004 had great content on the
+      Email Hammer framework.
+
+JARVIS: [SAVED] Context saved.
+
+  Session Summary:
+    • Task:    Processing Cole Gordon materials
+    • Status:  In Progress
+    • Pending: Process CG005, extract DNA
+    • Note:    Email Hammer framework in CG004
+
+  Next session: run /resume to load context.
+```
+
+---
+
+## /resume
+
+### What It Restores
+
+When you run `/resume` at the start of a new session, Mega Brain reads both saved files and presents:
+
+- Your previous task and its status
+- The completed steps from the last session
+- Remaining pending items
+- Exact next commands to run
+- Important file references
+- Your notes
+- How long ago the session was saved
+
+### Execution Flow
+
+<Steps>
+  <Step title="Run /resume">
+    ```bash
+    /resume
+    ```
+  </Step>
+
+  <Step title="Session summary is displayed">
+    ```
+    [RESUMING SESSION]
+
+    ## Last Activity
+    Processing Cole Gordon materials through pipeline
+
+    ## Status
+    In Progress
+
+    ## Completed
+    ✓ Processed CG003 (Masterclass - Scaling Sales Teams)
+    ✓ Processed CG004 (Blueprint - Email Hammer Framework)
+
+    ## Pending
+    ◻ Process CG005
+    ◻ Extract DNA (after 3+ sources)
+
+    ## Next Steps
+    1. /process-jarvis "inbox/COLE GORDON/COURSES/CG005.txt"
+    2. /extract-dna cole-gordon
+
+    ## Notes
+    Email Hammer framework in CG004 has great heuristics.
+    Review after DNA extraction.
+
+    ---
+    Last saved: 2026-03-06 15:30 (2 hours ago)
+
+    Want to continue where you left off?
+    ```
+  </Step>
+
+  <Step title="Confirm and continue">
+    You can proceed with the suggested next steps, do something different, or update the context before continuing.
+
+    ```
+    User: Yes, let's process CG005.
+
+    JARVIS: [Executing /process-jarvis...]
+    ```
+  </Step>
+</Steps>
+
+---
+
+## Storage Location
+
+```
+logs/LIVE-SESSION/
+├── CURRENT-SESSION.md     # Human-readable context
+├── CONTEXT.json           # Machine-readable context
+└── history/               # Archived previous sessions
+    ├── 2026-03-05.md
+    ├── 2026-03-04.md
+    └── ...
+```
+
+Only the **most recent** session lives in `CURRENT-SESSION.md`. When you save a new session, the previous one is automatically archived to `history/` by date.
+
+---
+
+## Session Status Values
+
+<Tabs>
+  <Tab title="in_progress">
+    Work is actively ongoing but not yet complete. Use this when you're partway through processing a batch, or when you've completed some steps and have more to go.
+
+    **Example:** "Processing 5 videos, 3 done, 2 remaining"
+  </Tab>
+  <Tab title="completed">
+    The task is fully finished with no pending work. Use this when all files are processed, DNA is extracted, or the session goal is met.
+
+    **Example:** "Extracted DNA for Cole Gordon, all 5 sources processed"
+  </Tab>
+  <Tab title="blocked">
+    You cannot proceed without external input, a fix, or a missing dependency. Use this when you're waiting on API keys, source files, or resolution of a bug.
+
+    **Example:** "Pipeline stuck at Phase 4, duplicate detection failing on CG005"
+  </Tab>
+</Tabs>
+
+---
+
+## Example Workflows
+
+### Multi-Session Project
+
+```
+Day 1:
+  Ingest 10 videos
+  Process 3 → /save (status: in_progress, 7 pending)
+
+Day 2:
+  /resume
+  Process 4 more → /save (status: in_progress, 3 pending)
+
+Day 3:
+  /resume
+  Process final 3
+  /extract-dna
+  /save (status: completed)
+```
+
+### Blocked Workflow
+
+```
+Session 1:
+  Start processing CG005
+  Phase 4 fails (missing chunk_ids)
+  /save  →  status: blocked, note: "Phase 4 bug on CG005"
+
+(Fix the pipeline)
+
+Session 2:
+  /resume  →  see note about Phase 4 bug
+  Retry /process-jarvis
+  /save  →  status: completed
+```
+
+### Switching Between Experts
+
+```
+Session A (Cole Gordon work):
+  /save  →  "Cole Gordon: 3/5 processed"
+
+Session B (Alex Hormozi work):
+  Work without saving over Cole Gordon context
+
+Session C (back to Cole Gordon):
+  /resume  →  context from Session A is intact
+  Continue processing CG004, CG005
+```
+
+---
+
+## Best Practices
+
+**Save at natural break points** — end of a session, before switching tasks, after completing a processing batch.
+
+**Be specific in your notes.** Vague notes help no one the next day:
+
+```
+# Good
+"CG004 has Email Hammer framework (12 emails, 48h).
+Heuristic: 'If show rate < 60%, deploy Email Hammer'.
+This should map to LNS agent memory."
+
+# Bad
+"Processed some files, found some good stuff"
+```
+
+**Include exact next commands** so `/resume` can surface them directly:
+
+```json
+"next_steps": [
+  "/process-jarvis \"inbox/COLE GORDON/COURSES/CG005.txt\"",
+  "/extract-dna cole-gordon"
+]
+```
+
+**Check for stale sessions.** If you resume a session that's weeks old, run `/jarvis-briefing` first to reconcile the saved state with the actual state of your knowledge base.
+
+---
+
+## Troubleshooting
+
+<AccordionGroup>
+  <Accordion title='"No session to resume"'>
+    The session files don't exist yet. Check `logs/LIVE-SESSION/` and start fresh:
+
+    ```bash
+    ls -la logs/LIVE-SESSION/
+    /save
+    ```
+  </Accordion>
+
+  <Accordion title='"Session is stale (weeks old)"'>
+    Archive the old session and start fresh:
+
+    ```bash
+    mv logs/LIVE-SESSION/CURRENT-SESSION.md \
+       logs/LIVE-SESSION/history/2026-02-15.md
+    /save
+    ```
+  </Accordion>
+
+  <Accordion title="Context doesn't match reality">
+    The saved session says files are pending, but they were actually processed since the last save. Reconcile with:
+
+    ```bash
+    /jarvis-briefing
+    ```
+
+    Then re-save with accurate current state:
+
+    ```bash
+    /save
+    # Describe the actual current state
+    ```
+  </Accordion>
+</AccordionGroup>

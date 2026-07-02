@@ -1,0 +1,219 @@
+---
+title: "Mega Brain Architecture: How the System Is Organized"
+sidebarTitle: "Architecture"
+description: "Explore how Mega Brain's modular file structure separates the processing engine, knowledge base, agent system, and Claude Code integration."
+---
+
+Mega Brain follows a modular architecture designed to keep concerns cleanly separated: the processing engine transforms raw materials, the knowledge base stores structured output, the agent system houses your AI experts, and the Claude Code integration layer ties everything together. Understanding this structure helps you know exactly where to look — and where to add new content — at every stage of your workflow.
+
+## System Map
+
+Here is how the top-level directories relate to each other:
+
+```
+mega-brain/
+├── inbox/          ← Raw materials waiting to be processed
+├── core/           ← Processing engine (tasks, workflows, schemas)
+├── agents/         ← AI agents (minds, cargo, conclave, templates)
+├── .claude/        ← Claude Code integration (hooks, commands, skills)
+├── knowledge/      ← Structured knowledge output (dossiers, DNA, playbooks)
+├── artifacts/      ← Intermediate pipeline data (chunks, insights, narratives)
+├── bin/            ← CLI binaries and validation tools
+└── system/         ← Registry and state tracking
+```
+
+Material enters through `inbox/`, flows through `core/` for processing, generates intermediate data in `artifacts/`, and surfaces as finished knowledge in `knowledge/` and enriched agents in `agents/`.
+
+## Core Components
+
+<CardGroup cols={2}>
+  <Card title="Processing Engine (core/)" icon="gear">
+    Tasks, workflows, schemas, and intelligence scripts that power every stage of the knowledge pipeline.
+  </Card>
+  <Card title="Agent System (agents/)" icon="robot">
+    Mind clones, cargo roles, conclave deliberation agents, and the official V3 agent templates.
+  </Card>
+  <Card title="Claude Code Integration (.claude/)" icon="plug">
+    Hooks, slash commands, skills, and operational rules that connect Mega Brain to Claude Code.
+  </Card>
+  <Card title="Knowledge Base (knowledge/)" icon="book">
+    Playbooks, expert dossiers, DNA schemas, and source metadata with full lineage tracing.
+  </Card>
+  <Card title="Pipeline Artifacts (artifacts/)" icon="layer-group">
+    Intermediate processing outputs — chunks, insights, narratives, and canonical entity maps.
+  </Card>
+  <Card title="Inbox (inbox/)" icon="inbox">
+    The drop zone for raw materials: videos, PDFs, transcriptions, and course content awaiting processing.
+  </Card>
+</CardGroup>
+
+### Processing Engine (`core/`)
+
+The `core/` directory contains everything needed to convert raw material into structured knowledge.
+
+<Accordion title="core/tasks/ — Atomic task definitions">
+  Individual task files define the smallest units of pipeline work:
+  - `extract-dna.md` — Extract the 5-layer DNA from source material
+  - `analyze-themes.md` — Identify recurring themes and patterns
+  - `normalize-entities.md` — Resolve entity name variations to canonical forms
+  - `process-batch.md` — Coordinate batch processing across multiple files
+  - `validate-cascade.md` — Run integrity checks across pipeline state
+</Accordion>
+
+<Accordion title="core/workflows/ — YAML workflow definitions">
+  Workflows compose tasks into end-to-end processes:
+  - `wf-pipeline-full.yaml` — Complete 8-phase JARVIS pipeline
+  - `wf-ingest.yaml` — Material ingestion workflow
+  - `wf-extract-dna.yaml` — Standalone DNA extraction
+  - `wf-conclave.yaml` — Multi-agent deliberation session
+</Accordion>
+
+<Accordion title="core/schemas/ — JSON Schema definitions">
+  Schema files validate all pipeline state files, keeping your data consistent:
+  - `chunks-state.schema.json`
+  - `insights-state.schema.json`
+  - `narratives-state.schema.json`
+  - `canonical-map.schema.json`
+  - `decisions-registry.schema.json`
+</Accordion>
+
+<Accordion title="core/intelligence/ — Python utilities">
+  Intelligence scripts handle programmatic operations:
+  - `audit_layers.py` — Validate layer classification before publishing
+  - RAG and semantic processing utilities
+  - Quality control and validation scripts
+</Accordion>
+
+### Agent System (`agents/`)
+
+Mega Brain ships with four categories of agents, each at a different layer of the distribution system:
+
+```
+agents/
+├── minds/          # Expert mind clones (Hormozi, Cole Gordon, etc.)
+├── cargo/          # Functional role agents (Sales, Marketing, Ops, Finance)
+├── conclave/       # Deliberative agents (Critic, Advocate, Synthesizer)
+├── boardroom/      # C-Level strategic debate agents
+├── _templates/     # Official V3 agent templates
+└── AGENT-INDEX.yaml  # Auto-updated master catalog
+```
+
+See [Agents](/concepts/agents) for a full breakdown of each agent type.
+
+### Claude Code Integration (`.claude/`)
+
+The `.claude/` directory wires Mega Brain into your Claude Code environment through three subsystems:
+
+<Tabs>
+  <Tab title="Hooks">
+    Over 20 lifecycle hooks run automatically during your sessions:
+    - `agent_index_updater.py` — Keeps the agent catalog current
+    - `continuous_save.py` — Auto-saves session state
+    - `enforce_dual_location.py` — Ensures dual-location logging
+    - `memory_persister.py` — Persists agent memory updates
+    - `inbox_age_alert.py` — Alerts you to unprocessed materials
+    - `creation_validator.py` — Validates newly created files
+  </Tab>
+  <Tab title="Slash Commands">
+    Built-in commands for common operations:
+    - `/jarvis-briefing` — Get a full system status report
+    - `/ingest` — Add new material to the inbox
+    - `/process-jarvis` — Run the complete 8-phase pipeline
+    - `/conclave` — Start a multi-agent deliberation session
+    - `/save` — Save the current session state
+    - `/resume` — Resume a previous session
+  </Tab>
+  <Tab title="Skills">
+    Over 40 skills activate automatically based on keywords and context, providing specialized instructions for tasks like DNA extraction, entity resolution, and playbook generation — without you needing to invoke them manually.
+  </Tab>
+</Tabs>
+
+### Knowledge Base (`knowledge/`)
+
+Every piece of structured knowledge Mega Brain produces lands here, fully traceable to its source:
+
+```
+knowledge/
+├── dossiers/
+│   ├── persons/    # Expert dossiers (e.g., ALEX-HORMOZI.md)
+│   └── themes/     # Cross-expert theme compilations
+├── playbooks/      # Operational playbooks
+├── dna/            # 5-layer DNA schemas
+└── sources/        # Source material metadata
+```
+
+<Note>
+  Every knowledge artifact carries a `chunk_id`, source file path, and original context reference. You can always trace any insight back to the exact passage it came from.
+</Note>
+
+### Pipeline Artifacts (`artifacts/`)
+
+Intermediate stages of the processing pipeline write their outputs here:
+
+```
+artifacts/
+├── chunks/         # Segmented content with metadata
+├── insights/       # Extracted actionable insights
+├── narratives/     # Synthesized narratives per person or theme
+├── extractions/    # DNA layer extractions
+└── canonical/      # Entity resolution maps
+```
+
+## State Management
+
+Mega Brain maintains a set of critical state files that track processing progress across sessions:
+
+| State File | Purpose | Location |
+|---|---|---|
+| `CHUNKS-STATE.json` | All segmented content chunks | `artifacts/chunks/` |
+| `CANONICAL-MAP.json` | Entity name resolution mappings | `artifacts/canonical/` |
+| `INSIGHTS-STATE.json` | Extracted actionable insights | `artifacts/insights/` |
+| `NARRATIVES-STATE.json` | Synthesized expert narratives | `artifacts/narratives/` |
+| `AGENT-INDEX.yaml` | Master agent registry | `agents/` |
+| `file-registry.json` | Processed file tracking | `system/REGISTRY/` |
+
+## CLI and Binaries (`bin/`)
+
+Command-line tools handle setup and operational tasks:
+
+- `setup.js` — Interactive setup wizard
+- `cli.js` — Main CLI entry point
+- `pre-publish-gate.js` — Validates layer classification before any publish
+- `validate-layers.js` — Checks layer system integrity
+
+## Development Workflow
+
+<Steps>
+  <Step title="Add Material">
+    Place your raw materials — PDFs, video transcripts, course files — in the `inbox/` directory, organized by source.
+  </Step>
+  <Step title="Run the Pipeline">
+    Execute `/process-jarvis` to trigger the 8-phase JARVIS processing pipeline on your new material.
+  </Step>
+  <Step title="Review Artifacts">
+    Inspect `artifacts/` to verify chunks, insights, and narratives were generated correctly before proceeding.
+  </Step>
+  <Step title="Access Structured Knowledge">
+    Query the dossiers in `knowledge/dossiers/` and browse compiled playbooks in `knowledge/playbooks/`.
+  </Step>
+  <Step title="Consult Your Agents">
+    Use mind clone and cargo agents to apply expert reasoning to your current challenges.
+  </Step>
+</Steps>
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Knowledge Pipeline" href="/concepts/knowledge-pipeline" icon="arrow-right">
+    Learn what happens in each of the 8 processing phases
+  </Card>
+  <Card title="DNA Schema" href="/concepts/dna-schema" icon="dna">
+    Understand the 5-layer knowledge extraction framework
+  </Card>
+  <Card title="Layer System" href="/concepts/layer-system" icon="layer-group">
+    Explore how L1, L2, and L3 control distribution and privacy
+  </Card>
+  <Card title="Agents" href="/concepts/agents" icon="robot">
+    Deep dive into every agent type and how to interact with them
+  </Card>
+</CardGroup>

@@ -1,0 +1,212 @@
+---
+title: "Mega Brain Community vs Pro: Full Feature Comparison"
+sidebarTitle: "Community vs Pro"
+description: "Compare Mega Brain Community (L1) and Pro (L2) editions side by side — features, agents, pipeline capabilities, and how to upgrade."
+---
+
+Mega Brain is distributed across two primary editions: Community (L1), the open-source foundation available as a public npm package, and Pro (L2), which layers in a populated knowledge base, pre-built mind clone agents, and full pipeline processing. Both editions share the same core engine, hooks, skills, and CLI tools — Pro simply adds premium content on top of that foundation.
+
+## Distribution Layers
+
+Mega Brain uses a three-layer architecture. Your edition determines which layers are included.
+
+| Layer | Name | Content | Distribution |
+|---|---|---|---|
+| **L1** | Community | Core engine, templates, hooks, skills, CLI | npm package (public) |
+| **L2** | Pro | Populated knowledge base, mind clones, pipeline | Premium (tracked) |
+| **L3** | Personal | Your materials, sessions, environment config | Local only (gitignored) |
+
+<Info>
+Layer 3 is always local-only and gitignored regardless of your edition. Your personal data — inbox files, knowledge base, session logs, and `.env` — never leaves your machine.
+</Info>
+
+## Feature Comparison
+
+### Core Features
+
+| Feature | Community (L1) | Pro (L2) |
+|---|---|---|
+| CLI and setup wizard | ✓ | ✓ |
+| Core engine and templates | ✓ | ✓ |
+| Skills and hooks system | ✓ | ✓ |
+| Agent templates and examples | ✓ | ✓ |
+| Slash commands | ✓ | ✓ |
+| Session persistence | ✓ | ✓ |
+
+### Knowledge Management
+
+| Feature | Community (L1) | Pro (L2) |
+|---|---|---|
+| Knowledge base (empty, ready to populate) | ✓ | ✓ |
+| Populated knowledge base | — | ✓ |
+| DNA schema (5 layers) | ✓ | ✓ |
+| Pre-built DNA extractions | — | ✓ |
+| Source traceability | ✓ | ✓ |
+
+### AI Agents
+
+| Feature | Community (L1) | Pro (L2) |
+|---|---|---|
+| Agent framework | ✓ | ✓ |
+| Mind clone templates | ✓ | ✓ |
+| Pre-built mind clones | — | ✓ (5 experts) |
+| Cargo agents (functional roles) | — | ✓ (29 agents) |
+| Council / Conclave | Templates only | Fully equipped |
+| JARVIS orchestrator | ✓ | ✓ Enhanced |
+
+### Pipeline Processing
+
+| Feature | Community (L1) | Pro (L2) |
+|---|---|---|
+| Pipeline framework | ✓ | ✓ |
+| 5-phase processing | Templates only | ✓ |
+| Chunking engine | ✓ | ✓ |
+| Entity resolution | ✓ | ✓ |
+| Knowledge extraction | ✓ | ✓ Enhanced |
+| Synthesis and compilation | ✓ | ✓ Enhanced |
+
+### Developer Experience
+
+| Feature | Community (L1) | Pro (L2) |
+|---|---|---|
+| 20+ hooks for automation | ✓ | ✓ |
+| Skill system | ✓ | ✓ |
+| Keyword-based routing | ✓ | ✓ |
+| Auto-save and resume | ✓ | ✓ |
+| Validation tools | ✓ | ✓ |
+| Quality watchdog | ✓ | ✓ |
+
+## What's Included in Each Edition
+
+<CardGroup cols={2}>
+  <Card title="Community Edition (L1)" icon="box-open">
+    The open-source foundation — everything you need to build your own knowledge system from scratch.
+
+    - Interactive setup wizard (`npx mega-brain-ai setup`)
+    - Core processing engine with YAML workflow orchestration
+    - 20+ hooks and skill system with auto-routing
+    - Slash commands: `/jarvis-briefing`, `/ingest`, `/save`, `/resume`, `/setup`
+    - Agent framework, templates, and Conclave scaffolding
+    - DNA schema (5 knowledge layers)
+    - Full source traceability
+    - Layer validation CLI and pre-publish gate
+  </Card>
+  <Card title="Pro Edition (L2)" icon="star">
+    Everything in Community, plus premium content and pre-built agents ready to use immediately.
+
+    - Populated knowledge base with expert playbooks and DNA extractions
+    - 5 pre-built mind clone agents (Hormozi, Gordon, Miner, Haynes, G4)
+    - 29 cargo agents across Revenue, Marketing, Operations, Finance, and Strategy
+    - Full 5-phase pipeline processing, ready to run
+    - Council / Conclave fully equipped with domain expertise
+    - Enhanced JARVIS orchestrator
+  </Card>
+</CardGroup>
+
+## Pro Edition Agent Breakdown
+
+<AccordionGroup>
+  <Accordion title="CARGO Agents (29) — Functional Role Agents">
+    Cargo agents synthesize knowledge from multiple sources and act as functional business roles.
+
+    **Revenue & Sales**
+    - Chief Revenue Officer (CRO)
+    - Sales Manager
+    - Business Development Rep (BDR)
+    - Closer
+    - Full Sales System
+
+    **Marketing**
+    - Chief Marketing Officer (CMO)
+    - Growth Marketer
+    - Content Strategist
+
+    **Operations**
+    - Chief Operating Officer (COO)
+    - Operations Manager
+    - Pipeline Master
+
+    **Finance**
+    - Chief Financial Officer (CFO)
+    - Financial Analyst
+
+    **Strategic**
+    - Critic (Methodological)
+    - Synthesizer
+    - Sentinel (Organizational)
+    - DevOps
+    - And 13 more specialized roles
+  </Accordion>
+  <Accordion title="MIND CLONE Agents (5) — Expert Replicas">
+    Mind clones reason like specific experts using their extracted DNA across all 5 knowledge layers.
+
+    - **Alex Hormozi** — Sales, offers, and value creation
+    - **Cole Gordon** — High-ticket closing and sales systems
+    - **Jeremy Miner** — NEPQ methodology and buyer psychology
+    - **Jeremy Haynes** — Scalable sales processes
+    - **G4 Educação** — Education business models
+  </Accordion>
+  <Accordion title="CONCLAVE Agents (3) — Multi-Agent Deliberation">
+    Conclave agents run structured debates to help you make better strategic decisions.
+
+    - **Methodological Critic** — Analyzes frameworks and rigor
+    - **Devil's Advocate** — Identifies risks and challenges
+    - **Synthesizer** — Builds consensus and delivers recommendations
+  </Accordion>
+  <Accordion title="SYSTEM Agents (2) — Core Infrastructure">
+    - **JARVIS** — The main orchestrator and system manager
+    - **Agent Creator** — Generates new agents dynamically
+  </Accordion>
+</AccordionGroup>
+
+## Prerequisites
+
+Both editions share the same system requirements.
+
+| Requirement | Version | Notes |
+|---|---|---|
+| [Claude Code](https://claude.ai/claude-code) | Max or Pro plan | Core runtime |
+| [Node.js](https://nodejs.org) | >= 18.0.0 | CLI and tooling |
+| [Python](https://python.org) | >= 3.10 | Intelligence scripts |
+
+### API Keys
+
+| Key | Purpose | Required? |
+|---|---|---|
+| `OPENAI_API_KEY` | Whisper transcription | **Yes** |
+| `VOYAGE_API_KEY` | Semantic embeddings (RAG) | Recommended |
+| `GOOGLE_CLIENT_ID` | Google Drive import | Optional |
+
+Run `/setup` in Claude Code to configure keys interactively. All keys are stored in `.env`, which is gitignored.
+
+## Choosing Your Edition
+
+<CardGroup cols={2}>
+  <Card title="Choose Community If…" icon="seedling">
+    - You want to build your own knowledge base from scratch
+    - You're learning the system and exploring capabilities
+    - You want to fully customize the pipeline
+    - You prefer working from an open-source foundation
+    - You're contributing to the project
+  </Card>
+  <Card title="Choose Pro If…" icon="bolt">
+    - You want immediate access to expert knowledge and playbooks
+    - You need pre-built mind clones and cargo agents
+    - You want the full 5-phase pipeline ready to run
+    - You need Council / Conclave for strategic decision-making
+    - You want to hit the ground running on day one
+  </Card>
+</CardGroup>
+
+## Upgrading from Community to Pro
+
+Pro Edition builds directly on top of Community, so upgrading is seamless and requires no migration.
+
+- All your L3 (Personal) data remains completely intact
+- Your custom configurations and agent definitions are preserved
+- Your `.env` settings carry over without modification
+- Community customizations work alongside Pro features
+
+<Note>
+To access Pro Edition, contact **@thiagofinch** on GitHub for access and licensing information. Your personal layer (L3) data is never affected by the upgrade.
+</Note>

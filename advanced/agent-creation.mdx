@@ -1,0 +1,387 @@
+---
+title: "Building Custom AI Agents with DNA Profiles"
+sidebarTitle: "Agent Creation"
+description: "Build custom AI agents in Mega Brain by combining DNA profiles, soul definitions, and memory systems into fully traceable, expert-backed personas."
+---
+
+Mega Brain agents are more than named prompts — they are structured personas built from layered knowledge. Each agent carries a main instruction file (`AGENT.md`), an optional personality definition (`SOUL.md`), a knowledge base (`MEMORY.md`), and a DNA configuration that weights expert mental models against each other. Every piece of content in an agent must be traceable to one of these source files. This traceability makes agents auditable, updatable, and consistently reliable across sessions.
+
+## Agent Architecture
+
+Every agent lives in its own directory under one of four category paths:
+
+```
+agents/cargo/AGENT-NAME/
+├── AGENT.md          ← Main prompt (required)
+├── SOUL.md           ← Personality definition (optional)
+├── MEMORY.md         ← Knowledge base (optional)
+└── DNA-CONFIG.yaml   ← Expert DNA weights (optional)
+```
+
+## Agent Types
+
+Mega Brain defines four agent categories. Choose the one that matches your use case before you create any files.
+
+<CardGroup cols={2}>
+  <Card title="CARGO — Functional Roles" icon="briefcase">
+    Functional agents for specific business roles: sales, finance, marketing, operations. Live in `agents/cargo/`. Mega Brain ships with 29 cargo agents including `AGENT-CFO`, `AGENT-CLOSER`, `AGENT-SDR`, and `AGENT-CMO`.
+  </Card>
+  <Card title="MINDS — Expert Clones" icon="brain">
+    High-fidelity replicas of specific expert mental models. Live in `agents/minds/`. Used for Alex Hormozi, Sam Ovens, Cole Gordon, and Jeremy Haynes. DNA weighting is critical here.
+  </Card>
+  <Card title="CONCLAVE — Council Participants" icon="users">
+    Perspective agents used in multi-agent deliberation sessions via `/conclave`. Live in `agents/conclave/`. Ships with Devil's Advocate, Optimist, and Pragmatist.
+  </Card>
+  <Card title="SYSTEM — Core Orchestration" icon="server">
+    Core system agents that orchestrate other agents. Live in `agents/system/`. JARVIS (orchestrator) and Agent-Creator (meta-agent) are the two system agents.
+  </Card>
+</CardGroup>
+
+**Total active agents:** 37 (29 cargo + 5 minds + 3 conclave + 2 system)
+
+## The DNA Knowledge System
+
+Before you write your first agent, understand the five layers of knowledge that the DNA system organizes. These layers are what you populate in `MEMORY.md` and reference in `DNA-CONFIG.yaml`.
+
+<Accordion title="L1: Philosophies — Core beliefs and worldview">
+The fundamental principles an expert operates from. These rarely change and form the foundation of every decision.
+
+**Examples:** "Systems before scale" (Sam Ovens), "Value arbitrage" (Alex Hormozi), "Integrity closes deals" (Cole Gordon)
+
+```markdown
+## PHILOSOPHIES
+
+### Sam Ovens
+- Systems before scale
+- Eliminate everything that isn't the one thing
+```
+</Accordion>
+
+<Accordion title="L2: Mental Models — Thinking frameworks">
+The cognitive lenses an expert uses to analyze situations and make decisions.
+
+**Examples:** "Unit economics model" (Alex Hormozi), "Value ladder" (Russell Brunson), "Flywheel" (Amazon)
+
+```markdown
+## MENTAL-MODELS
+
+### Unit Economics Model
+**Description:** Measure profitability at the per-unit level before scaling
+**Application:** Any time you evaluate a new offer or channel
+**Formula:** LTV / CAC > 3
+```
+</Accordion>
+
+<Accordion title="L3: Heuristics — Practical decision shortcuts">
+Actionable rules of thumb derived from experience. Fast to apply, reliable at scale.
+
+**Examples:** "LTV/CAC > 3", "20% max on comp", "6-month cash runway minimum"
+
+```markdown
+## HEURISTICS
+
+- If LTV/CAC < 3 → fix before scaling
+- Payback period > 12 months → requires strong justification
+- Cash runway < 6 months → stop all non-essential spend
+```
+</Accordion>
+
+<Accordion title="L4: Frameworks — Structured methodologies">
+Named, repeatable processes for tackling common problems.
+
+**Examples:** "CLOSER Framework" (Cole Gordon), "Value Equation" (Alex Hormozi), "Consulting Process" (Sam Ovens)
+
+```markdown
+## FRAMEWORKS
+
+### CLOSER Framework
+1. Clarify why they're on the call
+2. Label their problem
+3. Overview their past experiences
+4. Sell the vacation (outcome)
+5. Explain your solution
+6. Reinforce their decision
+```
+</Accordion>
+
+<Accordion title="L5: Methodologies — Step-by-step implementations">
+Detailed, sequential workflows for specific processes like sales calls, offer creation, or client onboarding.
+
+```markdown
+## METHODOLOGIES
+
+### 7-Step Sales Call
+**Step 1:** Rapport and agenda-setting (2 min)
+**Step 2:** Clarify the problem (5 min)
+**Step 3:** Quantify the cost of inaction (5 min)
+...
+```
+</Accordion>
+
+## Creating a New Agent
+
+<Steps>
+  <Step title="Choose the agent category">
+    Decide which category fits your agent's purpose:
+    - **CARGO** — Functional role (Sales, Finance, Operations)
+    - **MINDS** — Expert mind clone
+    - **CONCLAVE** — Council participant
+    - **SYSTEM** — Core orchestration
+
+    For most custom agents, start with CARGO.
+  </Step>
+
+  <Step title="Create the agent directory and copy the template">
+    ```bash
+    mkdir -p agents/cargo/AGENT-[NAME]
+    cd agents/cargo/AGENT-[NAME]
+
+    # Copy the production template
+    cp agents/_templates/TEMPLATE-AGENT-MD-ULTRA-ROBUSTO-V3.md AGENT.md
+    ```
+  </Step>
+
+  <Step title="Define agent identity in AGENT.md">
+    Edit `AGENT.md` and fill in the core identity fields. The template follows a structured format with a header block, ASCII logo, and metadata table:
+
+    ```markdown
+    # AGENT-CFO
+
+    > **Título:** "O Guardião da Saúde Financeira"
+    > **Categoria:** Finance
+    > **Versão:** 3.0.0
+    > **Maturidade:** ████████████████░░░░░░ 80%
+    ```
+
+    All content you add must be traceable to a source file using citation references:
+
+    ```markdown
+    ^[SOUL.md:17]                          ← Line 17 of SOUL.md
+    ^[MEMORY.md:48-49]                     ← Lines 48–49 of MEMORY.md
+    ^[DNA-CONFIG.yaml:43-47]               ← Lines 43–47 of DNA-CONFIG.yaml
+    ^[derivado:MEMORY.md:contagem-linhas-47-88]   ← Derived from analysis
+    ```
+  </Step>
+
+  <Step title="Define DNA weights (optional but recommended)">
+    Create `DNA-CONFIG.yaml` to specify which experts inform this agent and how heavily to weight each one:
+
+    ```yaml DNA-CONFIG.yaml
+    version: "1.0"
+    agent_name: "AGENT-CFO"
+    category: "Finance"
+
+    dna:
+      experts:
+        - name: "Sam Ovens"
+          domains: ["systems", "scaling"]
+          weight: 85
+        - name: "Alex Hormozi"
+          domains: ["offers", "unit-economics"]
+          weight: 80
+    ```
+  </Step>
+
+  <Step title="Define personality in SOUL.md (optional)">
+    Create `SOUL.md` to give your agent a consistent voice, set of phrases, and decision principles:
+
+    ```markdown SOUL.md
+    # SOUL - AGENT-CFO
+
+    ## IDENTITY
+
+    I am the guardian of financial health. The brake when needed,
+    the accelerator when numbers allow.
+
+    ## PHRASES I USE
+
+    - "Cash is king, everything else is noise"
+    - "Margin protects from errors"
+    - "Predictability > Spikes"
+
+    ## DECISION RULES
+
+    1. No ROI = No approval
+    2. Payback > 12 months = Strong justification required
+    3. Never approve spend I can't explain with numbers
+    ```
+  </Step>
+
+  <Step title="Add the knowledge base in MEMORY.md (optional)">
+    Create `MEMORY.md` to store insights extracted from source materials. Cite every claim back to its source:
+
+    ```markdown MEMORY.md
+    # MEMORY - AGENT-CFO
+
+    ## INSIGHTS
+
+    ### From Alex Hormozi
+
+    - LTV/CAC must be > 3 ^[source:100M-offers:p47]
+    - Break-even payback < 6 months ideal ^[source:100M-leads:p89]
+
+    ### From Sam Ovens
+
+    - Systems before scale ^[source:consulting-accelerator:m3]
+    - Cash runway minimum 6 months ^[source:consulting-accelerator:m7]
+    ```
+  </Step>
+
+  <Step title="Register the agent in AGENT-INDEX.yaml">
+    Add your agent to the master index so the system can discover and activate it:
+
+    ```yaml AGENT-INDEX.yaml
+    agents:
+      cargo:
+        - name: AGENT-CFO
+          category: Finance
+          file: agents/cargo/AGENT-CFO/AGENT.md
+          soul: agents/cargo/AGENT-CFO/SOUL.md
+          memory: agents/cargo/AGENT-CFO/MEMORY.md
+          dna: agents/cargo/AGENT-CFO/DNA-CONFIG.yaml
+          status: active
+          version: 3.0.0
+          keywords: ["finance", "cfo", "financial"]
+    ```
+
+    <Note>
+      The `agent_index_updater.py` hook (PostToolUse) can update this file automatically when it detects agent creation. If it doesn't trigger, add the entry manually.
+    </Note>
+  </Step>
+
+  <Step title="Validate the agent">
+    Run the validation scripts to check structure and citation integrity before activating the agent:
+
+    ```bash
+    # Check AGENT.md structure
+    python3 core/intelligence/validate_agent.py agents/cargo/AGENT-CFO
+
+    # Verify all citations resolve to real files and line numbers
+    python3 core/intelligence/verify_citations.py agents/cargo/AGENT-CFO/AGENT.md
+    ```
+  </Step>
+</Steps>
+
+## Agent Lifecycle
+
+### Automatic Creation via Hooks
+
+You don't always need to create agents manually. The `agent_creation_trigger.py` hook (PostToolUse) detects agent creation requests in tool output and triggers the creation workflow automatically:
+
+```python
+def detect_agent_request(tool_output: str) -> bool:
+    patterns = [
+        r'create agent',
+        r'novo agente',
+        r'new agent'
+    ]
+    return any(re.search(p, tool_output, re.I) for p in patterns)
+
+if detect_agent_request(tool_output):
+    trigger_agent_creation()
+```
+
+### Agent Activation Methods
+
+Once registered, you can activate an agent four ways:
+
+1. **Direct invocation** — Mention the agent by name in your prompt
+2. **Skill routing** — Keywords in your prompt trigger the agent via the skills system
+3. **Hook trigger** — A lifecycle event activates the agent automatically
+4. **Slash command** — Type `/agent-name` to invoke directly
+
+### Agent Index Structure
+
+`AGENT-INDEX.yaml` is the central registry. It's updated automatically by `agent_index_updater.py` on every PostToolUse event:
+
+```yaml
+version: "2.0.0"
+last_updated: "2024-12-25"
+
+agents:
+  cargo:
+    - name: AGENT-CFO
+      category: Finance
+      file: agents/cargo/AGENT-CFO/AGENT.md
+      soul: agents/cargo/AGENT-CFO/SOUL.md
+      memory: agents/cargo/AGENT-CFO/MEMORY.md
+      dna: agents/cargo/AGENT-CFO/DNA-CONFIG.yaml
+      status: active
+      version: 3.0.0
+      keywords: ["finance", "cfo", "financial"]
+
+  minds:
+    - name: ALEX-HORMOZI
+      category: Expert
+      file: agents/minds/ALEX-HORMOZI/AGENT.md
+      status: active
+      version: 2.0.0
+```
+
+## Quality Checklist
+
+Use this checklist before activating any new agent:
+
+<Steps>
+  <Step title="Structure validation">
+    - `AGENT.md` exists and follows the `TEMPLATE-AGENT-MD-ULTRA-ROBUSTO-V3.md` template
+    - Agent name follows `AGENT-[NAME]` convention (uppercase)
+    - Category is a valid value (Sales, Finance, Operations, etc.)
+    - Version is 3.0.0 or higher
+  </Step>
+  <Step title="Content validation">
+    - All sections are populated (WHO I AM, FORMATION, HOW I SPEAK, etc.)
+    - All citations reference real files and valid line numbers
+    - Quotes are literal — not paraphrased
+    - DNA weights are defined and make sense for the domain
+  </Step>
+  <Step title="Integration validation">
+    - `AGENT-INDEX.yaml` includes the agent with status `active`
+    - Keywords are defined for skill routing
+    - Dependencies are declared in the agent file
+  </Step>
+  <Step title="Testing">
+    - Agent activates when you use one of its keywords
+    - Claude's responses match the personality in `SOUL.md`
+    - Knowledge cited in responses matches `MEMORY.md`
+    - No broken citation references
+  </Step>
+</Steps>
+
+## Troubleshooting
+
+<Accordion title="Agent not found or not activating">
+1. Check that `AGENT-INDEX.yaml` includes your agent.
+2. Verify the file path in the index is correct.
+3. Ensure `status` is `"active"`, not `"draft"`.
+4. Run `python3 .claude/hooks/agent_index_updater.py` to rebuild the index.
+</Accordion>
+
+<Accordion title="Broken citation references">
+1. Verify `SOUL.md` exists at the path referenced in `AGENT.md`.
+2. Confirm the line numbers in citations still match after any edits.
+3. Run `python3 core/intelligence/verify_citations.py agents/cargo/AGENT-[NAME]/AGENT.md` to find all broken refs.
+4. Update stale line number references.
+</Accordion>
+
+<Accordion title="DNA conflicts between experts">
+1. Adjust expert weights in `DNA-CONFIG.yaml` — higher weight = more influence.
+2. Add explicit conflict resolution rules to the decision framework in `AGENT.md`.
+3. Define a priority order for conflicting experts in the relevant domain.
+4. If the conflict is fundamental, consider splitting into two specialized agents.
+</Accordion>
+
+<CardGroup cols={2}>
+  <Card title="DNA Schema" icon="dna" href="/concepts/dna-schema">
+    Deep dive into the 5-layer DNA knowledge system
+  </Card>
+  <Card title="Skills Routing" icon="route" href="/advanced/skills-routing">
+    Auto-activate agents with keyword routing
+  </Card>
+  <Card title="Hooks System" icon="bolt" href="/advanced/hooks-system">
+    Agent lifecycle hooks and automation
+  </Card>
+  <Card title="Validation" icon="shield-check" href="/advanced/validation">
+    Validate agent structure and content
+  </Card>
+</CardGroup>

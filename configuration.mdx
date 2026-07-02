@@ -1,0 +1,286 @@
+---
+title: "Configure Mega Brain: API Keys and Environment Setup"
+sidebarTitle: "Configuration"
+description: "Set up your .env file, configure required and optional API keys, run the setup wizard, and validate your Mega Brain environment for full pipeline operation."
+---
+
+Mega Brain stores all configuration in a `.env` file at your project root. The setup wizard generates this file automatically, but you can also create or edit it by hand. Understanding which keys unlock which features helps you decide what to configure upfront versus what to add later as your workflow expands.
+
+<Warning>
+  Never commit your `.env` file to version control. It contains sensitive API keys and is automatically added to `.gitignore` during installation. Run `cat .gitignore | grep .env` to verify it's excluded.
+</Warning>
+
+## Setup wizard
+
+The fastest way to configure Mega Brain is to run the interactive setup wizard. It checks your prerequisites, installs Python dependencies, prompts for keys with contextual guidance, validates connectivity, and writes your `.env` in one pass.
+
+```bash
+npx mega-brain-ai setup
+```
+
+The wizard walks through six steps:
+
+<Steps>
+  <Step title="Check prerequisites">
+    Verifies that Node.js 18+ and Python 3.10+ are installed and accessible on your PATH.
+  </Step>
+  <Step title="Install dependencies">
+    Automatically installs Python packages from `requirements.txt` — primarily PyYAML ≥ 6.0.
+  </Step>
+  <Step title="Configure API keys">
+    Prompts for each key in priority order (required → recommended → optional), explains what each key is used for, and links to the provider's dashboard.
+  </Step>
+  <Step title="Validate keys">
+    Tests API connectivity for OpenAI and Voyage AI. Unreachable or invalid keys are flagged before the `.env` is written.
+  </Step>
+  <Step title="Generate .env">
+    Creates or updates your `.env` file with the keys you provided. Existing keys are preserved unless you explicitly overwrite them.
+  </Step>
+  <Step title="Show summary">
+    Prints a full status summary and suggests the next three actions to take.
+  </Step>
+</Steps>
+
+### Example wizard session
+
+```
+$ npx mega-brain-ai setup
+
+  [1/6] Checking Python 3
+  ✔ Python 3.10.12 detected (python3)
+
+  [2/6] Checking Node.js
+  ✔ Node.js 18.17.0 detected
+
+  [3/6] Python Dependencies
+  ✔ Python dependencies installed
+
+  [4/6] API Key Configuration
+
+  REQUIRED  OPENAI_API_KEY — Whisper transcription for video/audio
+  Get yours at: https://platform.openai.com/api-keys
+
+? OpenAI API Key: sk-proj-...
+
+  RECOMMENDED  VOYAGE_API_KEY — Semantic embeddings for RAG search
+  Without this, semantic search uses mock vectors (degraded quality)
+  Get yours at: https://dash.voyageai.com/api-keys
+
+? Voyage API Key (Enter to skip): pa-...
+
+  [5/6] Validating Configuration
+  ✔ OpenAI API key is valid
+  ✔ Voyage AI key is valid
+
+  [6/6] Summary & .env Generation
+  ✔ .env file written
+
+  Next steps:
+  1. Open this project in Claude Code
+  2. Drop a YouTube URL or PDF into inbox/
+  3. Tell JARVIS: /ingest
+```
+
+## Environment variables reference
+
+### Required
+
+<Warning>
+  `OPENAI_API_KEY` is the only key Mega Brain strictly requires. Without it, video and audio ingestion fails. PDF and text ingestion still works, and you can manually place transcripts in `inbox/`.
+</Warning>
+
+| Variable | Description | Where to get it |
+|---|---|---|
+| `OPENAI_API_KEY` | Whisper API for video/audio transcription. Starts with `sk-`. | [platform.openai.com/api-keys](https://platform.openai.com/api-keys) |
+
+**Pricing note:** Whisper transcription costs approximately $0.006 per minute of audio (~$0.36 for a 1-hour video).
+
+### Recommended
+
+| Variable | Description | Where to get it |
+|---|---|---|
+| `VOYAGE_API_KEY` | High-quality semantic embeddings for RAG search. Starts with `pa-`. | [dash.voyageai.com](https://dash.voyageai.com) |
+
+Without `VOYAGE_API_KEY`, the system falls back to mock vectors. Semantic search accuracy drops noticeably and agent context retrieval becomes less precise. Voyage AI offers a free tier of 100M tokens/month before pay-as-you-go billing (~$0.02 per 1M tokens).
+
+### Optional
+
+| Variable | Description |
+|---|---|
+| `ANTHROPIC_API_KEY` | Direct Claude API access for standalone scripts and batch processing operations outside Claude Code. |
+| `GOOGLE_CLIENT_ID` | Google OAuth client ID for importing content directly from Google Drive and Google Docs. |
+| `GOOGLE_CLIENT_SECRET` | Google OAuth client secret (paired with `GOOGLE_CLIENT_ID`). |
+| `ELEVENLABS_API_KEY` | Text-to-speech for voice output features. |
+| `ELEVENLABS_VOICE_ID` | Default voice ID for ElevenLabs TTS. |
+| `DEEPGRAM_API_KEY` | Speech-to-text as an alternative transcription provider. |
+| `VAPI_API_KEY` | Voice AI platform for advanced voice interaction. |
+| `SUPABASE_URL` | Supabase project URL for MoneyClub email validation (Pro users). |
+| `SUPABASE_ANON_KEY` | Supabase anonymous key for client-side operations. |
+| `SUPABASE_SERVICE_KEY` | Supabase service key for server-side operations. |
+| `N8N_API_URL` | N8N instance URL for workflow automation and webhook handling. |
+| `N8N_API_KEY` | N8N API key for connecting to your automation workflows. |
+| `CLICKUP_PERSONAL_TOKEN` | ClickUp personal token for task and project management integration. |
+| `NOTION_TOKEN` | Notion integration token for documentation and knowledge management. |
+| `MIRO_TOKEN` | Miro token for collaborative whiteboarding integration. |
+| `FIGMA_API_KEY` | Figma API key for design file access. |
+| `PREMIUM_REPO_TOKEN` | GitHub personal access token for downloading the Pro edition. Requires `contents:read` on the `mega-brain-premium` repository. |
+
+## Environment file setup
+
+### Minimal configuration
+
+For most users getting started, only two keys are needed:
+
+```bash .env
+# Required — video and audio transcription via Whisper
+OPENAI_API_KEY=sk-your-actual-key-here
+
+# Recommended — high-quality semantic search
+VOYAGE_API_KEY=pa-your-actual-key-here
+```
+
+### Full configuration
+
+A fully configured `.env` for users who want all features enabled:
+
+```bash .env
+# ── Required ──────────────────────────────────────────────
+OPENAI_API_KEY=sk-your-key-here
+
+# ── Recommended ───────────────────────────────────────────
+VOYAGE_API_KEY=pa-your-key-here
+
+# ── Claude (optional) ─────────────────────────────────────
+ANTHROPIC_API_KEY=sk-ant-your-key-here
+
+# ── Google Drive integration ──────────────────────────────
+GOOGLE_CLIENT_ID=your-client-id.apps.googleusercontent.com
+GOOGLE_CLIENT_SECRET=your-client-secret
+
+# ── Voice features ────────────────────────────────────────
+ELEVENLABS_API_KEY=your-key
+ELEVENLABS_VOICE_ID=your-voice-id
+DEEPGRAM_API_KEY=your-key
+VAPI_API_KEY=your-key
+VAPI_ASSISTANT_ID=your-assistant-id
+
+# ── Database (Pro validation) ─────────────────────────────
+SUPABASE_URL=https://your-project.supabase.co
+SUPABASE_ANON_KEY=your-anon-key
+SUPABASE_SERVICE_KEY=your-service-key
+
+# ── Integrations (MCP) ────────────────────────────────────
+N8N_API_URL=https://your-instance.app.n8n.cloud
+N8N_API_KEY=your-n8n-api-key
+CLICKUP_PERSONAL_TOKEN=your-clickup-token
+NOTION_TOKEN=your-notion-token
+MIRO_TOKEN=your-miro-token
+FIGMA_API_KEY=your-figma-api-key
+
+# ── Pro edition access ────────────────────────────────────
+PREMIUM_REPO_TOKEN=ghp_your-github-pat
+```
+
+### Manual configuration
+
+If you prefer not to use the wizard, copy the example file and edit it directly:
+
+<Steps>
+  <Step title="Copy the template">
+    ```bash
+    cp .env.example .env
+    ```
+  </Step>
+  <Step title="Edit the file">
+    Open `.env` in your text editor and replace the placeholder values with your actual keys. Use `KEY=value` format with no spaces around the `=` sign.
+  </Step>
+  <Step title="Verify your configuration">
+    ```bash
+    npx mega-brain-ai status
+    ```
+
+    Or from inside Claude Code:
+
+    ```
+    /jarvis-briefing
+    ```
+  </Step>
+</Steps>
+
+## Validation commands
+
+Use these commands to confirm your configuration is correct after setup.
+
+```bash
+# Full environment status from the terminal
+npx mega-brain-ai status
+
+# Health score and active services from Claude Code
+/jarvis-briefing
+```
+
+To test a specific integration, run a targeted ingestion:
+
+```
+# Test OpenAI transcription
+/ingest https://www.youtube.com/watch?v=SHORT_VIDEO_ID
+```
+
+## Security best practices
+
+- **Never commit `.env`** — it is added to `.gitignore` automatically, but verify with `cat .gitignore | grep .env`
+- **Never share keys publicly** — do not paste them in chat, issues, or PRs
+- **Rotate immediately if compromised** — revoke the key in the provider's dashboard, generate a new one, update `.env`, then run `npx mega-brain-ai setup` to validate the replacement
+- **Use separate keys for development and production** — this limits blast radius if a key leaks
+- **Restrict key scope** — create keys with the minimum permissions each service requires
+
+## Troubleshooting
+
+<AccordionGroup>
+  <Accordion title="API key validation failed">
+    If the wizard reports a key is invalid:
+
+    1. Copy the key again directly from the provider's dashboard — avoid trailing spaces
+    2. Check the key format: OpenAI keys start with `sk-`, Voyage keys start with `pa-`
+    3. Log into the provider's dashboard and verify the key is active and not expired
+    4. Confirm your network can reach the API endpoint (try `curl -I https://api.openai.com/v1/models`)
+  </Accordion>
+
+  <Accordion title="Environment variables not loading">
+    If configured keys aren't being recognized by the system:
+
+    1. Confirm `.env` is in your project root — not a subdirectory
+    2. Verify the filename is exactly `.env` (not `.env.txt` or `env`)
+    3. Restart Claude Code — environment changes require a full restart
+    4. Check your syntax — use `KEY=value` with no spaces around `=`
+  </Accordion>
+
+  <Accordion title="Setup wizard won't start">
+    If `npx mega-brain-ai setup` fails to launch:
+
+    ```bash
+    # Clear the npm cache and retry
+    npm cache clean --force
+    npx mega-brain-ai setup
+    ```
+
+    If the error persists, verify your Node.js version is 18 or higher with `node --version`.
+  </Accordion>
+</AccordionGroup>
+
+## Next steps
+
+<CardGroup cols={2}>
+  <Card title="Quick Start Guide" icon="rocket" href="/quickstart">
+    Now that you're configured, ingest your first material and run the pipeline.
+  </Card>
+  <Card title="CLI Commands" icon="terminal" href="/commands/overview">
+    Explore all available slash commands and CLI tools.
+  </Card>
+  <Card title="Layer System" icon="layer-group" href="/concepts/layer-system">
+    Understand the L1/L2/L3 distribution layer system and Community vs Pro features.
+  </Card>
+  <Card title="Guides" icon="map" href="/guides/ingesting-materials">
+    Step-by-step walkthroughs for every major workflow.
+  </Card>
+</CardGroup>

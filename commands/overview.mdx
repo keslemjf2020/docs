@@ -1,0 +1,186 @@
+---
+title: "Mega Brain CLI Commands: Complete Reference"
+sidebarTitle: "Overview"
+description: "A complete reference for all Mega Brain slash commands — from first-time setup to multi-agent deliberation and session management."
+---
+
+Mega Brain is operated entirely through slash commands inside Claude Code. Each command orchestrates a specific stage of the knowledge management pipeline — ingesting raw materials, extracting structured knowledge, generating cognitive profiles, or coordinating multi-agent decisions. You never leave Claude Code to run Mega Brain.
+
+<CardGroup cols={2}>
+  <Card title="/setup" icon="wrench" href="/commands/setup">
+    Configure your environment, API keys, and dependencies with an interactive wizard. Run this first.
+  </Card>
+  <Card title="/ingest" icon="download" href="/commands/ingest">
+    Import materials from YouTube URLs, local PDFs, or Google Drive into the Mega Brain inbox.
+  </Card>
+  <Card title="/process-jarvis" icon="gears" href="/commands/process-jarvis">
+    Transform ingested content into structured knowledge through the 8-phase JARVIS pipeline.
+  </Card>
+  <Card title="/jarvis-briefing" icon="chart-bar" href="/commands/jarvis-briefing">
+    Display a real-time health score, processing statistics, and recommended next actions.
+  </Card>
+  <Card title="/extract-dna" icon="dna" href="/commands/extract-dna">
+    Generate a 5-layer cognitive DNA schema from 3 or more processed sources for an expert.
+  </Card>
+  <Card title="/conclave" icon="users" href="/commands/conclave">
+    Run a multi-agent deliberation session to reach evidence-based decisions on complex questions.
+  </Card>
+  <Card title="/save & /resume" icon="floppy-disk" href="/commands/save-resume">
+    Save your current work context and restore it in a future Claude Code session.
+  </Card>
+</CardGroup>
+
+## Quick Reference
+
+| Command | Description | When to use |
+|---|---|---|
+| `/setup` | Interactive environment configuration wizard | Once, on first run |
+| `/ingest <source>` | Import a YouTube URL, PDF, or local file | Every new piece of content |
+| `/process-jarvis <file>` | Run the 8-phase knowledge extraction pipeline | After each ingestion |
+| `/jarvis-briefing` | Show health score, stats, and pending tasks | Daily, or after bulk processing |
+| `/extract-dna <person>` | Generate cognitive DNA from processed sources | After 3+ sources for one expert |
+| `/conclave <question>` | Multi-agent deliberation on a strategic question | Complex, high-stakes decisions |
+| `/save` | Save current session context | End of work session |
+| `/resume` | Restore the last saved session context | Start of a new session |
+
+## Command Categories
+
+### System Management
+
+These commands set up and monitor your environment.
+
+| Command | Purpose | Frequency |
+|---|---|---|
+| [`/setup`](/commands/setup) | Configure environment and API keys | Once (first run) |
+| [`/jarvis-briefing`](/commands/jarvis-briefing) | System health and status | Daily |
+
+### Content Pipeline
+
+These commands move content through the knowledge pipeline — from raw material to structured insight.
+
+| Command | Purpose | Typical Usage |
+|---|---|---|
+| [`/ingest`](/commands/ingest) | Add new materials to inbox | Per video or document |
+| [`/process-jarvis`](/commands/process-jarvis) | Transform raw content into structured knowledge | Per source file |
+| [`/extract-dna`](/commands/extract-dna) | Generate cognitive DNA schemas | Per expert (3+ sources) |
+
+### AI Agents
+
+These commands engage Mega Brain's agent layer.
+
+| Command | Purpose | Use Case |
+|---|---|---|
+| [`/conclave`](/commands/conclave) | Multi-agent deliberation | Strategic decisions |
+
+### Session Management
+
+These commands preserve your work context across Claude Code sessions.
+
+| Command | Purpose | When to Use |
+|---|---|---|
+| [`/save`](/commands/save-resume) | Save current context | End of session |
+| [`/resume`](/commands/save-resume) | Restore previous context | Start of session |
+
+## Common Workflows
+
+### First-Time Setup
+
+<Steps>
+  <Step title="Install dependencies">
+    ```bash
+    npm install
+    ```
+  </Step>
+  <Step title="Configure your environment">
+    ```bash
+    /setup
+    ```
+    The interactive wizard walks you through API keys and dependency verification.
+  </Step>
+  <Step title="Verify system status">
+    ```bash
+    /jarvis-briefing
+    ```
+  </Step>
+</Steps>
+
+### Processing New Content
+
+<Steps>
+  <Step title="Ingest a source">
+    ```bash
+    /ingest https://youtube.com/watch?v=VIDEO_ID
+    ```
+  </Step>
+  <Step title="Run the pipeline">
+    ```bash
+    /process-jarvis "inbox/PERSON/TYPE/filename.txt"
+    ```
+  </Step>
+  <Step title="Extract DNA after 3+ sources">
+    ```bash
+    /extract-dna person-name
+    ```
+  </Step>
+</Steps>
+
+### Making Strategic Decisions
+
+```bash
+/conclave "Should we increase commission from 10% to 15%?"
+```
+
+Conclave assembles relevant cargo agents, runs a structured debate, applies critical review, and delivers a synthesized recommendation with confidence score.
+
+## Command Syntax
+
+<Note>
+All commands start with `/` and run **inside Claude Code**. They are not terminal commands — do not run them in your shell.
+</Note>
+
+### General Pattern
+
+```bash
+/command-name [required-arg] [--optional-flag]
+```
+
+<CodeGroup>
+  ```bash Basic
+  /jarvis-briefing
+  ```
+  ```bash With Arguments
+  /ingest https://youtube.com/watch?v=abc123
+  ```
+  ```bash With Flags
+  /jarvis-briefing --compact
+  ```
+  ```bash Complex
+  /ingest https://youtube.com/watch?v=abc123 --person "Alex Hormozi" --type MASTERCLASS
+  ```
+</CodeGroup>
+
+## Environment Requirements
+
+Before using any command, run `/setup` to configure your environment.
+
+### Required
+
+- **Claude Code** — Max or Pro plan
+- **Node.js** — version 18.0.0 or higher
+- **Python** — version 3.10 or higher
+- **OpenAI API Key** — for Whisper transcription of YouTube videos and audio files
+
+### Recommended
+
+- **Voyage AI API Key** — enables semantic search across your knowledge base
+- **Google Drive credentials** — allows direct import from Google Drive documents
+
+## Getting Help
+
+Each command includes built-in guidance. You can also view your current system state at any time:
+
+```bash
+/jarvis-briefing
+```
+
+For deeper diagnostic information, run `/jarvis-briefing --full` to see a breakdown of all pipeline components, pending tasks, and health score components.

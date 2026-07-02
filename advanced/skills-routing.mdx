@@ -1,0 +1,343 @@
+---
+title: "Configuring Intelligent Skills Routing in Mega Brain"
+sidebarTitle: "Skills Routing"
+description: "Configure keyword-based skill routing to automatically activate specialized processing modules when you need them, without manual intervention."
+---
+
+Mega Brain's skills system automatically activates the right set of instructions the moment your prompt contains a matching keyword. Instead of remembering which skill to load for each task, you define keywords in a `SKILL.md` file and the router handles the rest. Every session starts by indexing all available skills into a fast lookup map; every prompt you submit is matched against that map in under five seconds.
+
+## What Skills Are
+
+A skill is a folder in `.claude/skills/` containing a `SKILL.md` file. That file carries two things: metadata that tells the router when to activate it (keywords, trigger condition, priority), and step-by-step instructions that Claude follows once the skill is active. Skills are modular — you can add, disable, or update one without touching any other part of the system.
+
+## How the Detection Pipeline Works
+
+The routing system runs in five sequential phases, split across two lifecycle events:
+
+```
+1. SCAN      → List folders in .claude/skills/
+2. DETECT    → For each folder, check if SKILL.md exists
+3. EXTRACT   → Read header: Auto-Trigger, Keywords, Priority
+4. INDEX     → Build keyword map in SKILL-INDEX.json
+5. MATCH     → Compare user input with triggers
+```
+
+**Phase 1–4** run at `SessionStart` via `skill_indexer.py`. **Phase 5** runs at every `UserPromptSubmit` via `skill_router.py`.
+
+<Info>
+  Skills whose folder names start with `_` (like `_TEMPLATES`) are ignored by the indexer.
+</Info>
+
+## The SKILL.md Format
+
+Every skill requires a `SKILL.md` file. The header block — between the title and the first `---` divider — is parsed for routing metadata. All three fields are required for auto-detection.
+
+<CodeGroup>
+```markdown Minimal SKILL.md
+# MY-SKILL-NAME
+## Brief description of what this skill does
+
+> **Auto-Trigger:** When user mentions X or Y
+> **Keywords:** keyword1, keyword2, keyword3
+> **Prioridade:** MÉDIA
+
+---
+
+## INSTRUCTIONS
+
+1. First do this
+2. Then do that
+3. Finally validate
+```
+
+```markdown Advanced SKILL.md
+# MY-SKILL-NAME
+## Brief description
+
+> **Auto-Trigger:** When user asks to create agents or configure routing
+> **Keywords:** create agent, novo agente, skill routing, configure skill
+> **Prioridade:** ALTA
+
+---
+
+## DETECTION
+
+This skill activates when:
+- User mentions agent creation
+- User asks about routing configuration
+
+## INSTRUCTIONS
+
+1. Check existing skills in `.claude/skills/`
+2. Confirm the agent category (CARGO, MINDS, CONCLAVE, SYSTEM)
+3. Run the creation validator before writing files
+
+## VALIDATION
+
+- [ ] SKILL.md header has all required fields
+- [ ] Keywords are specific and unique
+- [ ] Skill activates on a test prompt
+
+## OUTPUTS
+
+- `.claude/skills/my-skill/SKILL.md`
+
+## DEPENDENCIES
+
+| Type | Path |
+|------|------|
+| READS | `knowledge/dna/` |
+| WRITES | `agents/cargo/[AGENT]/` |
+```
+</CodeGroup>
+
+## Keyword Matching
+
+### How It Works
+
+The skill router performs **case-insensitive substring matching**. If your prompt contains any registered keyword as a substring, the skill is considered a match. Multiple keywords in one skill are indexed independently.
+
+```python
+prompt_lower = prompt.lower()
+for keyword, skill_list in keyword_map.items():
+    if keyword in prompt_lower:
+        matches.append(skill_list[0])
+```
+
+When multiple skills match a single prompt, they are sorted by priority before activation. Only the top-priority match is injected into context.
+
+```
+User: "Create an agent for finance"
+
+Matches:
+1. agent-creation  (ALTA,  keyword: "agent")
+2. finance-agent   (MÉDIA, keyword: "finance")
+
+→ Activates: agent-creation (ALTA wins)
+```
+
+### Priority Levels
+
+| Priority | Use Case | Activation Order |
+|---|---|---|
+| **ALTA** | Core operations (agents, pipeline, docs) | Always first |
+| **MÉDIA** | Domain-specific (finance, sales) | After ALTA |
+| **BAIXA** | Utilities and helpers | Last resort |
+
+<Warning>
+  Short keywords (one or two characters) match substrings and can cause false positives. Use multi-word keywords like `"create agent"` instead of `"agent"` whenever possible.
+</Warning>
+
+### Injecting Skill Context
+
+When a match is found, `skill_router.py` returns a feedback string that Claude Code prepends to your prompt:
+
+```json
+{
+  "continue": true,
+  "feedback": "[SKILL AUTO-ACTIVATED: agent-creation]\nKeyword: 'agent'\n\n=== INSTRUCTIONS ===\n..."
+}
+```
+
+Claude then follows those instructions as part of its normal response.
+
+## Creating a Custom Skill
+
+<Steps>
+  <Step title="Create the skill directory">
+    ```bash
+    mkdir -p .claude/skills/my-skill-name
+    cd .claude/skills/my-skill-name
+    ```
+  </Step>
+  <Step title="Write the SKILL.md file">
+    Use the template from `.claude/skills/_TEMPLATES/SKILL-WRITER-GUIDE.md` or create from scratch:
+
+    ```bash
+    cat > SKILL.md << 'EOF'
+    # MY-SKILL-NAME
+    ## Brief description of what this skill does
+
+    > **Auto-Trigger:** When user mentions X or Y
+    > **Keywords:** keyword1, keyword2, keyword3
+    > **Prioridade:** MÉDIA
+
+    ---
+
+    ## INSTRUCTIONS
+
+    1. First do this
+    2. Then do that
+    3. Finally validate
+    EOF
+    ```
+  </Step>
+  <Step title="Test keyword activation">
+    Restart Claude Code and type a prompt containing one of your keywords. You should see:
+
+    ```
+    [SKILL AUTO-ACTIVATED: my-skill-name]
+    Keyword: 'keyword1'
+    ```
+
+    If the skill doesn't activate, check the skill index:
+
+    ```bash
+    cat .claude/mission-control/SKILL-INDEX.json | jq '.keyword_map'
+    ```
+  </Step>
+</Steps>
+
+## Skill Naming Convention
+
+Mega Brain uses a hybrid naming convention — numbered prefixes for core skills that need a guaranteed load order, and semantic kebab-case names for domain skills.
+
+<Accordion title="Core Skills (00–11) — numbered for load order">
+
+| Number | Skill | Purpose |
+|---|---|---|
+| 00 | SKILL-CREATOR | Create new skills |
+| 01 | DOCS-MEGABRAIN | Documentation generation |
+| 02 | PYTHON-MEGABRAIN | Python scripting |
+| 03 | AGENT-CREATION | Create agents |
+| 04 | KNOWLEDGE-EXTRACTION | Extract insights |
+| 05 | PIPELINE-JARVIS | Pipeline processing |
+| 06 | BRAINSTORMING | Ideation |
+| 07 | DISPATCHING-PARALLEL | Parallel agents |
+| 08 | EXECUTING-PLANS | Execute plans |
+| 09 | WRITING-PLANS | Write plans |
+| 10 | VERIFICATION | Validation |
+| 11 | USING-SUPERPOWERS | Advanced features |
+
+</Accordion>
+
+<Accordion title="Domain Skills — semantic kebab-case">
+
+| Skill | Category | Purpose |
+|---|---|---|
+| `agent-creation` | System | Create agents |
+| `chronicler` | System | Session logs |
+| `github-workflow` | Integration | GitHub operations |
+| `jarvis` | System | Orchestrator |
+| `jarvis-briefing` | System | Status reports |
+| `knowledge-extraction` | Pipeline | Extract knowledge |
+| `save` | System | Save sessions |
+| `resume` | System | Resume sessions |
+| `verify` | Quality | Validation |
+
+</Accordion>
+
+Mega Brain ships with **37 active skills** in total: 12 core + 25 domain.
+
+## Advanced Features
+
+### Sub-Agents
+
+Skills v2.0 supports **sub-agents** alongside regular skills. Sub-agents live in `.claude/jarvis/sub-agents/` and combine an `AGENT.md` instruction file with an optional `SOUL.md` personality file.
+
+| Feature | Skills | Sub-Agents |
+|---|---|---|
+| File | `SKILL.md` | `AGENT.md` + `SOUL.md` |
+| Purpose | Instruction set | Full agent persona |
+| Location | `.claude/skills/` | `.claude/jarvis/sub-agents/` |
+| Hierarchy | Standalone | Reports to JARVIS |
+
+### Skill Dependencies
+
+Skills can declare what they read from and write to, which helps you understand cross-skill dependencies:
+
+```markdown
+## DEPENDENCIES
+
+| Type | Path |
+|------|------|
+| READS | `knowledge/dna/` |
+| WRITES | `agents/cargo/[AGENT]/` |
+| DEPENDS_ON | SKILL-DOCS-MEGABRAIN |
+```
+
+### Skill Graph
+
+Core skills form a dependency graph rooted at `SKILL-CREATOR`:
+
+```
+SKILL-CREATOR (meta-skill, root)
+    │
+    ├── SKILL-DOCS-MEGABRAIN
+    │       │
+    │       ├── SKILL-AGENT-CREATION
+    │       │
+    │       └── SKILL-KNOWLEDGE-EXTRACTION
+    │               │
+    │               └── SKILL-PIPELINE-JARVIS
+    │
+    └── SKILL-PYTHON-MEGABRAIN
+```
+
+## Debugging Skills
+
+<Steps>
+  <Step title="Check the skill index">
+    Verify your skill was picked up during `SessionStart`:
+
+    ```bash
+    cat .claude/mission-control/SKILL-INDEX.json | jq '.skills'
+    ```
+  </Step>
+  <Step title="Inspect the keyword map">
+    Confirm your keywords are registered:
+
+    ```bash
+    cat .claude/mission-control/SKILL-INDEX.json | jq '.keyword_map'
+    ```
+  </Step>
+  <Step title="Run the router directly">
+    Test matching logic without starting a full session:
+
+    ```bash
+    python3 .claude/hooks/skill_router.py --test
+    ```
+  </Step>
+  <Step title="Validate the SKILL.md header">
+    Check that your header has all required fields:
+
+    ```bash
+    head -20 .claude/skills/my-skill/SKILL.md
+    ```
+  </Step>
+</Steps>
+
+<Accordion title="Common Issues and Fixes">
+
+**Skill not detected**
+1. Verify `SKILL.md` has `Auto-Trigger`, `Keywords`, and `Prioridade` fields.
+2. Check that the folder name does not start with `_`.
+3. Confirm keyword spelling — matching is case-insensitive but must be exact.
+4. Restart Claude Code to rebuild the index from scratch.
+
+**Wrong skill activates**
+1. Inspect `SKILL-INDEX.json` for keyword conflicts.
+2. Raise the priority of your intended skill (`ALTA` beats `MÉDIA`).
+3. Switch to more specific, multi-word keywords to reduce overlap.
+
+**Skill index is empty or missing**
+1. Check whether `skill_indexer.py` ran — it requires a `SessionStart` hook entry in `settings.json`.
+2. Confirm `.claude/skills/` exists and contains at least one valid skill folder.
+3. Run the indexer manually: `python3 .claude/hooks/skill_indexer.py`
+
+</Accordion>
+
+<CardGroup cols={2}>
+  <Card title="Hooks System" icon="bolt" href="/advanced/hooks-system">
+    Learn about the hook system that powers skill routing
+  </Card>
+  <Card title="Agent Creation" icon="robot" href="/advanced/agent-creation">
+    Create agents that integrate with the skill system
+  </Card>
+  <Card title="Validation" icon="shield-check" href="/advanced/validation">
+    Validate skill structure and content
+  </Card>
+  <Card title="Layer Management" icon="layers" href="/advanced/layer-management">
+    Understand how skills are classified and distributed
+  </Card>
+</CardGroup>

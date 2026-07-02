@@ -1,0 +1,266 @@
+---
+title: "Creating Mind Clone Agents from Expert Materials"
+sidebarTitle: "Mind Clones"
+description: "Extract a 5-layer cognitive DNA profile from processed expert materials and create an AI agent that reasons, quotes, and responds like that expert."
+---
+
+Mind Clones are the most powerful agents in Mega Brain. Once you've processed enough materials from a single expert, you can run `/extract-dna` to distill their reasoning patterns, rules of thumb, frameworks, and philosophies into a structured cognitive profile — and then query them directly. The resulting agent responds in the expert's voice, cites its sources, and only makes claims it can back up with a traceable chunk ID.
+
+## What Is DNA Extraction?
+
+DNA extraction analyzes all processed materials from a specific expert and produces a structured knowledge profile across 5 layers:
+
+| Layer | Name | Description |
+|-------|------|-------------|
+| L1 | Philosophies | Core beliefs and worldview that appear consistently across contexts |
+| L2 | Mental Models | Thinking frameworks the expert uses to analyze problems |
+| L3 | Heuristics | Practical rules with numeric thresholds — the most actionable layer |
+| L4 | Frameworks | Named structured methodologies |
+| L5 | Methodologies | Step-by-step processes with a required sequence |
+
+<Tip>
+  For the richest DNA profile, process 3–5 high-quality materials from the same expert before running extraction. A single source produces a functional agent, but multiple sources unlock cross-source heuristics with higher confidence weights.
+</Tip>
+
+## Prerequisites
+
+Before running `/extract-dna`, confirm these artifacts exist for your expert:
+
+- **At least 1 processed material** — run `/process-jarvis` first; 3–5 is recommended
+- **A dossier file** — `knowledge/dossiers/persons/DOSSIER-[PERSON].md`
+- **Insights in state** — entries in `INSIGHTS-STATE.json` for this person
+- **Chunks indexed** — entries in `CHUNKS-STATE.json` with `chunk_ids`
+
+If any of these are missing, `/extract-dna` will tell you exactly what's needed and suggest the right next command.
+
+## Full Workflow
+
+<Steps>
+  <Step title="Process your source materials">
+    Make sure all materials from your target expert have been through the pipeline:
+
+    ```bash
+    /process-jarvis inbox/alex-hormozi/MASTERCLASS/offer-creation.txt
+    /process-jarvis inbox/alex-hormozi/MASTERCLASS/pricing-strategies.txt
+    /process-jarvis inbox/alex-hormozi/PODCAST/acquisition-interview.txt
+    ```
+  </Step>
+  <Step title="Run DNA extraction">
+    Pass the expert's slug as the argument:
+
+    ```bash
+    /extract-dna alex-hormozi
+    ```
+
+    You'll see a live progress log as each layer is extracted:
+
+    ```
+    ═══════════════════════════════════════════════
+            DNA EXTRACTION: Alex Hormozi
+    ═══════════════════════════════════════════════
+
+    STEP 1: VERIFYING PREREQUISITES
+    ✓ DOSSIER exists: DOSSIER-ALEX-HORMOZI.md
+    ✓ INSIGHTS-STATE.json has 47 insights for this person
+    ✓ CHUNKS-STATE.json has 89 chunks for this person
+
+    STEP 2: LOADING SOURCES
+    Insights: 47 found │ Narratives: 3 found │ Chunks: 89 total
+
+    STEP 3: EXTRACTING BY LAYER
+    Layer 1 - Philosophies ............ OK (5 items)
+    Layer 2 - Mental Models ........... OK (3 items)
+    Layer 3 - Heuristics .............. OK (8 items)
+    Layer 4 - Frameworks .............. OK (2 items)
+    Layer 5 - Methodologies ........... OK (1 item)
+
+    STEP 4: CALCULATING WEIGHTS
+    Items weighted: 19
+    High confidence (≥0.70): 15 (79%)
+
+    AVERAGE WEIGHT: 0.74
+    ═══════════════════════════════════════════════
+    ```
+  </Step>
+  <Step title="Review the generated DNA files">
+    Six files are created in `knowledge/dna/persons/alex-hormozi/`:
+
+    - `HEURISTICAS.yaml` — Layer 3 rules with numeric thresholds (review first)
+    - `FRAMEWORKS.yaml` — Named structured methodologies
+    - `FILOSOFIAS.yaml` — Core beliefs
+    - `MODELOS-MENTAIS.yaml` — Mental models
+    - `METODOLOGIAS.yaml` — Step-by-step processes
+    - `CONFIG.yaml` — Agent configuration
+
+    Start with `HEURISTICAS.yaml` — it contains the highest-value, most actionable knowledge.
+  </Step>
+  <Step title="Query the mind clone">
+    The agent is ready immediately after extraction:
+
+    ```bash
+    /ask alex-hormozi "How should I price my high-ticket coaching?"
+    ```
+
+    Every response includes a direct answer in the expert's voice, the frameworks applied, traceable `chunk_ids`, and a confidence score.
+  </Step>
+</Steps>
+
+## The DNA Layer Schema
+
+### Layer 3: Heuristics (Most Valuable)
+
+Heuristics are "If X then Y" rules with numeric thresholds extracted directly from the expert's materials. They are the most immediately actionable part of the DNA.
+
+```yaml
+# HEURISTICAS.yaml
+heuristics:
+  - id: H_AH_001
+    content: "If LTV:CAC ratio < 3:1, business is not profitable"
+    weight: 0.85
+    source_chunks:
+      - chunk_AH001_023
+      - chunk_AH002_045
+    numeric_threshold: "3:1"
+    actionable_by:
+      - cfo
+      - cro
+    confidence: high
+    appearances: 3
+    contexts:
+      - financial_analysis
+      - unit_economics
+
+  - id: H_AH_002
+    content: "If close rate < 60%, problem is script not lead volume"
+    weight: 0.82
+    source_chunks:
+      - chunk_AH001_078
+    numeric_threshold: "60%"
+    actionable_by:
+      - closer
+      - sales_manager
+    confidence: high
+    appearances: 2
+```
+
+### How Weights Are Calculated
+
+Each DNA item starts with a base weight of **0.50**, then gains or loses confidence based on evidence quality:
+
+**Bonuses:**
+- `+0.15` — Direct quote with a `chunk_id`
+- `+0.15` — Appears in 2+ different sources
+- `+0.10` — Contains a numeric threshold
+- `+0.10` — Appears in 3+ sources
+- `+0.05` — Found in a narrative context
+- `+0.05` — Uses prescriptive language
+
+**Penalties:**
+- `-0.20` — Inferred, not a direct quote
+- `-0.15` — Contradicts another item
+- `-0.10` — Ambiguous context
+
+**Example calculation:**
+
+```
+Heuristic: "If close rate < 60%, focus on script"
+
+Base:              0.50
++ Direct quote:   +0.15
++ Numeric:        +0.10
++ Appears 2×:     +0.15
++ Prescriptive:   +0.05
+= TOTAL:           0.95  (Very High Confidence)
+```
+
+<Warning>
+  Items with a weight below **0.70** are never used in agent responses. Only high-confidence knowledge is surfaced to users.
+</Warning>
+
+## Agent Files Created
+
+After DNA extraction, three agent files are auto-generated:
+
+<AccordionGroup>
+  <Accordion title="SOUL.md — Core Identity">
+    Defines how the agent thinks, reasons, and frames problems. Written in first person in the expert's voice.
+
+    ```markdown
+    # Alex Hormozi - SOUL
+
+    I am Alex Hormozi. I think in terms of unit economics,
+    LTV:CAC ratios, and the Value Equation.
+
+    ## How I Reason
+
+    When someone asks about pricing, I immediately think:
+    1. What's the Dream Outcome?
+    2. What increases Perceived Likelihood?
+    3. How do we compress Time Delay?
+    4. How do we reduce Effort & Sacrifice?
+    ```
+  </Accordion>
+  <Accordion title="MEMORY.md — Accumulated Learning">
+    Records all frameworks, decisions, and sourced knowledge the agent has accumulated from processed materials.
+
+    ```markdown
+    # Alex Hormozi - MEMORY
+
+    **Sources:** AH001, AH002, AH003
+    **Last Updated:** 2026-03-06
+
+    ## Frameworks I Use
+
+    ### Value Equation [AH001_012, AH001_013]
+    ...
+
+    ## Decisions I've Made
+
+    **2024-02-15:** On pricing strategy for coaching
+    → Recommended value-based over time-based pricing
+    → Source: [AH001_045]
+    ```
+  </Accordion>
+  <Accordion title="AGENT.md — Compiled Operational Agent">
+    The full agent file combining SOUL and MEMORY, ready for Claude Code to invoke directly.
+  </Accordion>
+</AccordionGroup>
+
+## Assessing DNA Quality
+
+Use `/view-dna [expert]` to see the full quality report for any extracted agent:
+
+```bash
+/view-dna alex-hormozi
+```
+
+The report shows item counts per layer, weight distribution, source coverage, `chunk_id` traceability, contradiction warnings, and an overall quality score.
+
+**Quality benchmarks:**
+
+| Quality | Items | Heuristics | Avg Weight | Sources |
+|---------|-------|-----------|------------|---------|
+| ★★★★★ Excellent | 15+ | 5+ numeric | ≥ 0.70 | 3+ |
+| ★★★☆☆ Moderate | 8–14 | 2–4 | 0.60–0.69 | 1–2 |
+| ★☆☆☆☆ Insufficient | < 8 | < 2 | < 0.60 | 1 |
+
+If your DNA quality is low, process 3–5 more materials from that expert and re-run `/extract-dna`. Re-extraction is incremental — new items are added, nothing is replaced.
+
+## Keeping DNA Up to Date
+
+As you process more materials, the pipeline automatically checks DNA density and updates or creates the schema when the threshold is met. You can also force a manual refresh at any time:
+
+```bash
+/extract-dna alex-hormozi --force
+```
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Working with Agents" icon="robot" href="/guides/working-with-agents">
+    Learn how to query your new Mind Clone and Cargo agents for expert insights.
+  </Card>
+  <Card title="Using Conclave" icon="users" href="/guides/using-conclave">
+    Combine multiple Mind Clones in a multi-agent deliberation session.
+  </Card>
+</CardGroup>

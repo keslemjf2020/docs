@@ -1,0 +1,315 @@
+---
+title: "Saving and Resuming Processing Sessions in Mega Brain"
+sidebarTitle: "Session Management"
+description: "Use /save and /resume to preserve full session context across long processing runs, task switches, and multi-day projects in Mega Brain."
+---
+
+Processing a corpus of expert materials often spans multiple work sessions — especially when you're ingesting batches, running DNA extraction, or waiting on external decisions before acting on a Conclave recommendation. Mega Brain's session system lets you save exactly where you are and pick up later without losing context. A single `/save` command captures your current task, pending files, notes, and next steps; `/resume` restores everything so you can continue without retracing your steps.
+
+## What a Session Captures
+
+Sessions preserve:
+
+- **Current task and status** — what you're working on and where it stands
+- **Pending queue** — files ingested but not yet processed, or steps not yet completed
+- **Recent operations** — a timestamped log of what ran and what it produced
+- **File references** — exact paths to artifacts you'll need next
+- **User notes** — any context you want to carry forward
+
+Sessions are stored in `logs/LIVE-SESSION/` in both human-readable Markdown (`CURRENT-SESSION.md`) and structured JSON (`CONTEXT.json`).
+
+## Save and Resume Workflow
+
+<Steps>
+  <Step title="Save your current state">
+    Run `/save` at any point during your work:
+
+    ```bash
+    /save
+    ```
+
+    Mega Brain asks: **"What do you want me to save as context?"**
+
+    Type a plain-language description of where you are and what's left to do. You don't need to use any special syntax — just write naturally.
+
+    **Example input:**
+
+    ```
+    "I've ingested 3 Cole Gordon videos and processed 2 of them.
+    Still need to process the third one and then extract DNA."
+    ```
+
+    Mega Brain converts your note into a structured session file with the exact file paths, next commands, and status automatically filled in.
+  </Step>
+  <Step title="Resume when you're ready">
+    Any time you return to a project, run:
+
+    ```bash
+    /resume
+    ```
+
+    The system loads your saved context and displays a summary:
+
+    ```
+    ═══════════════════════════════════════════════
+               RESUMING SESSION
+    ═══════════════════════════════════════════════
+
+    📅 Last Activity
+    Processing Cole Gordon materials
+    Saved: 2026-03-06 14:32 (2 hours ago)
+
+    🟡 Status: IN_PROGRESS
+
+    Completed:
+    ✓ closing-masterclass-part1.txt → CG004
+    ✓ closing-masterclass-part2.txt → CG005
+
+    Pending:
+    ⚠ 1 video remaining:
+      inbox/cole-gordon/MASTERCLASS/closing-masterclass-part3.txt
+
+    🎯 Next Steps
+    1. /process-jarvis inbox/cole-gordon/MASTERCLASS/closing-masterclass-part3.txt
+    2. /extract-dna cole-gordon
+    3. /agents --knowledge "Cole Gordon"
+
+    📁 Important Files
+    - inbox/cole-gordon/MASTERCLASS/closing-masterclass-part3.txt
+    - knowledge/dossiers/persons/DOSSIER-COLE-GORDON.md
+    ═══════════════════════════════════════════════
+    ```
+  </Step>
+  <Step title="Continue your work">
+    Execute the suggested next steps in order. Mega Brain restores full context, so you don't need to re-examine files or recall what ran previously.
+  </Step>
+</Steps>
+
+## When to Save
+
+Save your session at these natural checkpoints:
+
+- After ingesting a batch of materials before processing them
+- After processing each material in a multi-file batch
+- Before and after DNA extraction
+- Before and after a Conclave session
+- Any time you're switching to an urgent task and will return later
+- Before stopping a long pipeline run
+
+<Tip>
+  Many operations auto-save context on completion. After `/process-jarvis` finishes, the session updates with what was processed and what agents were enriched. After `/extract-dna`, DNA quality metrics are recorded automatically. You still benefit from a manual `/save` to add your own notes and intentions.
+</Tip>
+
+## Session File Locations
+
+```
+logs/LIVE-SESSION/
+├── CURRENT-SESSION.md      # Human-readable session log
+├── CONTEXT.json            # Structured session data
+└── session-history/        # Archive of past sessions
+    ├── 2026-03-05.md
+    ├── 2026-03-04.md
+    └── 2026-03-03.md
+```
+
+`CONTEXT.json` stores machine-readable state including the task description, status, pending steps, important file paths, and run statistics:
+
+```json
+{
+  "last_task": "Processing Cole Gordon materials",
+  "status": "in_progress",
+  "pending": [
+    "Process closing-masterclass-part3.txt",
+    "Extract DNA for Cole Gordon"
+  ],
+  "next_steps": [
+    "/process-jarvis inbox/cole-gordon/MASTERCLASS/closing-masterclass-part3.txt",
+    "/extract-dna cole-gordon"
+  ],
+  "important_files": [
+    "inbox/cole-gordon/MASTERCLASS/closing-masterclass-part3.txt",
+    "knowledge/dossiers/persons/DOSSIER-COLE-GORDON.md"
+  ],
+  "notes": "Complete Cole Gordon before moving to Alex Hormozi",
+  "saved_at": "2026-03-06T14:32:00Z",
+  "statistics": {
+    "files_processed": 2,
+    "files_pending": 1,
+    "insights_extracted": 23,
+    "agents_enriched": 3
+  }
+}
+```
+
+## Common Session Scenarios
+
+<AccordionGroup>
+  <Accordion title="Multi-Day Processing Project">
+    When processing a large corpus over several days, save at the end of each session with a note describing exactly what's done and what's next.
+
+    **Day 1:**
+    ```bash
+    /ingest https://youtube.com/watch?v=video1
+    /ingest https://youtube.com/watch?v=video2
+    /ingest https://youtube.com/watch?v=video3
+    /save
+    # Note: "Ingested 3 Cole Gordon videos. Will process tomorrow."
+    ```
+
+    **Day 2:**
+    ```bash
+    /resume
+    /process-jarvis inbox/cole-gordon/video1.txt
+    /process-jarvis inbox/cole-gordon/video2.txt
+    /save
+    # Note: "Processed 2/3. Third video tomorrow, then DNA."
+    ```
+
+    **Day 3:**
+    ```bash
+    /resume
+    /process-jarvis inbox/cole-gordon/video3.txt
+    /extract-dna cole-gordon
+    /save
+    # Note: "Completed Cole Gordon. Ready for next expert."
+    ```
+  </Accordion>
+  <Accordion title="Interrupted Pipeline Run">
+    If you need to stop a running pipeline (e.g., with Ctrl+C), save immediately with a note about where it stopped:
+
+    ```bash
+    # Pipeline stopped mid-run
+    /save
+    # Note: "Pipeline was at Phase 4 when stopped.
+    #        File: inbox/alex-hormozi/offer-framework.txt
+    #        Need to rerun from beginning when resuming."
+    ```
+
+    When you return, resume and reprocess from the start — the pipeline is idempotent and the file registry prevents re-registration:
+
+    ```bash
+    /resume
+    /process-jarvis inbox/alex-hormozi/offer-framework.txt
+    ```
+  </Accordion>
+  <Accordion title="Waiting on an External Decision">
+    After a Conclave session that requires human approval before acting, save the blocked state clearly:
+
+    ```bash
+    /save
+    # Note: "Conclave recommended tiered commission structure.
+    #        Waiting for CEO approval before implementing.
+    #        Decision log: logs/conclave/session-2026-03-06.md"
+    ```
+
+    When you return after approval:
+
+    ```bash
+    /resume
+    # System displays the pending approval and the decision context
+    # Continue with implementation
+    ```
+  </Accordion>
+  <Accordion title="Context Switching to an Urgent Task">
+    If an urgent material needs processing while you're mid-project, save your current context, do the urgent work, and return:
+
+    ```bash
+    /save
+    # Note: "Pausing Cole Gordon processing for urgent Sam Ovens material."
+
+    /ingest [urgent-file]
+    /process-jarvis [urgent-file]
+
+    /resume
+    # Returns to Cole Gordon context
+    ```
+  </Accordion>
+</AccordionGroup>
+
+## Checking Session Status Without Resuming
+
+To inspect the current session without triggering a resume prompt:
+
+```bash
+/log
+```
+
+This shows status, duration, progress statistics, and a timestamped log of recent operations — useful for a quick orientation without committing to continuing a task.
+
+For a full system overview including agent status and inbox queue:
+
+```bash
+/jarvis-briefing
+```
+
+## Writing Good Session Notes
+
+The quality of your `/save` notes directly determines how useful `/resume` is. Include:
+
+- **What you completed** — specific files or steps finished
+- **What's pending** — the exact next action
+- **Any blockers** — approvals, missing data, external dependencies
+- **File paths and source IDs** — `inbox/cole-gordon/video3.txt`, `CG005`, etc.
+- **Decisions or context** — why you're doing things in a specific order
+
+**Good note:**
+```
+"Processed AH001–AH003. DNA extracted (19 items, weight 0.74).
+Still need to process AH004 (long video, ~90 min).
+After that, run /view-dna to check quality before querying."
+```
+
+**Less useful note:**
+```
+"Did some processing."
+```
+
+## Troubleshooting Sessions
+
+<AccordionGroup>
+  <Accordion title="Resume shows the wrong context">
+    Check the raw session file and, if needed, restore from history:
+
+    ```bash
+    cat logs/LIVE-SESSION/CURRENT-SESSION.md
+
+    # If corrupted, restore from the most recent archive
+    cp logs/LIVE-SESSION/session-history/2026-03-06.md \
+       logs/LIVE-SESSION/CURRENT-SESSION.md
+
+    /resume
+    ```
+  </Accordion>
+  <Accordion title="No recent save — lost progress context">
+    Use the briefing and registry to reconstruct state:
+
+    ```bash
+    /jarvis-briefing           # Shows last processing run
+    cat system/REGISTRY/file-registry.json  # What was processed
+    /inbox                     # What's still pending
+    /save                      # Re-capture current state
+    ```
+  </Accordion>
+  <Accordion title="Multiple overlapping sessions from different days">
+    Review the session history to find the correct checkpoint and restore it:
+
+    ```bash
+    ls -lt logs/LIVE-SESSION/session-history/
+    cat logs/LIVE-SESSION/session-history/[date].md
+    cp logs/LIVE-SESSION/session-history/[date].md \
+       logs/LIVE-SESSION/CURRENT-SESSION.md
+    /resume
+    ```
+  </Accordion>
+</AccordionGroup>
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Processing Pipeline" icon="gear" href="/guides/processing-pipeline">
+    Learn the 5-phase pipeline you'll be saving and resuming throughout.
+  </Card>
+  <Card title="Working with Agents" icon="robot" href="/guides/working-with-agents">
+    Query agents enriched during your saved processing sessions.
+  </Card>
+</CardGroup>

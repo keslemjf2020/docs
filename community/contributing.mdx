@@ -1,0 +1,222 @@
+---
+title: "Contributing to the Mega Brain Project"
+sidebarTitle: "Contributing"
+description: "How to contribute to Mega Brain — branch workflow, commit conventions, pull request process, code style guidelines, and how to report issues."
+---
+
+Mega Brain is maintained by **@thiagofinch**, and contributions from the community are welcome. Whether you're fixing a bug, improving documentation, building a new skill, or enhancing the pipeline, this guide covers everything you need to follow the project's workflow and get your changes merged cleanly.
+
+<Warning>
+Pushing directly to `main` is strictly prohibited. All changes must go through a branch and a Pull Request reviewed by the maintainer.
+</Warning>
+
+## Maintainer
+
+This project is maintained exclusively by **@thiagofinch**. All official updates, releases, and merges to `main` are handled by the maintainer. All PRs require their approval before merge.
+
+## Branch Workflow
+
+Always branch from `main` before making any changes. Use the naming convention below so your intent is immediately clear.
+
+### Branch Naming Convention
+
+| Prefix | Use Case |
+|---|---|
+| `feat/` | New features |
+| `fix/` | Bug fixes |
+| `docs/` | Documentation changes |
+| `refactor/` | Code refactoring |
+| `test/` | Adding or updating tests |
+
+**Format:** `{prefix}/{short-description}`
+
+**Examples:**
+- `feat/add-pipeline-v2`
+- `fix/batch-log-format`
+- `docs/update-readme`
+- `refactor/simplify-session-logic`
+
+## Commit Conventions
+
+Mega Brain uses [Conventional Commits](https://www.conventionalcommits.org/) for all commit messages. This keeps the history readable and enables automated changelog generation.
+
+### Commit Message Structure
+
+```
+<type>: <short description>
+
+[optional body]
+
+[optional footer]
+```
+
+**Allowed types:**
+
+| Type | When to Use |
+|---|---|
+| `feat` | New feature |
+| `fix` | Bug fix |
+| `docs` | Documentation changes only |
+| `refactor` | Code restructuring without behavior change |
+| `test` | Test additions or updates |
+| `chore` | Maintenance tasks (dependencies, config) |
+| `perf` | Performance improvements |
+| `ci` | CI/CD pipeline changes |
+
+**Examples:**
+```bash
+feat: add new pipeline processor
+fix: correct batch numbering in logs
+docs: update CLAUDE.md with new rules
+refactor: simplify session autosave logic
+test: add unit tests for source-sync
+chore: update dependencies
+```
+
+Reference related issues when applicable:
+```bash
+feat: add login form refs #42
+fix: resolve session resume crash fixes #87
+```
+
+## Pull Requests
+
+### PR Workflow
+
+1. **Create a branch** from `main` following the naming convention above
+2. **Make your changes** using conventional commits throughout
+3. **Open a PR** using the provided template on GitHub
+4. **Get approval** — all PRs require approval from @thiagofinch before merge
+5. **Address the checklist** — ensure all checklist items in the PR template are complete
+6. **Link issues** — use `Fixes #XX` in the PR body to auto-close related issues on merge
+
+### PR Checklist
+
+Before opening your PR, confirm:
+
+<CardGroup cols={2}>
+  <Card title="Before You Open the PR" icon="circle-check">
+    - Branch follows the naming convention
+    - All commits follow conventional format
+    - Tests pass locally
+    - Documentation updated if behavior changed
+  </Card>
+  <Card title="In Your PR Description" icon="file-lines">
+    - Clear description of what changed and why
+    - Links to related issues
+    - Screenshots or examples for any UI changes
+    - All checklist items addressed
+  </Card>
+</CardGroup>
+
+## What NOT to Do
+
+<Warning>
+These actions are explicitly prohibited and may result in your contribution being rejected:
+
+- **Do NOT** push directly to `main`
+- **Do NOT** merge a PR without maintainer approval
+- **Do NOT** commit API keys, secrets, or `.env` files
+- **Do NOT** skip the PR template checklist
+</Warning>
+
+## Security Guidelines
+
+Never hardcode credentials anywhere in the codebase. All sensitive configuration belongs in `.env`, which is already included in `.gitignore`.
+
+```bash
+# .env (gitignored — never commit this file)
+OPENAI_API_KEY=sk-...
+VOYAGE_API_KEY=pa-...
+GOOGLE_CLIENT_ID=...
+```
+
+**Never commit:**
+- API keys or tokens of any kind
+- Passwords or credentials
+- `.env` files
+- Private configuration data
+
+If a key is accidentally exposed in a commit, rotate it immediately and contact the maintainer.
+
+## Code Style
+
+### Naming Conventions
+
+| Type | Convention | Example |
+|---|---|---|
+| Folders | lowercase | `inbox`, `system` |
+| Config files | SCREAMING-CASE | `STATE.json`, `MEMORY.md` |
+| Python scripts | snake_case | `session_start.py` |
+| Skills | kebab-case | `knowledge-extraction/` |
+
+### Python Guidelines
+
+- Python 3.10+ is required
+- Use `pathlib.Path` for all file paths (cross-platform compatibility)
+- Hooks must use stdlib + PyYAML only — no additional dependencies
+- Follow [PEP 8](https://peps.python.org/pep-0008/) style conventions
+
+**Cross-platform path example:**
+```python
+from pathlib import Path
+
+# Good — works on all platforms
+path = Path("inbox") / "file.txt"
+
+# Avoid — platform-specific separator
+path = "inbox/file.txt"
+```
+
+### File Structure
+
+When adding new skills, follow this structure:
+```
+.claude/skills/skill-name/
+├── SKILL.md          # Required — must be exactly this name
+└── resources/        # Optional supporting files
+```
+
+When adding hooks, place them in `.claude/hooks/` and register them in `settings.json`:
+```json
+{
+  "hooks": {
+    "SessionStart": [".claude/hooks/my_hook.py"]
+  }
+}
+```
+
+## Testing
+
+Run these validation commands before submitting your PR:
+
+```bash
+# Validate the layer distribution is correct
+npm run validate:layers
+
+# Run the full pre-publish checks
+node bin/pre-publish-gate.js
+```
+
+Both commands must pass cleanly before your PR will be considered for review.
+
+## Reporting Issues
+
+**For bug reports**, open a GitHub issue and include:
+- A clear description of the problem
+- Exact steps to reproduce it
+- Expected behavior vs. what actually happened
+- Your system info (OS, Node version, Python version)
+- Full error messages and relevant log output
+- Output from `/jarvis-briefing` (very helpful for faster diagnosis)
+
+**For feature requests**, open a GitHub issue and include:
+- Your use case and the problem you're trying to solve
+- A proposed solution (optional but helpful)
+- Examples or mockups if applicable
+
+Search existing issues before opening a new one — your question may already be answered or the feature already requested.
+
+## Questions?
+
+If you're unsure about any guideline or have questions about implementation details, don't hesitate to ask. Open an issue on GitHub or reach out directly to **@thiagofinch** on the project repository.

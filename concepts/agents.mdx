@@ -1,109 +1,241 @@
 ---
-title: "Mega Brain Agent Types: Mind Clones and Cargo Agents"
+title: "AI Agent Types: Minds, Cargo, Conclave, and JARVIS"
 sidebarTitle: "Agents"
-description: "Understand the two agent types in Mega Brain — person-grounded Mind Clones and role-based Cargo Agents — and choose the right one for your use case."
+description: "Learn how Mega Brain's four agent types — Mind Clones, Cargo, Conclave, and JARVIS — give you expert reasoning, functional roles, structured debate, and pipeline orchestration."
 ---
 
-Agents are the interactive layer of Mega Brain's knowledge pipeline. Once you have ingested materials and extracted a DNA Schema, you can instantiate agents that put that knowledge to work. Mega Brain offers two distinct agent types: **Mind Clone Agents**, which replicate the reasoning of a specific expert, and **Cargo Agents**, which embody a professional role. Both types are grounded in your knowledge base and can participate in Conclave deliberation sessions.
+Mega Brain's agent system is built around a single idea: the right expert for the right question. When you need to think like Alex Hormozi about offer pricing, you consult his mind clone. When you need sales team guidance, you engage a cargo agent that synthesizes knowledge from multiple sales experts. When a decision is genuinely difficult, you convene a Conclave for structured deliberation. And threading all of it together is JARVIS — the meta-agent that orchestrates operations and keeps your knowledge system running.
 
----
-
-## Mind Clone Agents
-
-A Mind Clone Agent is an AI agent built to reason the way a specific expert reasons — not a generic simulation, but a cognitive replica grounded in that expert's actual materials. When you ask a Mind Clone a question, it draws on the DNA Schema extracted from the expert's videos, PDFs, podcasts, and courses. It thinks with their mental models, applies their heuristics, and works through their frameworks.
-
-### How Mind Clones differ from generic AI
-
-Generic AI assistants draw on broad training data and produce statistically average answers. A Mind Clone Agent draws exclusively on the source materials you provided and the DNA Schema extracted from them. Every response it generates is traceable to a specific moment in a specific document or recording.
+## Agent Types at a Glance
 
 <CardGroup cols={2}>
-  <Card title="Generic AI Assistant" icon="robot" href="/configuration/community-vs-pro">
-    - Trained on broad internet data
-    - No source citations
-    - Average-consensus answers
-    - No knowledge of your specific expert
+  <Card title="MINDS — Expert Mind Clones" icon="brain">
+    AI agents trained on a specific expert's actual materials. They reason using extracted DNA across all 5 layers. **5 active agents.**
   </Card>
-  <Card title="Mind Clone Agent" icon="brain" href="/guides/building-mind-clones">
-    - Trained on your expert's materials only
-    - Every claim cites a source
-    - Reasons with the expert's actual mental models
-    - Reflects the expert's philosophies and heuristics
+  <Card title="CARGO — Functional Role Agents" icon="briefcase">
+    Operational agents for day-to-day business functions. They synthesize knowledge from multiple experts relevant to their role. **14 active agents.**
+  </Card>
+  <Card title="CONCLAVE — Deliberative Agents" icon="scale-balanced">
+    Constitutional debate agents that challenge, advocate, and synthesize across multiple perspectives. **3 active agents.**
+  </Card>
+  <Card title="SYSTEM — JARVIS Orchestrator" icon="server">
+    The meta-agent that manages pipeline operations, agent supervision, quality control, and session state.
   </Card>
 </CardGroup>
 
-### Use cases for Mind Clones
+## MINDS: Expert Mind Clones
 
-- **Expert-style answers:** Ask the Mind Clone how a specific expert would approach your problem and get a response grounded in their actual thinking.
-- **Simulating expert reasoning:** Walk through a decision using the expert's frameworks and methodologies, step by step.
-- **Testing decisions:** Present a plan to the Mind Clone and stress-test it against the expert's known heuristics and philosophies before committing.
-- **Conclave participation:** Deploy the Mind Clone inside a multi-agent Conclave to represent that expert's perspective in a deliberation.
+Mind clones are the most direct expression of Mega Brain's purpose: they let you consult an expert's actual thinking, not a generic AI approximation. Every mind clone is built from real materials processed through the pipeline, and every response they give traces back to specific source chunks.
 
-<Warning>
-  Mind Clone Agents require a **Pro** subscription. Creating a Mind Clone also requires that the source expert's materials have been fully processed through the DNA Extraction phase. See [Community vs Pro](/configuration/community-vs-pro) for details.
-</Warning>
+### Active Mind Clones
 
----
+<Accordion title="Alex Hormozi">
+  **Path:** `agents/minds/alex-hormozi/`
 
-## Cargo Agents
+  **DNA highlights:**
+  - L1 (Philosophies): Price is a consequence of value; scale before optimize
+  - L2 (Mental Models): Value Equation `(Dream Outcome × Probability) / (Time × Effort)`; Product Ladder
+  - L3 (Heuristics): Never anchor price without establishing value first
+  - L4 (Frameworks): Offer Stack Formula; Lead Magnet systems
+  - L5 (Methodologies): 30-Day Onboarding Pipeline; launch sequences
 
-A Cargo Agent is a role-based agent rather than a person-based one. Instead of cloning a specific expert, you instantiate a professional function — "Marketing Strategist," "Financial Analyst," "Operations Lead" — and Mega Brain equips it with the relevant knowledge from your knowledge base that matches that role.
+  **Expertise:** Business scaling, offer creation, monetization strategy
+</Accordion>
 
-Cargo Agents are ideal when you need expert-level reasoning on a domain but don't have (or want) a specific person's materials as the foundation. They draw on the structured knowledge you have already ingested and extract the role-relevant subset.
+<Accordion title="Cole Gordon">
+  **Path:** `agents/minds/cole-gordon/`
 
-### How Cargo Agents differ from Mind Clones
+  **DNA highlights:**
+  - L1 (Philosophies): Speed beats perfection in lead response; qualification over persuasion
+  - L2 (Mental Models): NEPQ framework; response velocity model
+  - L3 (Heuristics): Respond to leads in under 5 minutes; always anchor before revealing price
+  - L4 (Frameworks): SPIN Selling; NEPQ methodology
+  - L5 (Methodologies): Sales team scaling; onboarding sequences
 
-Where a Mind Clone is anchored to a single expert's identity and source materials, a Cargo Agent synthesizes across all relevant materials in your knowledge base for its role. A "Sales Strategist" Cargo Agent will draw on every sales-related insight in your system, regardless of which expert produced it.
+  **Expertise:** High-ticket sales, NEPQ methodology, team scaling
+</Accordion>
 
-<Tip>
-  Cargo Agents are available on the **Community** plan. They are a good starting point if you are building your knowledge base and not yet ready to commit to a full Mind Clone extraction.
-</Tip>
+<Accordion title="Jeremy Haynes">
+  **Path:** `agents/minds/jeremy-haynes/`
+  **Expertise:** Sales operations, process optimization
+</Accordion>
 
----
+<Accordion title="Jeremy Miner">
+  **Path:** `agents/minds/jeremy-miner/`
+  **Expertise:** NEPQ methodology, neuro-emotional selling
+</Accordion>
 
-## Comparing Agent Types
+<Accordion title="The Scalable Company">
+  **Path:** `agents/minds/the-scalable-company/`
+  **Expertise:** Business systems, operational scaling
+</Accordion>
+
+### Mind Clone File Structure
+
+Each mind clone lives in its own directory with four files:
+
+```
+agents/minds/{expert}/
+├── AGENT.md          # Identity, role, reasoning protocols, decision frameworks
+├── DNA-CONFIG.yaml   # 5-layer DNA extracted from source materials
+├── MEMORY.md         # Episodic memory — past decisions, lessons, calibrations
+└── SOUL.md           # Core personality, voice, values, communication style
+```
+
+### How to Interact with Mind Clones
+
+```bash
+# Ask a specific mind clone a question
+/ask alex-hormozi "How should I price my high-ticket offer?"
+
+# Get DNA-grounded strategic reasoning
+/ask cole-gordon "What's the best way to scale a sales team from 3 to 10?"
+```
+
+<Note>
+  Mind clones provide **traced reasoning** — every recommendation links back to source material with chunk IDs, so you can verify the thinking against the original content.
+</Note>
+
+## CARGO: Functional Role Agents
+
+Cargo agents handle day-to-day business operations. Unlike mind clones (which replicate a single expert), cargo agents synthesize DNA from multiple experts relevant to their function.
+
+### Active Cargo Agents (14)
 
 <Tabs>
-  <Tab title="Mind Clone Agent">
-    | Attribute | Detail |
-    |---|---|
-    | **Grounded in** | A specific expert's materials |
-    | **Knowledge source** | DNA Schema from that expert only |
-    | **Cites sources** | Yes — exact timestamps and page references |
-    | **Reasoning style** | Replicates the expert's philosophies and mental models |
-    | **Best for** | Simulating a known expert, Conclave debates, high-stakes decisions |
-    | **Availability** | Pro only |
+  <Tab title="Sales Roles (9)">
+    - **SDS** — Sales Development Specialist
+    - **LNS** — Lead Nurturing Specialist
+    - **BDR** — Business Development Representative
+    - **NEPQ Specialist** — Neuro-Emotional Persuasion methodology expert
+    - **Sales Coordinator** — Pipeline and process coordination
+    - **Sales Manager** — Team management and performance
+    - **Sales Lead** — Senior sales leadership and strategy
+    - **Customer Success** — Retention and expansion
+    - **Closer** — High-ticket closing specialist
   </Tab>
-  <Tab title="Cargo Agent">
-    | Attribute | Detail |
-    |---|---|
-    | **Grounded in** | A professional role or function |
-    | **Knowledge source** | All role-relevant content in your knowledge base |
-    | **Cites sources** | Yes — from any contributing material |
-    | **Reasoning style** | Role-optimized synthesis across multiple experts |
-    | **Best for** | Domain Q&A, filling knowledge gaps, early-stage pipelines |
-    | **Availability** | Community and Pro |
+  <Tab title="Marketing (1)">
+    - **Paid Media Specialist** — Paid acquisition channels and campaign optimization
+  </Tab>
+  <Tab title="C-Level (4)">
+    - **CFO** — Chief Financial Officer
+    - **COO** — Chief Operating Officer
+    - **CMO** — Chief Marketing Officer
+    - **CRO** — Chief Revenue Officer
   </Tab>
 </Tabs>
 
----
+### DNA Synthesis Example
 
-## Creating an Agent
+The Sales-Lead agent combines knowledge from:
 
-Use the `/create-agent` command from the CLI to instantiate either agent type:
+| Source Expert | Contribution |
+|---|---|
+| Cole Gordon | Team scaling and NEPQ qualification |
+| Alex Hormozi | Offer optimization and volume strategy |
+| Jeremy Haynes | Sales operations and process design |
+| Jeremy Miner | Neuro-emotional selling techniques |
+
+### Automatic Agent Creation
+
+Cargo agents are created automatically when pipeline Phase 7 detects sufficient role mentions:
+
+- **≥10 mentions** → 🔴 Create new agent (prompted for your approval)
+- **≥5 mentions** → 🟡 Monitor role (flagged for future consideration)
+
+## CONCLAVE: Deliberative Agents
+
+When a decision is genuinely complex, Conclave gives you structured multi-perspective analysis. Rather than a single answer, you get a debate — with advocates, critics, and a synthesizer — grounded in your knowledge base.
+
+### The Three Conclave Agents
+
+<CardGroup cols={3}>
+  <Card title="Crítico Metodológico" icon="magnifying-glass">
+    Challenges assumptions, demands evidence, and identifies logical weaknesses in proposed approaches.
+  </Card>
+  <Card title="Advogado do Diabo" icon="comment-dots">
+    Presents counter-arguments and explores alternative perspectives that the primary proposal overlooks.
+  </Card>
+  <Card title="Sintetizador" icon="arrows-merge">
+    Synthesizes all perspectives into a final recommendation, documenting points of consensus and dissent.
+  </Card>
+</CardGroup>
+
+### How a Conclave Session Works
+
+<Steps>
+  <Step title="Pose your question">
+    Submit a question or decision to the Conclave using `/conclave`.
+  </Step>
+  <Step title="Independent analysis">
+    Each agent independently analyzes the question from their perspective.
+  </Step>
+  <Step title="Cross-examination">
+    Agents challenge each other's reasoning, exposing assumptions and testing logical consistency.
+  </Step>
+  <Step title="Evidence gathering">
+    The knowledge base is queried via RAG to surface supporting evidence and relevant expert insights.
+  </Step>
+  <Step title="Synthesis and output">
+    The Sintetizador compiles a final recommendation with documented consensus, disagreements, and dissenting views.
+  </Step>
+</Steps>
 
 ```bash
-# Create a Mind Clone Agent
-/create-agent --type mind-clone --expert "Alex Hormozi"
-
-# Create a Cargo Agent
-/create-agent --type cargo --role "Marketing Strategist"
+/conclave "Should we prioritize scaling revenue or optimizing our operations right now?"
 ```
 
-JARVIS will load the relevant DNA Schema or knowledge base subset, configure the agent's reasoning parameters, and make it available for queries and Conclave sessions.
+## SYSTEM: JARVIS, the Orchestrator
 
----
+JARVIS is the meta-agent that manages your entire Mega Brain system. You interact with it constantly — it runs your pipeline, supervises agents, maintains quality, and manages session state.
 
-## Related Pages
+<CardGroup cols={2}>
+  <Card title="Pipeline Orchestration" icon="diagram-project">
+    Coordinates all 8 phases of the JARVIS pipeline, handling dependencies and sequencing.
+  </Card>
+  <Card title="Agent Supervision" icon="users">
+    Monitors agent health, triggers memory updates, and coordinates multi-agent operations.
+  </Card>
+  <Card title="Quality Control" icon="shield-check">
+    Validates pipeline outputs, catches data integrity issues, and enforces processing rules.
+  </Card>
+  <Card title="Session Management" icon="clock">
+    Saves and resumes session state, maintains context across conversations, and tracks open loops.
+  </Card>
+</CardGroup>
 
-- [Building Mind Clones](/guides/building-mind-clones) — Step-by-step guide to creating and configuring Mind Clone Agents
-- [Conclave](/concepts/conclave) — Learn how to deploy agents in multi-agent deliberation sessions
+## Agent Commands
+
+| Command | Action |
+|---|---|
+| `/ask [agent-id] "[question]"` | Query a specific agent |
+| `/conclave "[question]"` | Start a multi-agent deliberation |
+| `/agents` | Show agent registry and status |
+| `/create-agent` | Create a new agent from template |
+
+## Memory Updates
+
+Agent memories are updated automatically during pipeline Phase 7. You retain full control with three approval options:
+
+| Option | Effect |
+|---|---|
+| **YES** | Update both AGENT.md and MEMORY.md |
+| **MEMORY ONLY** | Update episodic memory only |
+| **SKIP** | Defer the update to a future session |
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="DNA Schema" href="/concepts/dna-schema" icon="dna">
+    Learn how agent DNA is extracted and structured
+  </Card>
+  <Card title="Knowledge Pipeline" href="/concepts/knowledge-pipeline" icon="arrow-right">
+    See how agents are enriched during Phase 7
+  </Card>
+  <Card title="Layer System" href="/concepts/layer-system" icon="layer-group">
+    Understand how agent files are distributed across L1, L2, and L3
+  </Card>
+  <Card title="Architecture" href="/concepts/architecture" icon="sitemap">
+    Explore the complete system structure including the agents/ directory
+  </Card>
+</CardGroup>

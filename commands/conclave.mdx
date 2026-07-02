@@ -1,0 +1,233 @@
+---
+title: "/conclave: Multi-Agent Deliberation for Strategic Decisions"
+sidebarTitle: "/conclave"
+description: "Run a structured 4-phase multi-agent deliberation session — debate, critical review, devil's advocate, and synthesis — to reach evidence-based decisions on complex questions."
+---
+
+Some decisions are too consequential for a single perspective. `/conclave` assembles the relevant cargo agents from your knowledge base, has them debate a question using evidence drawn from your processed sources, submits the debate to a Methodological Critic and Devil's Advocate for scrutiny, and then produces a synthesised recommendation with a confidence score, residual risks, and clear next steps. If confidence falls below 60%, the session escalates to you rather than guessing.
+
+<Note>
+Conclave runs **once** per query. There are no re-run loops. If the session ends with low confidence, that result is intentional — it means the question genuinely requires a human decision.
+</Note>
+
+## Syntax
+
+```bash
+/conclave [QUESTION]
+```
+
+<ParamField body="QUESTION" type="string" required>
+  The strategic question or decision you want the council to deliberate on.
+
+  **Examples:**
+  - `"Should we increase closer commission from 10% to 15%?"`
+  - `"Should we hire 5 or 10 closers for Q2?"`
+  - `"Should we raise pricing on the core offer?"`
+</ParamField>
+
+## Examples
+
+<CodeGroup>
+  ```bash Commission change
+  /conclave "Should we increase closer commission from 10% to 15%?"
+  ```
+  ```bash Hiring decision
+  /conclave "Should we hire 5 or 10 closers in Q2?"
+  ```
+  ```bash Pricing strategy
+  /conclave "Should we raise pricing on the core offer from $5k to $7k?"
+  ```
+  ```bash Process change
+  /conclave "Should we move to a same-day close process?"
+  ```
+</CodeGroup>
+
+## When to Use Conclave
+
+**Good use cases:**
+- Decisions that affect money, structure, or operational risk
+- Questions where multiple roles have valid but different perspectives
+- Situations where your knowledge base holds relevant evidence
+- Reversible decisions where you want structured reasoning before acting
+
+**Poor use cases:**
+- Tactical execution questions ("Which CRM field should I use?")
+- Questions your knowledge base lacks data to answer
+- Urgent decisions where you need an answer in under an hour
+- Highly subjective questions with no measurable criteria
+
+## How It Works
+
+Conclave runs 4 phases in sequence:
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                        CONCLAVE FLOW                            │
+├─────────────────────────────────────────────────────────────────┤
+│  Phase 0: Constitutional Foundation    [Governing principles]   │
+│  Phase 1: Multi-Agent Debate           [Cargo agents deliberate]│
+│  Phase 2: Methodological Critic        [Process evaluation]     │
+│  Phase 3: Devil's Advocate             [Challenge assumptions]  │
+│  Phase 4: Synthesis                    [Final recommendation]   │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+### Phase 0: Constitutional Foundation
+
+Before any agent speaks, four governing principles are established. These override agent opinions if there is any conflict.
+
+<Tabs>
+  <Tab title="Empiricism">
+    All claims must cite chunk IDs. No opinions or unattributed assertions.
+
+    ```
+    ✓ "Close rate drops 40% without qualification ^[CG003_089]"
+    ✗ "Close rate probably drops without qualification"
+    ```
+  </Tab>
+  <Tab title="Pareto (80/20)">
+    Agents must identify the 20% of actions that generate 80% of results. The session avoids "busy work" solutions.
+  </Tab>
+  <Tab title="Inversion">
+    Before recommending what to do, agents must ask what would cause failure — then design around those failure modes.
+  </Tab>
+  <Tab title="Antifragility">
+    Options that benefit from volatility and stress are preferred over fragile, fixed-state alternatives.
+  </Tab>
+</Tabs>
+
+**Governance hierarchy:** Constitution → Protocols → Agent Instructions. The Critic in Phase 2 flags any agent that violates these principles.
+
+### Phase 1: Multi-Agent Debate
+
+The appropriate cargo agents are selected based on the question domain, and each presents a position with supporting evidence.
+
+For a commission question, the agents might be `[CRO, CFO, SALES-MANAGER, CLOSER]`. For a hiring decision, `[CRO, SALES-MANAGER, COO]`. Each agent states:
+- Their **position** (yes, no, conditional)
+- Their **reasoning**, citing chunk IDs
+- **Risks and trade-offs** they see
+- Their **confidence level** (0–100%)
+
+### Phase 2: Methodological Critic
+
+The Critic evaluates the **quality of the debate process**, not the merit of any position. It scores the session across five dimensions:
+
+| Dimension | Max Points | What It Checks |
+|---|---|---|
+| Premises declared | 20 | Were assumptions clearly stated? |
+| Evidence traceable | 20 | Do all claims have chunk IDs? |
+| Logic consistent | 20 | Are there internal contradictions? |
+| Alternatives considered | 20 | Were other options explored? |
+| Conflicts resolved | 20 | Were tensions between agents addressed? |
+
+The Critic also identifies specific gaps — missing scenarios, uncited claims, unresolved tensions — that the Synthesizer must address.
+
+### Phase 3: Devil's Advocate
+
+The Devil's Advocate actively tries to break the emerging conclusion. It identifies:
+
+- The **most fragile premise** in the debate
+- The **main risk** the agents did not discuss
+- A **12-month regret scenario** — what could go catastrophically wrong
+- An **ignored alternative** that deserves consideration
+
+This phase surfaces the blind spots that consensus-building tends to obscure.
+
+### Phase 4: Synthesis
+
+The Synthesizer integrates feedback from the Critic and Devil's Advocate into a final recommendation. The output includes:
+
+- A **clear decision** — yes, no, or conditional
+- A **confidence score** (0–100%)
+- **Modifications** from the initial proposal based on the critical review
+- **Residual risks** with named owners and mitigations
+- **Next steps** with specific owners, actions, and deadlines
+- **Reversal criteria** — the conditions under which you should pause or undo the decision
+
+**Example synthesis output (abridged):**
+
+```
+DECISION: YES - Increase commission with safeguards
+
+CONFIDENCE: 78%
+
+REVISED STRUCTURE:
+  TIER 1: 12% base commission
+  TIER 2: +3% accelerator at 80% quota
+  TIER 3: +2% additional at 100% quota with NPS > 40
+
+REVERSAL CRITERIA:
+  Pause or revert if ANY of:
+    • Churn rate increases > 5% absolute within 6 months
+    • NPS drops below 35
+    • Cost as % of revenue exceeds 18%
+
+NEXT STEPS:
+  1. Draft compensation policy — CRO + CFO — end of week
+  2. Model 3 revenue scenarios — CFO — 5 days
+  3. Socialise with top 3 closers — Sales-Manager — 1 week
+```
+
+## Low Confidence Outcome
+
+If the final confidence score falls below 60%, Conclave does **not** make a recommendation. Instead, it presents the options it evaluated and explains what additional data would raise confidence:
+
+```
+⚠️  CONFIDENCE: 52% — BELOW THRESHOLD OF 60%
+
+TYPE OF UNCERTAINTY: Insufficient data
+
+OPTIONS FOR HUMAN DECISION:
+
+OPTION A: Increase to 15% immediately
+  Trade-off: Speed vs risk | Confidence from: CRO, Sales-Manager
+
+OPTION B: Phased approach (12% → 15% over 2 quarters)
+  Trade-off: Safety vs market competitiveness | Confidence from: CFO
+
+OPTION D: Gather more data (2-week research sprint)
+  What's needed:
+    • Survey top 10 closers on retention drivers
+    • Benchmark 5 competitors' comp packages
+
+⚠️  This case requires a HUMAN DECISION.
+```
+
+## Agent Roles
+
+| Agent | Role |
+|---|---|
+| **Cargo Agents** (CRO, CFO, etc.) | Bring domain expertise and cite evidence from your knowledge base |
+| **Methodological Critic** | Evaluates process quality — ensures rigor, not just agreement |
+| **Devil's Advocate** | Challenges assumptions and surfaces hidden risks |
+| **Synthesizer** | Integrates all feedback into a final actionable recommendation |
+
+## Key Principles
+
+1. **Evidence-based** — every claim must cite a chunk ID or it can be rejected
+2. **Constitutional governance** — the four founding principles override any agent's opinion
+3. **One-pass rule** — Conclave runs once; no loops; inconclusive results escalate to human
+4. **Process vs. merit** — the Critic evaluates *how* agents reasoned, not *what* they concluded
+5. **Adversarial testing** — the Devil's Advocate actively tries to break the conclusion before it reaches synthesis
+
+## Troubleshooting
+
+<AccordionGroup>
+  <Accordion title='"No relevant agents found"'>
+    The question doesn't map to any available cargo agents. Check your `agents/cargo/` directory and ensure that agents exist for the relevant domain. Marketing questions, for example, require a CMO agent.
+  </Accordion>
+
+  <Accordion title='"Insufficient evidence"'>
+    Your knowledge base doesn't have enough processed material to support the question. Ingest and process relevant expert content first, then retry:
+
+    ```bash
+    /ingest expert-video.mp4
+    /process-jarvis "inbox/EXPERT/video.txt"
+    /conclave "your question"
+    ```
+  </Accordion>
+
+  <Accordion title='"Confidence always below 60%"'>
+    Persistent low confidence means the question is genuinely ambiguous, critical data is missing, or the question falls outside your agents' domain of expertise. In all three cases, a human decision is the correct outcome — not more deliberation.
+  </Accordion>
+</AccordionGroup>

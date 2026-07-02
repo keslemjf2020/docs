@@ -1,0 +1,338 @@
+---
+title: "Querying and Working with Mega Brain AI Agents"
+sidebarTitle: "Working with Agents"
+description: "Learn how to invoke Cargo agents and Mind Clone agents, interpret sourced responses, check confidence scores, and get the most accurate answers from Mega Brain."
+---
+
+Mega Brain builds a growing roster of AI agents as you process expert materials. Each agent is automatically enriched with structured knowledge extracted from your sources — and every answer they give traces back to specific chunks in your inbox. This guide covers how to find the right agent for your question, invoke it correctly, and interpret the response you get back.
+
+## Agent Types
+
+Mega Brain organizes agents into four categories:
+
+<CardGroup cols={2}>
+  <Card title="Cargo Agents" icon="briefcase">
+    Functional role agents covering Sales, Marketing, Operations, and Finance. These are the workhorses for tactical questions in their domain.
+  </Card>
+  <Card title="Mind Clones" icon="brain">
+    Expert agents that reason like specific people, grounded in their actual materials. Use these when you want an answer in a particular expert's voice and framework.
+  </Card>
+  <Card title="Conclave" icon="users">
+    A multi-agent deliberation council for strategic decisions. See the [Using Conclave](/guides/using-conclave) guide.
+  </Card>
+  <Card title="System Agents" icon="gear">
+    JARVIS and internal pipeline agents. These run automatically — you don't query them directly.
+  </Card>
+</CardGroup>
+
+## Viewing Agent Status
+
+### List All Agents
+
+```bash
+/agents
+```
+
+This shows every active agent, the last date its memory was updated, which experts it knows, and its version:
+
+```
+═══════════════════════════════════════════════
+              AGENTS STATUS  —  2026-03-06
+═══════════════════════════════════════════════
+
+MIND CLONES:
+   Alex Hormozi   │ DNA: 19 items │ Weight: 0.74
+   Cole Gordon    │ DNA: 23 items │ Weight: 0.78
+   Sam Ovens      │ DNA: 15 items │ Weight: 0.71
+
+SALES:
+   CLOSER         │ MEMORY: 2026-03-05 │ 3 experts │ v2.1
+   BDR            │ MEMORY: 2026-03-05 │ 2 experts │ v1.8
+   SALES-MANAGER  │ MEMORY: 2026-03-05 │ 3 experts │ v2.0
+
+C-LEVEL:
+   CRO            │ MEMORY updated: 2026-03-04 │ Knows: 3 experts
+   CFO            │ MEMORY updated: 2026-03-04 │ Knows: 2 experts
+
+⚠️ OUTDATED (>3 days): CMO, CUSTOMER-SUCCESS
+
+🚨 SUGGESTED FOR CREATION:
+   🔴 APPOINTMENT-SETTER (12 mentions — threshold reached)
+═══════════════════════════════════════════════
+```
+
+### Filter by Category or Knowledge
+
+```bash
+# View only sales agents
+/agents --category SALES
+
+# Which agents know about a specific expert?
+/agents --knowledge "Cole Gordon"
+```
+
+The `--knowledge` flag shows you exactly which agents have absorbed Cole Gordon's materials, including the source IDs, insight count, and frameworks loaded.
+
+## Querying Cargo Agents
+
+### Invoking a Cargo Agent
+
+Use `/ask [agent-name] "[question]"` to query any agent directly:
+
+```bash
+/ask closer "How do I handle the 'I need to think about it' objection?"
+```
+
+### Sales Agents
+
+<Tabs>
+  <Tab title="CLOSER">
+    The CLOSER agent specializes in high-ticket sales, objection handling, and discovery calls. It draws on closing frameworks from all processed sales experts.
+
+    ```bash
+    /ask closer "How do I handle the 'I need to think about it' objection?"
+    ```
+
+    **Sample response:**
+
+    ```
+    ────────────────────────────────────
+             CLOSER RESPONDS
+    ────────────────────────────────────
+
+    "I need to think about it" is Layer 3 of the
+    Onion of Blame (Cole Gordon framework).
+
+    It's NOT the real objection — it's a smoke screen.
+
+    USE THE PEEL-BACK:
+
+    "I understand you want to think about it. But just
+    so I'm clear — when people say they need to think
+    about it, it's usually because ONE of three things:
+
+    1. They're not 100% sure this will work for them
+    2. The timing doesn't feel quite right
+    3. The investment feels like a stretch
+
+    Which one of those is closest for you?"
+
+    Then SHUT UP. Let them tell you the real objection.
+
+    SOURCES:
+    [chunk_CG001_067] Onion of Blame framework
+    [chunk_CG002_034] Layer 3 = thinking objection
+    [chunk_CG001_089] Peel-back technique
+
+    CONFIDENCE: 0.87 (High)
+    ```
+  </Tab>
+  <Tab title="BDR">
+    The BDR agent covers cold outreach, lead qualification, and appointment setting.
+
+    ```bash
+    /ask bdr "What's a good cold call opening?"
+    ```
+
+    Responses follow a proven structure: Pattern Interrupt → Permission → Reason for Call, with source citations from processed outreach frameworks.
+  </Tab>
+  <Tab title="SALES-MANAGER">
+    Use the SALES-MANAGER agent for team diagnostics, hiring decisions, and coaching frameworks.
+
+    ```bash
+    /ask sales-manager "How do I know if I need more closers or better closers?"
+    ```
+
+    **Sample diagnostic:**
+
+    ```
+    IF close rate < 60%:
+      → Problem: SKILL (need better closers/training)
+      → Don't hire more yet
+
+    IF close rate >= 60% AND pipeline full:
+      → Problem: CAPACITY (need more closers)
+
+    IF close rate >= 60% BUT pipeline not full:
+      → Problem: LEAD GENERATION (fix top of funnel)
+
+    SOURCES:
+    [chunk_CG001_045] 60% benchmark
+    [chunk_CG002_078] Diagnostic framework
+
+    CONFIDENCE: 0.91 (Very High)
+    ```
+  </Tab>
+</Tabs>
+
+### C-Level Agents
+
+<Tabs>
+  <Tab title="CRO">
+    **Focus:** Revenue growth, sales strategy, pricing
+
+    ```bash
+    /ask cro "Should I increase prices or volume?"
+    ```
+
+    The CRO applies unit economics, market positioning frameworks, and sales capacity constraints from your processed materials.
+  </Tab>
+  <Tab title="CFO">
+    **Focus:** Financial metrics, profitability, risk
+
+    ```bash
+    /ask cfo "Is my LTV:CAC ratio healthy?"
+    ```
+
+    The CFO evaluates against industry benchmarks (including Hormozi's 3:1 threshold), cash flow implications, and payback period.
+  </Tab>
+  <Tab title="CMO">
+    **Focus:** Positioning, messaging, demand generation
+
+    ```bash
+    /ask cmo "How do I position against competitors?"
+    ```
+
+    The CMO draws on differentiation strategies and messaging frameworks from your marketing materials.
+  </Tab>
+  <Tab title="COO">
+    **Focus:** Systems, processes, scalability
+
+    ```bash
+    /ask coo "How do I scale operations without breaking?"
+    ```
+
+    The COO identifies bottlenecks, automation opportunities, and process documentation gaps.
+  </Tab>
+</Tabs>
+
+## Querying Mind Clones
+
+Mind Clones let you ask questions directly to an expert as if you were in conversation with them. Every response is grounded in their actual materials.
+
+```bash
+/ask alex-hormozi "How should I think about pricing?"
+/ask cole-gordon "What's the most common reason deals fall apart?"
+/ask sam-ovens "How do I build a consulting offer from scratch?"
+```
+
+### Understanding Mind Clone Responses
+
+Every Mind Clone response includes five components:
+
+1. **Direct Answer** — Delivered in the expert's voice and language
+2. **Framework Application** — Named methodologies referenced by the expert
+3. **Sources** — Specific `chunk_ids` linking to the original material
+4. **Confidence Score** — A 0.00–1.00 score based on evidence weight
+5. **Related Concepts** — Additional frameworks you may want to explore
+
+<Note>
+  Mind Clones only use knowledge with a weight of **0.70 or higher**. If an expert said something once without context, it won't surface in a response. This keeps answers high-confidence and traceable.
+</Note>
+
+## How Agents Stay Current
+
+Agents are automatically updated every time you run the pipeline. After processing completes, Mega Brain maps extracted themes and frameworks to the agents that should receive them:
+
+```
+"02-SALES-PROCESS" → [closer, SDS, LNS]
+"04-COMPENSATION"  → [sales-manager, CRO, CFO]
+"07-PRICING"       → [CRO, CFO, closer]
+```
+
+Specific frameworks also route to specific agents:
+
+```
+"NEPQ Framework":   [closer, SDS]
+"Farm System":      [sales-manager, CRO]
+"Value Equation":   [CRO, CFO]
+```
+
+If any agent that should have received knowledge didn't, the pipeline logs an `AGENT_COVERAGE_FAILED` error so you can catch gaps immediately.
+
+## Tips for Getting Better Answers
+
+<CardGroup cols={2}>
+  <Card title="Ask Specific Questions" icon="magnifying-glass">
+    **Better:** "How do I handle the price objection at the end of a demo?"
+
+    **Worse:** "Tell me about sales"
+  </Card>
+  <Card title="Check Confidence Scores" icon="gauge">
+    **≥ 0.80** — High confidence, act on it
+
+    **0.70–0.79** — Good confidence, verify context
+
+    **< 0.70** — Agent won't surface this knowledge
+  </Card>
+  <Card title="Always Trace Sources" icon="link">
+    Use the returned `chunk_ids` to read the original material. Context around a quote often reveals nuance that a summary misses.
+  </Card>
+  <Card title="Pick the Right Agent Type" icon="robot">
+    **Tactical questions** → Cargo agent
+
+    **Expert perspective** → Mind Clone
+
+    **Strategic decisions** → Conclave
+  </Card>
+</CardGroup>
+
+## Troubleshooting
+
+<AccordionGroup>
+  <Accordion title="Agent says 'I don't have knowledge about that'">
+    Check whether the agent has been enriched with relevant sources:
+
+    ```bash
+    /agents --knowledge "[expert-name]"
+    ```
+
+    If the expert's materials haven't been processed yet, run `/process-jarvis` on the relevant files. You can also try a different agent type — a Mind Clone may have knowledge a Cargo agent hasn't received.
+  </Accordion>
+  <Accordion title="Response lacks chunk_ids or sources">
+    The agent memory may not have been updated after the last pipeline run. Reprocess the relevant materials:
+
+    ```bash
+    /process-jarvis inbox/[person]/[file].txt
+    ```
+  </Accordion>
+  <Accordion title="Agent is outdated (more than 3 days old)">
+    ```bash
+    # See which agents need refreshing
+    /agents --outdated
+
+    # Process new materials to update memories
+    /process-jarvis [new-material]
+    ```
+  </Accordion>
+  <Accordion title="Want to create an agent that doesn't exist yet">
+    Check the current mention count. If a role is mentioned frequently enough in your materials, it will be auto-created at threshold:
+
+    ```bash
+    /agents
+    ```
+
+    You can also force creation manually (use sparingly):
+
+    ```bash
+    /create-agent APPOINTMENT-SETTER --category SALES --sub-of SALES-MANAGER
+    ```
+  </Accordion>
+</AccordionGroup>
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Creating Mind Clones" icon="brain" href="/guides/creating-mind-clones">
+    Extract DNA from your processed experts to create more Mind Clone agents.
+  </Card>
+  <Card title="Using Conclave" icon="users" href="/guides/using-conclave">
+    Combine multiple agents in a structured strategic deliberation.
+  </Card>
+  <Card title="Processing Pipeline" icon="gear" href="/guides/processing-pipeline">
+    Run the pipeline to enrich your agents with new materials.
+  </Card>
+  <Card title="Session Management" icon="floppy-disk" href="/guides/session-management">
+    Save your work and resume across sessions.
+  </Card>
+</CardGroup>

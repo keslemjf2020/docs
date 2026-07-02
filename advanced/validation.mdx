@@ -1,0 +1,501 @@
+---
+title: "Validating Package Integrity and Layer Compliance"
+sidebarTitle: "Validation"
+description: "Run Mega Brain's validation tools to check package integrity, enforce L1/L2/L3 layer compliance, and block secret leaks before publishing."
+---
+
+Mega Brain includes a multi-stage validation pipeline that catches issues at every step of development — in real time while you write files, before you commit, and as a hard gate before any npm publish. Validation runs automatically through hooks during development; you run it manually before shipping. If validation fails, publication is physically blocked. There is no way to skip it.
+
+## Validation Architecture
+
+The pipeline has four stages, each targeting a different risk:
+
+```
+Development       →    Pre-Commit       →    Pre-Publish      →    CI/CD
+(Real-time hooks)      (Layer checks)        (Security gate)       (Automated verify)
+```
+
+- **Development:** `creation_validator.py` and `claude_md_guard.py` hooks fire on every Write/Edit, blocking invalid files before they land.
+- **Pre-commit:** `audit_layers.py` classifies all files and surfaces DELETE and REVIEW candidates for manual review.
+- **Pre-publish:** `pre-publish-gate.js` scans for secrets and non-L1 content, blocking `npm publish` if anything fails.
+- **CI/CD:** GitHub Actions runs `validate-package.js` on every pull request and push to `main`.
+
+## Core Validation Tools
+
+### validate-package.js
+
+This tool answers one question: does the npm package contain **only L1 (Community)** content? It simulates a dry-run publish, classifies every file that would be included, and reports any violations.
+
+```bash
+# Human-readable report
+node bin/validate-package.js
+
+# JSON output for CI pipelines
+node bin/validate-package.js --json
+```
+
+<CodeGroup>
+```javascript validate-package.js (core logic)
+export function validatePackageSync(projectRoot) {
+  // Step 1: Get files that would be published
+  const packFiles = getPackFiles(projectRoot);
+
+  // Step 2: Classify each file via audit_layers.py
+  const classifications = classifyFiles(packFiles, projectRoot);
+
+  // Step 3: Any non-L1 file is a violation
+  const violations = [];
+  for (const file of packFiles) {
+    const info = classifications[file];
+    if (info.layer !== 'L1') {
+      violations.push({
+        path: file,
+        layer: info.layer,
+        reason: info.reason
+      });
+    }
+  }
+
+  return {
+    status: violations.length === 0 ? 'PASSED' : 'FAILED',
+    totalFiles: packFiles.length,
+    violations,
+  };
+}
+```
+
+```text Example output (passing)
+✅ PASSED: All 247 pack files are L1
+
+Layer breakdown:
+  L1 (Community):  247 files
+  L2 (Premium):      0 files
+  L3 (Personal):     0 files
+  NEVER (Secrets):   0 files
+```
+
+```json JSON output (failing)
+{
+  "status": "FAILED",
+  "totalFiles": 249,
+  "violations": [
+    {
+      "path": "knowledge/dossiers/ALEX.md",
+      "layer": "L2",
+      "reason": "Premium content"
+    },
+    {
+      "path": "agents/minds/ALEX-HORMOZI/AGENT.md",
+      "layer": "L2",
+      "reason": "Premium content"
+    }
+  ]
+}
+```
+</CodeGroup>
+
+**How validate-package.js works internally:**
+
+<Steps>
+  <Step title="Get package files">
+    Runs `npm pack --dry-run --json` to get the exact list of files that would be published:
+    ```bash
+    npm pack --dry-run --json
+    ```
+  </Step>
+  <Step title="Classify each file">
+    Calls `audit_layers.py` via Python subprocess to assign a layer to every path.
+  </Step>
+  <Step title="Check for violations">
+    Any file not classified as L1 is flagged as a violation.
+  </Step>
+  <Step title="Return exit code">
+    - **Exit 0** — All files are L1 (PASSED)
+    - **Exit 1** — Non-L1 files found (FAILED)
+    - **Exit 2** — Validation error (ERROR)
+  </Step>
+</Steps>
+
+### pre-publish-gate.js
+
+This is the security gate that runs automatically via the `prepublishOnly` npm script every time you run `npm publish`. It blocks publication if secrets or non-L1 content are detected. The gate is **fail-closed** — if any check fails, publish is blocked.
+
+```json package.json
+{
+  "scripts": {
+    "prepublishOnly": "node bin/pre-publish-gate.js"
+  }
+}
+```
+
+The gate runs six checks in sequence:
+
+<Accordion title="Step 1: Clean __pycache__">
+Removes Python bytecode cache directories that could accidentally end up in the package:
+
+```bash
+find . -type d -name __pycache__ -exec rm -rf {} +
+```
+</Accordion>
+
+<Accordion title="Step 2: Get package files">
+Same dry-run pack approach as `validate-package.js` — gets the exact file list that would be published.
+</Accordion>
+
+<Accordion title="Step 3: Check file names">
+Blocks files matching a hardcoded list of forbidden patterns (`.env`, `*.key`, `credentials.json`, etc.):
+
+```javascript
+for (const file of packFiles) {
+  for (const pattern of FORBIDDEN_FILE_PATTERNS) {
+    if (pattern.test(file)) {
+      console.error(`[BLOCKED] Forbidden file: ${file}`);
+      foundIssues++;
+    }
+  }
+}
+```
+</Accordion>
+
+<Accordion title="Step 4: Scan file contents for secrets">
+Reads every text file and scans for patterns matching API keys, tokens, and credentials. Redacts the detected value in the output to avoid logging the secret itself.
+
+```javascript
+for (const pattern of SECRET_PATTERNS) {
+  const matches = content.match(new RegExp(pattern.source, 'g'));
+  if (matches) {
+    const redacted = matches[0].substring(0, 12) + '**REDACTED**';
+    console.error(`[BLOCKED] Secret found in: ${file} → ${redacted}`);
+    foundIssues++;
+  }
+}
+```
+
+Binary files (`.png`, `.pdf`, `.zip`, etc.) are skipped automatically. Files with more than 3 email addresses are flagged as potential PII leaks.
+</Accordion>
+
+<Accordion title="Step 5: Run trufflehog (optional)">
+If `trufflehog` is installed, runs a deep verified-secrets scan:
+
+```bash
+trufflehog filesystem "." --only-verified --no-update --json
+```
+
+Install with: `brew install trufflehog`
+</Accordion>
+
+<Accordion title="Step 6: Layer validation">
+Calls `validate-package.js` internally to confirm all files are L1.
+</Accordion>
+
+**Gate output:**
+
+```text PASSED
+[pre-publish] Security gate PASSED. 247 files scanned, 0 issues.
+[pre-publish] Package is safe to publish.
+```
+
+```text FAILED
+====================================================
+  NPM PUBLISH BLOCKED: 5 security issue(s) found
+====================================================
+
+  Fix the issues above before publishing.
+  Run 'npm pack --dry-run' to see what would be published.
+```
+
+## Layer Validation
+
+### audit_layers.py
+
+This tool classifies every file in the repository into L1, L2, L3, NEVER, DELETE, or REVIEW. Run it to get a full picture of what's in your repo and whether anything needs to move.
+
+```bash
+# Generate a full audit report
+python3 core/intelligence/audit_layers.py
+
+# Output files:
+# - docs/audit/AUDIT-REPORT.json  (machine-readable, all items)
+# - docs/audit/AUDIT-REPORT.md    (human-readable summary)
+```
+
+The classifier uses a priority chain to assign layers:
+
+```
+DELETE > NEVER > L3 > L2 > L1 > REVIEW
+```
+
+```python Classification logic (simplified)
+def classify_path(path: Path, repo_root: Path) -> tuple[str, str]:
+    rel_path = str(path.relative_to(repo_root))
+
+    for pattern in DELETE_PATTERNS:
+        if pattern in rel_path:
+            return ("DELETE", "Obsolete — replaced by newer implementation")
+
+    for pattern in NEVER_PATTERNS:
+        if pattern.search(rel_path):
+            return ("NEVER", "Secrets/sensitive config")
+
+    for prefix in L3_PATTERNS:
+        if rel_path.startswith(prefix):
+            if path.name == ".gitkeep":
+                return ("L1", "Empty structure marker")
+            return ("L3", "Personal data")
+
+    for prefix in L2_PATTERNS:
+        if rel_path.startswith(prefix):
+            if path.name == ".gitkeep":
+                return ("L1", "Empty structure marker")
+            return ("L2", "Premium content")
+
+    for prefix in L1_PATTERNS:
+        if rel_path.startswith(prefix):
+            return ("L1", "Core engine")
+
+    return ("REVIEW", "Unclear (needs classification)")
+```
+
+The audit covers 20,797+ items across all layers. REVIEW items (58.6% in the Phase 7 audit) need manual classification.
+
+<Warning>
+  `.gitkeep` files are always classified as L1 regardless of directory — they contain no data and exist only as empty structure markers.
+</Warning>
+
+## Validation Hooks
+
+Two PreToolUse hooks enforce layer compliance in real time, before any file is written.
+
+### creation_validator.py
+
+Fires on every Write or Edit operation and checks whether the target file path is allowed under the current layer rules. It blocks creation of NEVER files and flags layer violations before they land on disk.
+
+<CodeGroup>
+```python creation_validator.py (simplified)
+def validate_creation(file_path: str) -> dict:
+    path = Path(file_path)
+
+    if is_never_file(path):
+        return {
+            "continue": False,
+            "feedback": f"[BLOCKED] Cannot create {path.name} — contains secrets"
+        }
+
+    expected_layer = get_expected_layer(path)
+    if expected_layer == "VIOLATION":
+        return {
+            "continue": False,
+            "feedback": f"[BLOCKED] {path} violates layer rules"
+        }
+
+    return {"continue": True}
+```
+
+```json Hook output — blocked
+{
+  "continue": false,
+  "feedback": "[BLOCKED] Cannot create .env — contains secrets"
+}
+```
+
+```json Hook output — allowed
+{
+  "continue": true
+}
+```
+</CodeGroup>
+
+### claude_md_guard.py
+
+Enforces a strict policy: `CLAUDE.md` may only exist in two locations — the project root (`./CLAUDE.md`) and the `.claude/` directory (`.claude/CLAUDE.md`). Any attempt to create it elsewhere is blocked.
+
+```python
+def is_valid_claude_md_location(path: Path) -> bool:
+    valid_paths = [
+        Path("CLAUDE.md"),
+        Path(".claude/CLAUDE.md")
+    ]
+    return path in valid_paths
+
+if path.name == "CLAUDE.md" and not is_valid_claude_md_location(path):
+    return {
+        "continue": False,
+        "feedback": "[BLOCKED] CLAUDE.md only allowed in root or .claude/"
+    }
+```
+
+## Quality Validation
+
+### quality_watchdog.py
+
+Runs on every `UserPromptSubmit` and warns you about quality issues before Claude processes your prompt:
+
+```python
+def check_quality_metrics(prompt: str, context: dict) -> dict:
+    warnings = []
+
+    if len(prompt) > 10000:
+        warnings.append("Prompt very long (>10k chars) — consider splitting")
+
+    if contains_anti_patterns(prompt):
+        warnings.append("Detected anti-pattern: avoid hardcoded paths")
+
+    if warnings:
+        return {
+            "continue": True,
+            "feedback": "[QUALITY WARNING] " + "; ".join(warnings)
+        }
+
+    return {"continue": True}
+```
+
+### stop_hook_completeness.py
+
+Fires on the `Stop` event and checks whether you have unfinished work before Claude stops generating:
+
+```python
+def check_completeness(session_state: dict) -> dict:
+    issues = []
+
+    if session_state.get("pending_todos", 0) > 0:
+        issues.append(f"{session_state['pending_todos']} TODO items pending")
+
+    if session_state.get("unsaved_changes", False):
+        issues.append("Unsaved changes detected")
+
+    if issues:
+        return {
+            "continue": True,
+            "feedback": f"[COMPLETENESS CHECK] {'; '.join(issues)}"
+        }
+
+    return {"continue": True}
+```
+
+## CI/CD Integration
+
+Wire validation into GitHub Actions so every pull request and push to `main` runs the full check automatically:
+
+<CodeGroup>
+```yaml .github/workflows/validate.yml
+name: Validate Package
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          npm ci
+          pip install pyyaml
+
+      - name: Validate package layers
+        run: |
+          node bin/validate-package.js --json > validation.json
+          cat validation.json
+          if [ "$(jq -r '.status' validation.json)" != "PASSED" ]; then
+            echo "Validation FAILED"
+            jq '.violations' validation.json
+            exit 1
+          fi
+
+      - name: Run security gate
+        run: node bin/pre-publish-gate.js
+```
+
+```bash Manual validation
+# Run all checks manually
+node bin/validate-package.js
+node bin/pre-publish-gate.js
+python3 core/intelligence/audit_layers.py
+cat docs/audit/AUDIT-REPORT.md
+```
+</CodeGroup>
+
+## Pre-Publish Validation Checklist
+
+Run these four steps before every publish or major commit:
+
+<Steps>
+  <Step title="Run package validation">
+    ```bash
+    node bin/validate-package.js
+    ```
+    Expected: `PASSED: All {N} pack files are L1`
+  </Step>
+  <Step title="Run the security gate">
+    ```bash
+    node bin/pre-publish-gate.js
+    ```
+    Expected: `Security gate PASSED`
+  </Step>
+  <Step title="Check the full audit report">
+    ```bash
+    python3 core/intelligence/audit_layers.py
+    cat docs/audit/AUDIT-REPORT.md
+    ```
+    Review DELETE and REVIEW items and resolve them.
+  </Step>
+  <Step title="Test hook validators">
+    ```bash
+    # Test creation_validator blocks .env
+    echo '{"tool": "Write", "path": ".env"}' | python3 .claude/hooks/creation_validator.py
+    # Expected: {"continue": false}
+    ```
+  </Step>
+</Steps>
+
+## Troubleshooting
+
+<Accordion title="validate-package.js fails with 'npm pack error'">
+1. Check that `package.json` has a valid `files` field.
+2. Run `npm pack --dry-run` directly to see the raw error.
+3. Ensure you're on npm version 7 or later.
+4. Look for circular dependency warnings in the npm output.
+</Accordion>
+
+<Accordion title="File classified into the wrong layer">
+1. Check whether the file path matches any pattern in `audit_layers.py`.
+2. Verify there are no typos in the path prefix.
+3. Update `L1_PATTERNS`, `L2_PATTERNS`, or `L3_PATTERNS` as needed.
+4. Re-run the audit to confirm the fix.
+</Accordion>
+
+<Accordion title="Pre-publish gate blocks a valid file">
+1. Check whether the file name matches `FORBIDDEN_FILE_PATTERNS`.
+2. Verify the file content doesn't accidentally match any `SECRET_PATTERNS`.
+3. If it's a false positive, update the patterns in `pre-publish-gate.js`.
+4. Document the exception so future maintainers understand the decision.
+</Accordion>
+
+<Accordion title="PreToolUse hooks slow down file operations">
+1. Check timeout settings — fast hooks should be ≤ 2s, validators ≤ 5s.
+2. Cache classification results where possible to avoid repeated disk reads.
+3. Move heavy validation logic to PostToolUse instead.
+4. Use `settings.local.json` to disable non-critical hooks during development.
+</Accordion>
+
+<CardGroup cols={2}>
+  <Card title="Layer Management" icon="layers" href="/advanced/layer-management">
+    Complete L1/L2/L3 layer classification system
+  </Card>
+  <Card title="Hooks System" icon="bolt" href="/advanced/hooks-system">
+    PreToolUse and PostToolUse validation hooks
+  </Card>
+</CardGroup>

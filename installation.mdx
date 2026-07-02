@@ -1,64 +1,245 @@
 ---
-title: "Mega Brain Installation: CLI Setup and API Configuration"
+title: "Install Mega Brain: Setup and Configuration Guide"
 sidebarTitle: "Installation"
-description: "Set up Mega Brain from scratch: install dependencies, run the setup wizard, configure your API keys, and verify your environment is ready."
+description: "Install Mega Brain, meet the prerequisites, run the setup wizard, configure API keys, and verify your environment is ready to ingest expert materials."
 ---
 
-This guide walks you through everything you need to get Mega Brain running in your environment. By the end, you'll have the CLI installed, your API keys configured, and a verified system ready to ingest materials and run the knowledge pipeline. The full setup takes about five minutes.
+Mega Brain runs inside Claude Code and uses Node.js and Python under the hood. Before you install, make sure you meet the prerequisites below — the setup wizard will check for them automatically, but it's faster to have everything in place first. The whole process takes about two minutes.
 
 ## Prerequisites
 
-Before you begin, make sure you have the following in place:
+<CardGroup cols={2}>
+  <Card title="Node.js 18+" icon="node-js">
+    Version 18.0.0 or higher is required. [Download from nodejs.org](https://nodejs.org).
+  </Card>
+  <Card title="Python 3.10+" icon="python">
+    Version 3.10 or higher is required for hooks and intelligence scripts. [Download from python.org](https://python.org).
+  </Card>
+  <Card title="Claude Code (Max or Pro)" icon="code">
+    Mega Brain uses Claude Code as its core runtime. An active Max or Pro subscription is required.
+  </Card>
+  <Card title="OpenAI API Key" icon="key">
+    Required for video and audio transcription via Whisper. [Get your key](https://platform.openai.com/api-keys).
+  </Card>
+</CardGroup>
 
-- **Node.js 18 or higher** — Mega Brain's CLI and pipeline engine require Node 18+. Run `node --version` to check your current version.
-- **Claude Code** — Mega Brain is designed to run inside [Claude Code](https://claude.ai/code), which serves as your primary interface for slash commands and the JARVIS orchestrator.
-- **OpenAI API key** — This is the only required API key. Obtain one from [platform.openai.com](https://platform.openai.com/api-keys) before you start the setup wizard.
+### System requirements
 
-## Installation Steps
+| Component | Requirement | Notes |
+|---|---|---|
+| **Operating System** | Linux, macOS, or Windows | Windows requires WSL for best compatibility |
+| **Memory** | 4 GB RAM minimum | 8 GB+ recommended for large files |
+| **Storage** | 1 GB free space | More needed as your knowledge base grows |
+| **Network** | Internet connection | Required for API calls and transcription |
+
+<Warning>
+  Mega Brain requires an active Claude Code Max or Pro subscription. The system runs as an extension of Claude Code and cannot operate without it.
+</Warning>
+
+## Installation
 
 <Steps>
-  <Step title="Install dependencies">
-    Navigate to your project directory and install Mega Brain's dependencies:
+  <Step title="Install the package">
+    Install Mega Brain globally via npm, or use npx to run it without a permanent install.
 
-    ```bash
-    npm install
-    ```
+    <CodeGroup>
+      ```bash npm (global install)
+      npm install -g mega-brain-ai
+      ```
 
-    Run this command from the root of your project. It installs the core engine, CLI tooling, templates, skills, and hooks included in your edition.
+      ```bash npx (no install required)
+      npx mega-brain-ai install
+      ```
+    </CodeGroup>
   </Step>
+
   <Step title="Run the setup wizard">
-    Launch the interactive setup wizard to initialize your environment:
+    The setup wizard walks you through configuring API keys, installs Python dependencies, and generates your `.env` file.
 
     ```bash
     npx mega-brain-ai setup
     ```
 
-    The wizard walks you through the full configuration process. It prompts you for API keys, detects your edition (Community or Pro), and writes a `.env` file with your settings. Only `OPENAI_API_KEY` is required — all other keys are optional and you can skip them at the prompt.
+    The wizard will:
+    - Check for Python 3.10+ and Node.js 18+
+    - Install Python dependencies (PyYAML)
+    - Prompt for your API keys with context on what each one does
+    - Validate API connectivity for OpenAI and Voyage AI
+    - Write your `.env` file
+    - Display a full setup summary
+
+    <Tip>
+      Setup auto-triggers on first use if `.env` is missing. You can skip straight to step 3 if you've already done a fresh clone and want the wizard to handle everything from scratch.
+    </Tip>
   </Step>
-  <Step title="Configure your API keys">
-    The setup wizard creates a `.env` file at the root of your project. At minimum, it must contain your OpenAI API key:
+
+  <Step title="Configure API keys">
+    The wizard writes your keys to `.env` automatically. If you need to configure manually, create or edit `.env` in your project root:
+
+    ```bash .env
+    # Required — powers video and audio transcription via Whisper
+    OPENAI_API_KEY=sk-your-actual-key-here
+
+    # Recommended — enables high-quality semantic search via RAG
+    VOYAGE_API_KEY=pa-your-actual-key-here
+
+    # Optional — direct Claude API access for batch operations
+    ANTHROPIC_API_KEY=sk-ant-your-actual-key-here
+    ```
+
+    <Warning>
+      Never commit your `.env` file to version control. It is automatically added to `.gitignore` during installation.
+    </Warning>
+
+    Without `OPENAI_API_KEY`, video and audio ingestion will fail. Without `VOYAGE_API_KEY`, semantic search falls back to mock vectors.
+  </Step>
+
+  <Step title="Verify your installation">
+    Check the status of your environment from the command line:
 
     ```bash
-    OPENAI_API_KEY=sk-...
+    npx mega-brain-ai status
     ```
 
-    Open the `.env` file to review or update any keys the wizard wrote. If you chose to skip optional keys during setup, you can add them here at any time. Never commit your `.env` file to version control.
+    A successful setup produces output like this:
 
-    <Note>
-      Setup auto-triggers on first use if Mega Brain detects that your `.env` file is missing. If you skip the wizard now, the system will prompt you to run it again the first time you execute a command in Claude Code.
-    </Note>
-  </Step>
-  <Step title="Verify your installation">
-    Open Claude Code and run the JARVIS briefing command to confirm the system is configured correctly and all components are online:
+    ```
+    Mega Brain v1.3.0
 
-    ```text
+    SETUP SUMMARY
+
+    Tools
+      Python 3 ........... OK  3.10.12
+      Node.js ............ OK  18.17.0
+      pip install ........ OK  installed
+
+    API Keys
+      OPENAI_API_KEY ..... OK  sk-...
+      VOYAGE_API_KEY ..... OK  pa-...
+      Google OAuth ....... SKIP not set
+
+    .env file ............ WRITTEN
+    ```
+
+    Then open your project in Claude Code and run the JARVIS briefing command to confirm the runtime is connected:
+
+    ```bash
     /jarvis-briefing
     ```
-
-    JARVIS responds with a status report covering your pipeline configuration, available slash commands, active hooks, and edition details. If you see the briefing output, your installation is complete and ready to use.
   </Step>
 </Steps>
 
-<Tip>
-  Mega Brain ships in two editions — **Community (L1)** and **Pro (L2)**. Community includes the CLI, setup wizard, core engine, templates, skills, hooks, and agent templates. Pro adds a populated knowledge base, pre-built mind clone agents, full pipeline processing, and the Council/Conclave system. See [Community vs Pro](/configuration/community-vs-pro) for a full feature comparison.
-</Tip>
+## Local development install
+
+<Steps>
+  <Step title="Clone the repository">
+    ```bash
+    git clone https://github.com/thiagofinch/mega-brain.git
+    cd mega-brain
+    ```
+  </Step>
+  <Step title="Install Node.js dependencies">
+    ```bash
+    npm install
+    ```
+  </Step>
+  <Step title="Install Python dependencies">
+    <CodeGroup>
+      ```bash macOS / Linux
+      python3 -m pip install -r requirements.txt
+      ```
+
+      ```bash Windows (WSL)
+      pip install -r requirements.txt
+      ```
+    </CodeGroup>
+  </Step>
+  <Step title="Run the setup wizard">
+    ```bash
+    npm run install-wizard
+    ```
+  </Step>
+</Steps>
+
+## Directory structure
+
+After installation, your Mega Brain project will have the following layout:
+
+```
+mega-brain/
+├── .claude/          # Claude Code integration: hooks, skills, commands
+├── agents/           # AI agent definitions and templates
+├── artifacts/        # Processing pipeline stages (chunks, insights, narratives)
+├── bin/              # CLI tools and entry points
+├── core/             # Processing engine and schemas
+├── inbox/            # Raw materials input directory
+├── knowledge/        # Your knowledge base (playbooks, dossiers, DNA)
+├── logs/             # Session and processing logs
+├── .env              # Your API keys (generated by wizard, gitignored)
+└── package.json      # Project metadata
+```
+
+## Available editions
+
+| Edition | Description |
+|---|---|
+| **Layer 1 — Community** | Free and open source. Includes the core engine, templates, hooks, skills, CLI tools, and agent templates. |
+| **Layer 2 — Pro** | Everything in Community plus a pre-populated knowledge base, mind clone agents, full pipeline processing, and the Conclave multi-agent system. Requires MoneyClub membership. |
+| **Layer 3 — Personal** | Your data layer: personal materials, sessions, and `.env`. Always stays local — it never leaves your machine. |
+
+To upgrade from Community to Pro:
+
+```bash
+npx mega-brain-ai upgrade
+```
+
+## Troubleshooting
+
+<AccordionGroup>
+  <Accordion title="Python not found">
+    If the setup wizard cannot find Python:
+
+    1. Verify Python 3.10+ is installed from [python.org](https://python.org)
+    2. Add Python to your system PATH
+    3. Try using `python3` instead of `python`
+    4. Restart your terminal after installation
+  </Accordion>
+
+  <Accordion title="Node.js version too old">
+    If your Node.js version is below 18, update it using nvm:
+
+    ```bash
+    nvm install 18
+    nvm use 18
+    ```
+
+    Or download the latest LTS release from [nodejs.org](https://nodejs.org).
+  </Accordion>
+
+  <Accordion title="Permission errors on npm install">
+    If you see `EACCES` errors on macOS or Linux, avoid using `sudo`. Instead:
+
+    ```bash
+    npx mega-brain-ai install
+    ```
+  </Accordion>
+
+  <Accordion title="Python dependencies failed">
+    If pip installation fails, try installing manually:
+
+    ```bash
+    python3 -m pip install -r requirements.txt
+    ```
+  </Accordion>
+</AccordionGroup>
+
+## Next steps
+
+<CardGroup cols={2}>
+  <Card title="Quick Start Guide" icon="rocket" href="/quickstart">
+    Ingest your first material and process it through the pipeline.
+  </Card>
+  <Card title="Configuration" icon="sliders" href="/configuration">
+    Configure additional API keys and customize Mega Brain for your workflow.
+  </Card>
+</CardGroup>

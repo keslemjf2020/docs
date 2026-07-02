@@ -1,0 +1,266 @@
+---
+title: "Mega Brain Release Notes and Version History"
+sidebarTitle: "Changelog"
+description: "Complete version history and release notes for Mega Brain, including new features, improvements, bug fixes, known issues, and the project roadmap."
+---
+
+Mega Brain follows [Semantic Versioning](https://semver.org/): `MAJOR.MINOR.PATCH`. A major version bump signals breaking changes; a minor version adds backward-compatible features; a patch version delivers bug fixes and improvements. This page tracks every release and provides upgrade guidance between versions.
+
+## Version Support
+
+| Version | Status | Support | End of Life |
+|---|---|---|---|
+| 1.3.x | **Current** | ✓ Full support | — |
+| 1.0.x | Maintenance | ⚠ Security fixes only | Q4 2026 |
+| < 1.0 | Deprecated | ✗ No support | Ended |
+
+<Note>
+Always use the latest stable version for the best performance and security. Only the project maintainer (@thiagofinch) publishes official releases.
+</Note>
+
+---
+
+## [1.3.0] — March 2026
+
+**Status:** Stable · **Highlights:** Production-ready release with enhanced stability, documentation, and developer experience.
+
+### What's New
+
+**Core System**
+- AI-powered knowledge management system, fully stable for production use
+- 5-layer DNA extraction across Philosophies, Mental Models, Heuristics, Frameworks, and Methodologies
+- Full source traceability for all extracted knowledge, linking every insight back to its origin material
+
+**Pipeline Processing**
+- 5-phase pipeline (Chunking → Resolution → Extraction → Synthesis → Compilation)
+- Support for videos, PDFs, transcriptions, podcasts, and training courses
+- Batch processing with logs in `logs/batches/`
+- Automated quality validation at each phase
+
+**AI Agents**
+- Mind clone framework for expert replication
+- 29 cargo agents across Revenue, Marketing, Operations, Finance, and Strategy
+- Conclave multi-agent deliberation system
+- JARVIS orchestrator for pipeline management
+
+**Developer Experience**
+- 20+ hooks for automation and validation
+- Skill system with keyword-based auto-routing
+- Session persistence with auto-save and resume
+- Interactive setup wizard (`npx mega-brain-ai setup`)
+
+### Commands Available
+
+| Command | Description |
+|---|---|
+| `/jarvis-briefing` | System status and health score |
+| `/jarvis-full` | Full pipeline (ingest + process + enrich) |
+| `/process-jarvis` | Run 5-phase processing pipeline |
+| `/conclave` | Multi-agent deliberation session |
+| `/ingest` | Ingest new material |
+| `/save` | Save current session |
+| `/resume` | Resume previous session |
+| `/setup` | Environment setup wizard |
+
+### Architecture
+
+**Layer Distribution**
+- **L1 (Community):** Core engine, templates, hooks, skills, CLI
+- **L2 (Pro):** Populated knowledge base, mind clones, full pipeline
+- **L3 (Personal):** User materials, sessions, environment config (always local-only)
+
+**Directory Structure**
+```
+mega-brain/
+├── core/           # Processing engine
+├── agents/         # AI agent definitions
+├── .claude/        # Claude Code integration
+├── bin/            # CLI tools
+├── knowledge/      # Knowledge base
+├── artifacts/      # Pipeline stages
+├── inbox/          # Raw materials input
+├── docs/           # Documentation
+└── logs/           # Session logs
+```
+
+**npm Package Dependencies**
+```json
+{
+  "chalk": "^5.3.0",
+  "inquirer": "^9.2.0",
+  "ora": "^7.0.0",
+  "boxen": "^7.1.0",
+  "gradient-string": "^2.0.2"
+}
+```
+
+### Known Issues
+
+<AccordionGroup>
+  <Accordion title="Windows Path Handling">
+    Some scripts may encounter issues with Windows backslash paths. Use forward slashes or `pathlib.Path` for cross-platform compatibility:
+
+    ```python
+    from pathlib import Path
+
+    # Good — cross-platform
+    path = Path("inbox") / "file.txt"
+
+    # Avoid — platform-specific
+    path = "inbox\\file.txt"
+    ```
+  </Accordion>
+  <Accordion title="Large File Processing">
+    Files over 2GB may need to be split before ingestion due to API limits. Consider processing large video files as audio-only to reduce file size.
+  </Accordion>
+</AccordionGroup>
+
+---
+
+## [1.0.0] — February 2026
+
+**Status:** Maintenance · **Highlights:** First production release establishing the core architecture and task system.
+
+### Added
+
+**Task System**
+- Task template following the HO-TP-001 anatomy
+- `TASK-REGISTRY.md` with full category listing and dependency graph
+- Foundation tasks: `detect-role`, `normalize-entities`
+- Intelligence tasks: `analyze-themes`, `detect-business-model`, `score-viability`
+- Extraction tasks: `extract-dna`, `extract-knowledge`, `generate-skill`
+- Pipeline tasks: `process-batch`, `trigger-agent`, `trigger-dossier`
+- Validation tasks: `validate-cascade`, `verify-completeness`
+
+**Core Structure**
+```
+core/tasks/
+├── _templates/
+│   └── task-tmpl.md
+├── TASK-REGISTRY.md
+├── CHANGELOG.md
+├── detect-role.md
+├── normalize-entities.md
+├── analyze-themes.md
+├── extract-dna.md
+├── process-batch.md
+└── validate-cascade.md
+```
+
+**Versioning Conventions Established**
+- MAJOR: Breaking changes in task anatomy
+- MINOR: New tasks added
+- PATCH: Fixes in existing tasks
+
+---
+
+## Upgrade Guide
+
+<AccordionGroup>
+  <Accordion title="Upgrading from 1.x to 1.3.0">
+    **Breaking changes:** None.
+
+    1. Update the package:
+    ```bash
+    npm update mega-brain-ai
+    ```
+
+    2. Review the new features listed in this changelog
+
+    3. Restart Claude Code to load new hooks and skills
+
+    4. Run a system health check:
+    ```bash
+    /jarvis-briefing
+    ```
+
+    **Data migration:** Not required. All personal data (L3) remains fully compatible.
+  </Accordion>
+
+  <Accordion title="Upgrading from Community to Pro">
+    **Breaking changes:** None.
+
+    Pro Edition builds on top of Community — all your L3 (Personal) data is preserved, your `.env` configuration carries over, and your custom hooks and skills continue to work alongside Pro features.
+
+    **What you gain immediately:**
+    - Pre-built mind clones (5 experts)
+    - Cargo agents (29 functional roles)
+    - Populated knowledge base with expert playbooks
+    - Full 5-phase pipeline capabilities
+    - Enhanced Conclave with domain expertise
+
+    **Steps:**
+    1. Contact @thiagofinch on GitHub for Pro access
+    2. Follow the upgrade instructions provided
+    3. No data migration needed — restart Claude Code and you're ready
+
+    Community customizations remain intact and work alongside all Pro features.
+  </Accordion>
+</AccordionGroup>
+
+---
+
+## Roadmap
+
+### In Development
+
+- Enhanced RAG capabilities for deeper knowledge retrieval
+- Additional pre-built mind clone agents
+- Real-time collaboration features
+- Advanced search and filtering across the knowledge base
+- Performance optimizations for large batch processing
+
+### Under Consideration
+
+- Web interface for non-CLI users
+- Mobile companion app
+- Team collaboration features
+- Cloud sync options
+- Third-party integration API
+
+<Note>
+The roadmap is subject to change based on community feedback and project priorities. Open a GitHub issue to request features or upvote existing requests.
+</Note>
+
+---
+
+## Security Updates
+
+Security issues are addressed with the highest priority. Patches are released as soon as possible, and users are notified via GitHub security advisories. Issues are assigned severity levels: Critical, High, Medium, and Low.
+
+**If you discover a security vulnerability:**
+1. **Do NOT** open a public GitHub issue
+2. Contact @thiagofinch directly with a private message
+3. Include: a description of the vulnerability, steps to reproduce it, potential impact, and a suggested fix if you have one
+4. Allow time for patch development before public disclosure
+5. Coordinate disclosure timing with the maintainer
+
+---
+
+## Release Process
+
+Releases are managed exclusively by @thiagofinch. The process for each release:
+
+1. Feature development on dedicated branches
+2. PR review and approval
+3. Merge to `main`
+4. Version bump following semantic versioning
+5. Update this changelog
+6. Run validation:
+```bash
+npm run validate:layers
+node bin/pre-publish-gate.js
+```
+7. Publish to npm
+8. Create a GitHub release
+9. Announce to the community
+
+---
+
+## Stay Updated
+
+To stay informed about new releases:
+- **Watch** the GitHub repository for release notifications
+- **Star** the repo to track activity
+- **Follow** @thiagofinch on GitHub
+- **Check** this changelog page regularly
