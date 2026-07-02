@@ -1,13 +1,11 @@
 {
-  "$schema": "https://mintlify.com/docs.json",
+  "projectType": "saas",
+  "projectName": "Mega Brain",
+  "projectDescription": "An AI-powered knowledge management system that ingests expert materials and transforms them into structured playbooks, DNA schemas, and mind-clone agents.",
   "theme": "luma",
-  "name": "Mega Brain",
-  "colors": {
-    "primary": "#7C3AED",
-    "light": "#A78BFA",
-    "dark": "#5B21B6"
-  },
-  "favicon": "https://icons.duckduckgo.com/ip3/thiagofinch-mega-brain.mintlify.app.ico",
+  "primaryColor": "#7C3AED",
+  "lightColor": "#A78BFA",
+  "darkColor": "#5B21B6",
   "navigation": {
     "tabs": [
       {
@@ -59,14 +57,23 @@
       }
     ]
   },
-  "navbar": {
-    "primary": {
-      "type": "button",
-      "label": "Get Started",
-      "href": "/introduction"
-    }
-  },
-  "footer": {
-    "socials": {}
-  }
+  "keyFeatures": [
+    "Multi-format ingestion (video, PDF, audio, transcriptions, podcasts)",
+    "5-Layer DNA Extraction (Philosophies, Mental Models, Heuristics, Frameworks, Methodologies)",
+    "Mind Clone Agents — AI agents that reason like specific experts",
+    "Multi-Agent Conclave for evidence-based deliberation",
+    "JARVIS Orchestrator with 20+ automation hooks",
+    "CLI-first workflow with slash commands and session persistence",
+    "Full source provenance and knowledge traceability"
+  ],
+  "publicApiSurface": [
+    "npx mega-brain-ai setup",
+    "/jarvis-briefing",
+    "/ingest",
+    "/extract-dna",
+    "/create-agent",
+    "/conclave",
+    "/playbook",
+    "OPENAI_API_KEY configuration"
+  ]
 }

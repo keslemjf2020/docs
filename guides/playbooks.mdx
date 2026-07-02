@@ -1,0 +1,111 @@
+---
+title: "Create Actionable Playbooks from Expert Knowledge"
+sidebarTitle: "Playbooks"
+description: "Synthesize ingested expert materials into step-by-step playbooks you can execute, share, and update as your knowledge base grows."
+---
+
+Playbooks are the most immediately usable output Mega Brain can produce. Where raw ingested material and DNA schemas store knowledge in a form optimized for agents to reason over, a playbook transforms that same knowledge into a structured, human-readable action guide tailored to a specific goal. Think of a playbook as the answer to the question: "Given everything I've learned from these experts, exactly what should I do to achieve X?" The result is opinionated, step-by-step, and grounded in evidence — not a generic template, but a synthesis of real expert thinking applied to your stated objective.
+
+## What a Playbook Contains
+
+Every playbook Mega Brain generates includes the following components:
+
+<CardGroup cols={2}>
+  <Card title="Step-by-Step Action Guide" icon="list-check">
+    A sequenced set of concrete actions organized around achieving the playbook's stated goal or scenario. Each step is specific enough to act on immediately.
+  </Card>
+  <Card title="Synthesized Expert Insights" icon="brain">
+    Key insights drawn from multiple ingested sources and attributed to the relevant experts and materials, so you understand not just what to do but why.
+  </Card>
+  <Card title="Evidence Links" icon="arrow-up-right-from-square">
+    Every major recommendation traces back to the source material it came from — a chapter, a video timestamp, or a course module — giving you full provenance and a path to go deeper.
+  </Card>
+  <Card title="Recommended Tools & Frameworks" icon="wrench">
+    Where relevant, Mega Brain surfaces the specific tools, frameworks, or mental models the extracted experts recommend for the scenario, drawn directly from their documented approaches.
+  </Card>
+</CardGroup>
+
+## Creating a Playbook
+
+<Steps>
+  <Step title="Ensure materials are ingested and DNA is extracted">
+    Playbooks are synthesized from extracted knowledge, not directly from raw files. Before you run `/playbook`, confirm that you have:
+
+    - Ingested the relevant expert materials with `/ingest`
+    - Run `/extract-dna` on at least one material set
+
+    The breadth of your playbook scales with how much relevant knowledge is already extracted in your project. If your knowledge base is thin on the topic, ingest more materials first. See [Ingest Expert Materials](/guides/ingesting-materials) for the full walkthrough.
+  </Step>
+  <Step title="Run the /playbook command">
+    Open Claude Code in your project directory and run:
+
+    ```bash
+    /playbook
+    ```
+
+    JARVIS will prompt you for the playbook topic and any configuration options.
+  </Step>
+  <Step title="Specify the topic or goal for the playbook">
+    Enter a clear, outcome-oriented topic. The more specific your goal, the more actionable the playbook output.
+
+    ```
+    Playbook topic: Launch a new SaaS product
+    ```
+
+    You can be more specific if you have a defined context:
+
+    ```
+    Playbook topic: Launch a bootstrapped B2B SaaS product with no paid ads
+    ```
+
+    JARVIS uses this topic to focus its synthesis — it searches across all extracted DNA and ingested material for insights relevant to your stated goal.
+  </Step>
+  <Step title="Mega Brain synthesizes the playbook">
+    JARVIS scans your full extracted knowledge base, identifies every relevant philosophy, framework, heuristic, and methodology, and assembles them into a coherent action sequence. For a topic with strong coverage in your knowledge base, this typically produces a multi-section playbook with 15–40 discrete action steps.
+
+    ```
+    ✓ Playbook generated: Launch a new SaaS product
+      → 6 sections created
+      → 28 action steps documented
+      → 14 evidence citations linked
+      → Saved to ./playbooks/launch-new-saas-product.md
+    ```
+  </Step>
+  <Step title="Review and refine the generated playbook">
+    Open the generated playbook file and read through it critically. Verify that the recommended steps align with the experts you've ingested and that the evidence citations point to the right sources. If a section feels incomplete or off-target, you can:
+
+    - Ingest additional materials on that subtopic and re-run `/playbook` to regenerate
+    - Edit the playbook file directly to add context specific to your situation
+    - Run `/conclave` with relevant agents to stress-test any steps you're uncertain about
+  </Step>
+</Steps>
+
+## Using Your Playbooks
+
+Playbooks are living documents, not one-time outputs.
+
+<Tabs>
+  <Tab title="Referencing">
+    All generated playbooks are saved to the `./playbooks/` directory in your project. Reference them directly in Claude Code by citing the file path, or open them in any markdown editor. Because every step includes evidence links, you can follow any citation back to the original source material for deeper context whenever you need it.
+  </Tab>
+  <Tab title="Updating">
+    When you ingest new expert materials and run additional DNA extractions, re-run `/playbook` with the same topic to generate an updated version. Mega Brain will incorporate the newly extracted knowledge into the synthesis. Version your playbooks by date or iteration so you can track how your understanding of a topic evolves.
+
+    ```bash
+    /playbook
+    Playbook topic: Launch a new SaaS product
+    ```
+  </Tab>
+  <Tab title="Sharing">
+    Playbooks are plain markdown files with no proprietary formatting — share them with team members, clients, or collaborators through any standard channel. Recipients get the full action guide and evidence citations even if they don't have access to your Mega Brain project. For internal team use, commit your `./playbooks/` directory to your project's version control system.
+  </Tab>
+</Tabs>
+
+<Tip>
+  The most powerful playbooks draw from multiple experts who approach the same problem from different angles. Before generating a playbook on a high-stakes topic, ingest materials from at least two or three experts in the domain. When their extracted frameworks converge on the same recommendation, you can act with significantly more confidence. Where they diverge, the playbook will surface the trade-off — and you can run a [Conclave session](/guides/running-conclave) to deliberate before deciding.
+</Tip>
+
+## Next Steps
+
+- **[Ingest Expert Materials](/guides/ingesting-materials)** — Add more expert sources to your knowledge base to make future playbooks richer and more complete.
+- **[Knowledge Pipeline](/concepts/knowledge-pipeline)** — Understand how JARVIS processes ingested material through each stage before it becomes available for playbook synthesis.

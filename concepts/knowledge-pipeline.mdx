@@ -1,0 +1,43 @@
+---
+title: "How the Mega Brain Knowledge Pipeline Works"
+sidebarTitle: "Knowledge Pipeline"
+description: "Trace how raw expert materials become structured playbooks, DNA schemas, and AI agents through Mega Brain's five-phase automated pipeline."
+---
+
+Mega Brain transforms unstructured expert materials — videos, PDFs, audio files, podcasts, and training courses — into actionable intelligence through a five-phase pipeline. Each phase builds on the last, so by the time you reach the end, you have a fully populated knowledge base, a cognitive profile of your chosen expert, and AI agents ready to reason on your behalf.
+
+## The Five Phases
+
+<Steps>
+  <Step title="Ingest">
+    Import materials from any supported source: YouTube URLs, PDFs, audio files, or plain text transcriptions. Run `/ingest` from the CLI and point it at your material. JARVIS automatically detects the format, normalizes the content into a consistent internal representation, and queues it for processing. You never need to pre-format or convert files by hand.
+  </Step>
+  <Step title="Process">
+    JARVIS runs the ingested material through its quality control layer before any knowledge extraction begins. More than 20 automation hooks fire at this stage — checking for transcript accuracy, deduplicating content, flagging low-confidence segments, and structuring the raw text into processable units. This step protects the integrity of everything that comes after it.
+  </Step>
+  <Step title="Extract DNA">
+    With clean, structured content in hand, Mega Brain builds a cognitive profile of the expert across five knowledge layers: Philosophies, Mental Models, Heuristics, Frameworks, and Methodologies. The result is a DNA Schema — a machine-readable map of how this expert thinks, decides, and operates. Run `/extract-dna` to trigger this phase manually, or let JARVIS advance the pipeline automatically.
+  </Step>
+  <Step title="Create Agents">
+    Generate AI agents directly from the extracted DNA. Mind Clone Agents reason like the specific expert whose materials you ingested, citing their actual source material as evidence. Cargo Agents are role-based alternatives — think "Marketing Strategist" or "Financial Analyst" — built from the same knowledge base but oriented around a function rather than a person. Run `/create-agent` to build either type.
+  </Step>
+  <Step title="Deliberate">
+    Bring your agents together in a Conclave — a structured multi-agent deliberation session. Each agent argues from its own expert perspective and cites evidence from the source materials. The session closes with a structured output summarizing the debate and producing actionable recommendations. Run `/conclave` to open a session.
+  </Step>
+</Steps>
+
+## Full Provenance
+
+Every insight Mega Brain extracts — every heuristic, framework, or philosophy — carries a citation back to the exact moment in the source material where it originated. If a mental model came from minute 34 of a YouTube video, or page 12 of a PDF, Mega Brain records that link and surfaces it whenever an agent draws on that knowledge.
+
+This means you can always audit what your agents know and where they learned it. You are never trusting a black box. When an agent makes a recommendation, you can follow the evidence trail all the way back to the original expert speaking or writing in their own words.
+
+<Note>
+  **Community vs Pro editions:** Ingestion (Phase 1) and basic processing (Phase 2) are available to all users. DNA Extraction (Phase 3), Mind Clone Agent creation (Phase 4), and the Conclave (Phase 5) require a **Pro** subscription. Cargo Agent creation is available on the Community plan. See [Community vs Pro](/configuration/community-vs-pro) for a full feature comparison.
+</Note>
+
+## Related Pages
+
+- [JARVIS Orchestrator](/cli/jarvis) — Learn how JARVIS manages automation hooks across the pipeline
+- [DNA Extraction](/concepts/dna-extraction) — Understand the five knowledge layers in depth
+- [Agents](/concepts/agents) — Explore Mind Clone and Cargo Agent capabilities

@@ -1,0 +1,84 @@
+---
+title: "Multi-Agent Conclave: Evidence-Based Deliberation"
+sidebarTitle: "Conclave"
+description: "Run structured multi-agent deliberation sessions where expert agents debate your questions, cite source evidence, and converge on actionable recommendations."
+---
+
+The Conclave is Mega Brain's multi-agent deliberation system. Instead of asking a single agent for an answer, you convene a panel of agents — each representing a different expert or role — and let them debate your question from their respective perspectives. Every argument is grounded in source material, and the session closes with a structured output that captures the full spectrum of views and distills them into recommendations you can act on. Use the Conclave whenever a decision is complex enough that a single perspective would leave you exposed.
+
+<Note>
+  The Conclave is a **Pro** feature. You need at least one Mind Clone or Cargo Agent already created before you can open a session. See [Community vs Pro](/configuration/community-vs-pro) and [Agents](/concepts/agents) to get started.
+</Note>
+
+---
+
+## How Conclave Works
+
+<Steps>
+  <Step title="Convene your agents">
+    Choose which agents will participate in the session. You can mix Mind Clone Agents and Cargo Agents in the same Conclave. Each agent brings its own knowledge base, DNA Schema, and reasoning style to the table. The more distinct the perspectives, the richer the deliberation.
+  </Step>
+  <Step title="Pose the question">
+    Submit the decision or question you want deliberated. Frame it as specifically as possible — the more context you provide, the more grounded the responses will be. The Conclave works best with concrete, bounded questions rather than open-ended prompts.
+  </Step>
+  <Step title="Agents debate">
+    Each agent analyzes the question through its own lens and presents an opening position. Agents then respond to each other's arguments, challenge assumptions, and surface counterevidence. Every claim an agent makes cites the specific source material — timestamp, page number, or section — that supports it. You are never trusting an assertion without a reference.
+  </Step>
+  <Step title="Receive structured output">
+    When the deliberation concludes, Mega Brain produces a structured session report containing each agent's final position, the key points of agreement and disagreement, a synthesized recommendation, and a full evidence index linking every cited claim back to its source material. You can feed this output directly into a playbook or use it as a decision record.
+  </Step>
+</Steps>
+
+---
+
+## Use Cases
+
+<CardGroup cols={3}>
+  <Card title="Strategic Decisions" icon="chess-queen">
+    Bring multiple expert perspectives to a high-stakes choice — entering a new market, pricing a product, or allocating budget — before you commit. Each agent argues from its expert's actual playbook.
+  </Card>
+  <Card title="Stress-Testing Plans" icon="shield-check">
+    Present a plan you have already drafted and let agents attack it from different mental models. Surface blind spots, faulty assumptions, and overlooked risks before you execute.
+  </Card>
+  <Card title="Synthesizing Conflicting Views" icon="arrows-split-up-and-left">
+    When your knowledge base contains experts who disagree, the Conclave gives you a structured way to map the disagreement, understand what drives it, and identify where the experts actually converge.
+  </Card>
+</CardGroup>
+
+<Accordion title="Example: Evaluating a pricing strategy">
+  Suppose you are deciding between value-based and cost-plus pricing for a new product. You convene a Conclave with three agents: a Mind Clone of a SaaS pricing expert, a Marketing Strategist Cargo Agent, and a Financial Analyst Cargo Agent.
+
+  Each agent opens with its position and supporting evidence. The SaaS Mind Clone argues for value-based pricing and cites a specific chapter from the expert's course on customer willingness-to-pay research. The Financial Analyst flags margin risk and cites two case studies from ingested PDFs. The Marketing Strategist introduces a positioning angle that neither of the others considered.
+
+  The structured output maps all three views, highlights the margin-risk tradeoff as the central tension, and recommends a hybrid approach — with source citations attached to every supporting data point.
+</Accordion>
+
+<Accordion title="Example: Stress-testing a go-to-market plan">
+  You have drafted a go-to-market plan and want to pressure-test it before launch. Convene a Conclave with agents representing your most critical thinkers — perhaps a growth expert Mind Clone and an operations-focused Cargo Agent.
+
+  Each agent attacks the plan from its perspective, surfacing assumptions that may not hold and recommending specific adjustments. The session output becomes your pre-launch risk register, with every flag traceable back to the expert reasoning that produced it.
+</Accordion>
+
+---
+
+## Starting a Conclave Session
+
+Use the `/conclave` command from the CLI to open a session:
+
+```bash
+/conclave --agents "Alex Hormozi, Marketing Strategist, Financial Analyst" \
+          --question "Should we launch a lower-priced self-serve tier in Q3?"
+```
+
+JARVIS manages the session flow — sequencing agent turns, enforcing evidence citation requirements, and compiling the structured output when deliberation concludes.
+
+<Tip>
+  Use `/conclave --async` to run a deliberation in the background and retrieve the structured output when it completes. This is useful for complex questions that benefit from deeper agent reasoning passes.
+</Tip>
+
+---
+
+## Related Pages
+
+- [Agents](/concepts/agents) — Create the Mind Clone and Cargo Agents you need before running a Conclave
+- [Running a Conclave](/guides/running-conclave) — Step-by-step guide to setting up and interpreting Conclave sessions

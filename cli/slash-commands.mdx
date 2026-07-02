@@ -1,0 +1,179 @@
+---
+title: "Mega Brain Slash Command Reference"
+sidebarTitle: "Slash Commands"
+description: "Complete reference for every Mega Brain slash command — what each one does, what it prompts for, and what output to expect inside Claude Code."
+---
+
+Slash commands are the primary way you interact with Mega Brain inside Claude Code. All knowledge work — ingesting materials, extracting structured DNA, building agents, running conclaves, and generating playbooks — happens through slash commands. Type a command at the Claude Code prompt, answer any follow-up questions, and Mega Brain's pipeline takes care of the rest.
+
+## Command Reference
+
+<Accordion title="/jarvis-briefing">
+  **What it does**
+
+  Displays a full system status report: pipeline health, ingested materials, loaded agents, active session state, and the complete list of available commands. JARVIS compiles this report by polling every active subsystem at the moment you run the command.
+
+  **When to use it**
+
+  Run `/jarvis-briefing` immediately after installation to confirm everything is configured correctly. Return to it any time you want a quick overview of what's in your knowledge base and which agents are ready to use.
+
+  **Inputs required**
+
+  None. The command runs without any prompts.
+
+  **Expected output**
+
+  A structured status report showing:
+  - System health indicators
+  - List of ingested materials and their processing state
+  - Available agents and their source DNA
+  - Current pipeline state and any pending operations
+  - Full list of available slash commands
+</Accordion>
+
+<Accordion title="/ingest">
+  **What it does**
+
+  Imports a new material into Mega Brain's knowledge base and queues it for processing. JARVIS runs ingestion hooks automatically — detecting the format, scoring quality, and flagging duplicates before the material enters the pipeline.
+
+  **When to use it**
+
+  Use `/ingest` whenever you want to add new source material to your knowledge base: an expert's talk, a PDF guide, a podcast episode, or any document you want to learn from.
+
+  **What it prompts for**
+
+  - **Source type** — URL or file path
+  - **URL or file path** — the specific address or location of the material
+
+  **Supported formats**
+
+  - YouTube URLs
+  - Podcast URLs
+  - PDF files
+  - Audio files
+  - Text files
+
+  **Expected output**
+
+  A confirmation message including the assigned material ID. Keep this ID handy — you can reference it when running `/extract-dna` or building agents from this specific source.
+</Accordion>
+
+<Accordion title="/extract-dna">
+  **What it does**
+
+  Extracts structured knowledge from one or more ingested materials using Mega Brain's 5-layer DNA framework. The extraction produces a DNA schema that captures the source's core philosophies, mental models, heuristics, frameworks, and methodologies in a structured, reusable format.
+
+  **When to use it**
+
+  Run `/extract-dna` after ingesting a material and before creating any agents based on it. The DNA schema is the foundation for mind clones and cargo agents — you must extract it first.
+
+  **What it prompts for**
+
+  - **Material selection** — which ingested material(s) to process (by ID or name)
+
+  **The 5 DNA layers**
+
+  1. **Philosophies** — core beliefs and worldview
+  2. **Mental Models** — thinking frameworks and cognitive tools
+  3. **Heuristics** — rules of thumb and decision shortcuts
+  4. **Frameworks** — structured approaches and systems
+  5. **Methodologies** — step-by-step processes and workflows
+
+  **Expected output**
+
+  A DNA schema file for the processed material(s), saved to your knowledge base and immediately available for agent creation.
+
+  <Note>
+    Full pipeline processing requires Pro edition. Community edition users can run single-material extractions. See [Community vs Pro](/configuration/community-vs-pro) for a comparison.
+  </Note>
+</Accordion>
+
+<Accordion title="/create-agent">
+  **What it does**
+
+  Creates a new agent — either a Mind Clone or a Cargo Agent — from an extracted DNA schema. The agent internalizes the knowledge patterns in the schema so it can reason, advise, and respond in a manner consistent with the source material.
+
+  **When to use it**
+
+  Use `/create-agent` once you have a DNA schema ready. You can create multiple agents from different schemas, then bring them together in a `/conclave` session.
+
+  **What it prompts for**
+
+  - **Agent type** — Mind Clone or Cargo Agent
+  - **Source DNA schema** — the schema to build the agent from
+  - **Agent name** — a label to identify the agent in future sessions
+
+  **Agent types**
+
+  | Type | Description | Edition |
+  |---|---|---|
+  | Mind Clone | A high-fidelity replica of an expert's thinking style and knowledge | Pro |
+  | Cargo Agent | A focused task-oriented agent built from specific extracted frameworks | Community + Pro |
+
+  **Expected output**
+
+  An agent configuration saved to your session and knowledge base, ready to use in `/conclave` sessions or direct queries.
+</Accordion>
+
+<Accordion title="/conclave">
+  **What it does**
+
+  Starts a multi-agent deliberation session where two or more agents reason through a question or topic together. Each agent contributes its perspective based on its source DNA, and JARVIS synthesizes the exchange into structured recommendations.
+
+  **When to use it**
+
+  Use `/conclave` when you want multiple expert perspectives on a decision, want to surface tensions between different frameworks, or need a more robust answer than any single agent can provide.
+
+  **What it prompts for**
+
+  - **Topic or question** — what you want the agents to deliberate on
+  - **Participating agents** — which agents to include in the session
+
+  **Requirements**
+
+  - At least 2 created agents
+  - Pro edition
+
+  **Expected output**
+
+  A structured deliberation report including each agent's perspective, points of agreement and tension, and a synthesized set of recommendations grounded in the contributing DNA schemas.
+
+  <Warning>
+    `/conclave` is a Pro-only feature. Running it on a Community edition installation will return an upgrade prompt. See [Community vs Pro](/configuration/community-vs-pro).
+  </Warning>
+</Accordion>
+
+<Accordion title="/playbook">
+  **What it does**
+
+  Generates an actionable playbook on a given topic or goal by synthesizing across all relevant extracted knowledge in your base. The playbook organizes findings into concrete steps, references the frameworks and mental models that support each step, and links back to the source evidence.
+
+  **When to use it**
+
+  Use `/playbook` when you want to move from raw knowledge to a structured action plan. It works best after you've ingested and extracted DNA from multiple related materials.
+
+  **What it prompts for**
+
+  - **Topic or goal** — the specific outcome you want the playbook to address
+
+  **Expected output**
+
+  A structured playbook containing:
+  - Step-by-step action items
+  - Supporting frameworks and heuristics for each step
+  - Evidence links back to the source materials
+  - Recommended agents to consult for deeper guidance
+
+  <Tip>
+    The more DNA schemas you have in your knowledge base on a topic, the richer and better-evidenced your playbook will be. Run `/ingest` and `/extract-dna` on multiple expert sources before generating a playbook. See the [Playbooks guide](/guides/playbooks) for best practices.
+  </Tip>
+</Accordion>
+
+<CardGroup cols={2}>
+  <Card title="JARVIS Orchestrator" icon="robot" href="/cli/jarvis">
+    How JARVIS manages your pipeline and triggers automation hooks
+  </Card>
+  <Card title="CLI Overview" icon="map" href="/cli/overview">
+    Terminal commands, session persistence, and command types at a glance
+  </Card>
+</CardGroup>

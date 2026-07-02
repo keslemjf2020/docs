@@ -1,0 +1,105 @@
+---
+title: "Run a Multi-Agent Conclave Session"
+sidebarTitle: "Running Conclave"
+description: "Convene two or more expert agents for structured, evidence-based deliberation and synthesized recommendations on any question or strategic decision."
+---
+
+A Conclave session brings multiple Mega Brain agents into a single structured deliberation. Instead of asking one expert's perspective at a time, you pose a question to a panel of agents simultaneously — each argues from its own extracted DNA, cites its own source materials, and challenges the other agents' positions. The result is a synthesized recommendation that reflects the full range of expert viewpoints in your knowledge base. Conclave is especially valuable when you face a high-stakes decision and want genuine intellectual tension rather than a single echo-chamber answer.
+
+<Note>
+  Conclave is a **Pro edition** feature and requires a minimum of **2 agents** — either Mind Clone Agents, Cargo Agents, or a mix of both — to be present in your project before you can start a session. See [Community vs Pro](/configuration/community-vs-pro) to compare editions.
+</Note>
+
+## When to Use Conclave
+
+Reach for Conclave when a single perspective isn't enough:
+
+- **Strategic decisions** that benefit from multiple expert viewpoints before you commit resources
+- **Stress-testing a business plan or strategy** by forcing agents with different frameworks to find its weaknesses
+- **Synthesizing conflicting advice** from mentors who hold opposing positions on the same topic
+- **Creative or technical problems** where diverse mental models produce meaningfully different solutions
+- **Pre-mortem analysis** — asking agents to argue against a plan you're already leaning toward
+
+## Running a Conclave Session
+
+<Steps>
+  <Step title="Confirm you have at least 2 agents">
+    Open Claude Code and verify that your project contains at least two agents. You can mix Mind Clone Agents and Cargo Agents in the same Conclave. If you need to create agents first, see [Build an Expert Mind Clone](/guides/building-mind-clones) or run `/create-agent` and select the Cargo Agent type.
+  </Step>
+  <Step title="Run the /conclave command">
+    Start the session from your project directory:
+
+    ```bash
+    /conclave
+    ```
+
+    JARVIS initializes the deliberation environment and prepares each agent to operate independently within the session.
+  </Step>
+  <Step title="Define the question or topic for deliberation">
+    When prompted, enter a clear, specific question or topic. The more focused your question, the more actionable the output.
+
+    ```
+    Topic: Should I launch a low-ticket front-end offer before my premium program, 
+           or go straight to the premium offer?
+    ```
+
+    Vague or overly broad questions produce diffuse output. Frame the topic as a concrete decision or a direct question.
+  </Step>
+  <Step title="Select which agents participate">
+    JARVIS lists the agents available in your project. Choose the ones most relevant to the question. You can include all agents or curate a panel for the specific topic.
+
+    ```
+    Available agents:
+      [1] Alex Hormozi Mind Clone  (Offers, pricing, scaling)
+      [2] Seth Godin Mind Clone    (Marketing, positioning)
+      [3] Sales Cargo Agent        (Role: B2B sales execution)
+
+    Select agents for this Conclave (e.g. 1,2): 1,2
+    ```
+  </Step>
+  <Step title="Review each agent's perspective and evidence">
+    JARVIS runs the deliberation and outputs structured perspectives from each participating agent. Each perspective includes the agent's position, the reasoning behind it, and citations to the source materials that ground the argument.
+
+    Watch for points of agreement and genuine disagreement — the tension between agents is where Conclave delivers its most useful signal.
+  </Step>
+  <Step title="Use the synthesized recommendations">
+    After all agents have presented, JARVIS produces a synthesized recommendation section that distills areas of consensus, flags unresolved tensions, and surfaces the most actionable guidance. Use this section to inform — not replace — your own judgment.
+
+    ```
+    ✓ Conclave complete
+      → 2 agent perspectives documented
+      → 7 evidence citations linked
+      → Synthesis: ./conclaves/2024-01-15-launch-strategy.md
+    ```
+
+    The full session output is saved to your project's `./conclaves/` directory for future reference.
+  </Step>
+</Steps>
+
+## Reading Conclave Output
+
+Each saved Conclave session is structured in four sections:
+
+<CardGroup cols={2}>
+  <Card title="Agent Perspectives" icon="comments">
+    One section per participating agent. Each section states the agent's position on the topic, the reasoning chain it followed, and the specific frameworks or mental models it applied.
+  </Card>
+  <Card title="Evidence Citations" icon="book-open">
+    Every claim in every perspective links back to the exact source material — a timestamp in a video, a page in a PDF, or a section of a transcript — so you can verify the reasoning directly.
+  </Card>
+  <Card title="Points of Tension" icon="scale-balanced">
+    JARVIS identifies where agents directly disagree and summarizes the nature of the conflict. These disagreements often reveal the key assumption your decision hinges on.
+  </Card>
+  <Card title="Synthesized Recommendations" icon="lightbulb">
+    A distilled, actionable summary that integrates consensus points and calls out the trade-offs embedded in areas of conflict. This is the section to bring into your decision-making process.
+  </Card>
+</CardGroup>
+
+<Tip>
+  Save your Conclave sessions and revisit them when the decision you were deliberating has played out. Comparing the agents' predictions to real-world results is one of the fastest ways to identify which experts in your knowledge base have the most applicable insights for your specific context.
+</Tip>
+
+## Next Steps
+
+- **[Conclave Concepts](/concepts/conclave)** — Understand how JARVIS orchestrates multi-agent deliberation and how evidence-based debate is structured internally.
+- **[Agent Concepts](/concepts/agents)** — Learn about the differences between Mind Clone and Cargo Agents and how each type contributes to a Conclave session.

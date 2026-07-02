@@ -1,47 +1,77 @@
 ---
-title: "Quickstart"
-description: "Begin with a guide on the fastest path to a successful outcome"
+title: "Get Started with Mega Brain in Minutes"
+sidebarTitle: "Quickstart"
+description: "Ingest your first expert material, run the knowledge pipeline, extract a DNA schema, and create a mind-clone agent — all in one session."
 ---
 
-Describe how someone begins using your product. What is the first thing they need to do? Are there any prerequisites?
+This tutorial gets you from a fresh installation to a working mind-clone agent in one session. You'll ingest a real piece of expert material, run it through the knowledge pipeline, extract a structured DNA schema, and create an AI agent that reasons from that knowledge. Follow the steps in order — each one builds on the last.
 
-A quickstart should take someone from zero to using your product. They'll get a quick win and a sense of what they can accomplish.
-
-## Prerequisites
-
-Before you begin, you must have:
-
-- Requirement one (for example, Node.js 18+, a free account, an API key)
-- Requirement two (for example, a compatible device, a compatible browser, a compatible operating system)
-
-## Get started
+<Tip>
+  Some steps in this guide — specifically DNA extraction, agent creation, and the Conclave — require the **Pro (L2)** edition. Community (L1) users can follow steps 1 through 4 to ingest materials and explore the core pipeline. See [Community vs Pro](/configuration/community-vs-pro) for a full breakdown.
+</Tip>
 
 <Steps>
-  <Step title="Install">
-    Describe how to install your product or sign up.
-
-    ```bash
-    npm install your-package
-    ```
+  <Step title="Complete installation">
+    If you haven't set up Mega Brain yet, follow the [Installation guide](/installation) to install dependencies, run the setup wizard, and configure your `OPENAI_API_KEY`. Return here once `/jarvis-briefing` runs successfully in Claude Code.
   </Step>
-  <Step title="Configure">
-    Describe any setup or configuration needed before first use.
+  <Step title="Open Claude Code">
+    Claude Code is your primary interface for everything in Mega Brain. Open it in your project directory — this is where you'll run all slash commands and interact with the JARVIS orchestrator throughout this tutorial.
 
-    ```bash
-    your-cli init
-    ```
+    All Mega Brain commands use the `/` prefix and run directly inside Claude Code's command input. You don't need a separate terminal for the steps that follow.
   </Step>
-  <Step title="Run it">
-    Show the first thing a user does to see it working.
+  <Step title="Run /jarvis-briefing">
+    Start every session by checking system status with the JARVIS briefing:
 
-    ```bash
-    your-cli start
     ```
+    /jarvis-briefing
+    ```
+
+    JARVIS responds with a summary of your pipeline configuration, available slash commands, active hooks, and the current state of your knowledge base. Read through the output to confirm everything is operational and to orient yourself before ingesting new material.
+  </Step>
+  <Step title="Ingest your first material">
+    Bring your first piece of expert content into Mega Brain using the `/ingest` command. You can provide a YouTube URL, a local PDF path, or a plain text transcription:
+
+    ```
+    /ingest
+    ```
+
+    When prompted, paste a YouTube URL or provide a file path to a PDF or transcript. Mega Brain fetches or reads the content, queues it for processing, and confirms the ingestion. JARVIS then runs its automation hooks to clean and structure the raw material for the next phase.
+  </Step>
+  <Step title="Extract DNA">
+    Once ingestion completes, extract a structured knowledge profile from the material:
+
+    ```
+    /extract-dna
+    ```
+
+    Mega Brain analyzes the ingested content and builds a DNA schema across five knowledge layers — Philosophies, Mental Models, Heuristics, Frameworks, and Methodologies. Every item in the schema links back to the specific source passage it came from, giving you full provenance on all extracted knowledge.
+  </Step>
+  <Step title="Create a mind-clone agent">
+    With a DNA schema in place, generate an AI agent that reasons from the extracted knowledge:
+
+    ```
+    /create-agent
+    ```
+
+    Follow the prompts to name your agent and confirm the source DNA. Mega Brain compiles the schema into an agent definition and registers it in your knowledge base. You can then invoke the agent directly in Claude Code to ask questions, generate advice, or pull it into a Conclave session with other agents.
   </Step>
 </Steps>
 
-<Tip>
-  Give people a way to get help. This could be a link to a support page, a chat with a customer support agent, or a forum for your product.
+## Next Steps
 
-  Example: Need help? Reach out to us at [support@yourcompany.com](mailto:support@yourcompany.com).
-</Tip>
+You've completed the core workflow. From here, explore the guides and reference docs below to go deeper into each part of the system.
+
+<CardGroup cols={2}>
+  <Card title="Ingesting Materials" icon="file-import" href="/guides/ingesting-materials">
+    Learn how to ingest videos, PDFs, podcasts, and transcriptions at scale with advanced options.
+  </Card>
+  <Card title="Knowledge Pipeline" icon="brain" href="/concepts/knowledge-pipeline">
+    Understand how JARVIS orchestrates the 5-phase pipeline and what happens at each stage.
+  </Card>
+  <Card title="Building Mind Clones" icon="robot" href="/guides/building-mind-clones">
+    Go deep on agent creation: customize DNA schemas, tune reasoning behavior, and manage your agent library.
+  </Card>
+  <Card title="Slash Commands" icon="terminal" href="/cli/slash-commands">
+    Browse the full reference for every slash command available in the Mega Brain CLI.
+  </Card>
+</CardGroup>

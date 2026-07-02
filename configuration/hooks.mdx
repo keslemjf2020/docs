@@ -1,0 +1,59 @@
+---
+title: "Customize JARVIS Automation Hooks"
+sidebarTitle: "Hooks"
+description: "Understand and configure the 20+ JARVIS hooks that fire across ingestion, processing, agent creation, and output generation to keep your pipeline healthy."
+---
+
+JARVIS runs 20+ automation hooks throughout the knowledge pipeline. Hooks let you control quality checks, trigger custom actions, and tune pipeline behavior at each stage — from the moment raw materials land in the system to the final output delivered to you.
+
+<Note>
+  Basic hook visibility and the default hook suite are available to all users. Advanced hook customization — including overriding hook logic and writing custom hook handlers — may require the Pro edition. See [Community vs Pro](configuration/community-vs-pro) for a full feature comparison.
+</Note>
+
+## Hook Categories
+
+Hooks are organized by the pipeline stage at which they fire. Expand each category below to see what JARVIS monitors and where you can intervene.
+
+<Accordion title="Ingestion Hooks — triggered when new materials are added">
+  Ingestion hooks run the moment you supply source material to Mega Brain, before any processing begins. They protect the pipeline from malformed, duplicate, or low-quality inputs.
+
+  - **Format detection and normalization** — Identifies the content type (PDF, transcript, web page, etc.) and converts it to a consistent internal format.
+  - **Duplicate detection** — Compares the incoming material against your knowledge base to flag or skip content that has already been ingested.
+  - **Content quality scoring** — Assigns a quality score to the raw material and can halt ingestion if the score falls below the configured threshold.
+</Accordion>
+
+<Accordion title="Processing Hooks — run during the 5-phase pipeline">
+  Processing hooks fire as JARVIS moves material through the core extraction pipeline. They provide checkpoints between phases so errors are caught early rather than propagating to downstream stages.
+
+  - **Chunk validation** — Verifies that content has been split into coherent, appropriately sized chunks before extraction begins.
+  - **Extraction quality checks** — Evaluates the structured data pulled from each chunk and flags low-confidence extractions for review.
+  - **Progress reporting** — Emits status updates at each phase transition so you can track long-running ingestion jobs in real time.
+</Accordion>
+
+<Accordion title="Agent Hooks — triggered on agent creation or invocation">
+  Agent hooks ensure that every agent built from your knowledge base starts with the right context and responds with verified, grounded answers.
+
+  - **Context loading** — Confirms that the relevant knowledge chunks are loaded into the agent's working context before it responds.
+  - **Evidence verification** — Checks that agent responses are backed by traceable source material rather than hallucinated content.
+  - **Response quality checks** — Scores each response against your configured quality criteria and can trigger a retry if the threshold is not met.
+</Accordion>
+
+<Accordion title="Output Hooks — run when generating playbooks, conclave reports, and DNA schemas">
+  Output hooks apply a final layer of validation and enrichment before any artifact leaves the pipeline and reaches you.
+
+  - **Formatting and structure validation** — Ensures the output conforms to the expected schema for its type (playbook, DNA schema, conclave report, etc.).
+  - **Source citation linking** — Attaches provenance links from every claim in the output back to the originating source material.
+  - **Output quality scoring** — Produces an overall quality score for the artifact and surfaces any sections that fall below threshold.
+</Accordion>
+
+## Default Hook Behavior
+
+Out of the box, JARVIS runs all hooks automatically using sensible defaults calibrated for general-purpose knowledge pipelines. Most users never need to change hook configuration — the defaults catch the most common issues and keep the pipeline moving without manual intervention.
+
+If a hook fails, JARVIS logs the failure with enough context to diagnose the issue and, where possible, retries or falls back gracefully rather than halting the entire run.
+
+<Tip>
+  Run `/jarvis-briefing` in the CLI at any time to see a live summary of hook statuses, recent failures, and pipeline health. It's the fastest way to confirm that all hooks fired successfully on your last run. See the [JARVIS CLI reference](cli/jarvis) for the full command list.
+</Tip>
+
+To understand how hooks fit into the broader flow of data through Mega Brain, see the [knowledge pipeline overview](concepts/knowledge-pipeline).

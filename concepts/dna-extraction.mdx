@@ -1,0 +1,78 @@
+---
+title: "Expert DNA Extraction: 5 Layers of Knowledge"
+sidebarTitle: "DNA Extraction"
+description: "Learn how Mega Brain deconstructs expert materials into five structured knowledge layers that power AI agents, playbooks, and DNA schemas."
+---
+
+DNA Extraction is the phase where raw expert content becomes structured intelligence. Rather than storing a transcript or a summary, Mega Brain analyzes source materials and pulls out the underlying cognitive architecture of the expert — the beliefs, thinking patterns, shortcuts, systems, and procedures that explain not just *what* they know, but *how* they think. Organizing knowledge across five distinct layers makes it reusable, auditable, and directly actionable inside AI agents and playbooks.
+
+## The Five Knowledge Layers
+
+Each layer captures a different dimension of an expert's cognition. Together, they form a complete DNA Schema.
+
+<Accordion title="Philosophies">
+  Philosophies are the core beliefs and worldviews that drive every decision an expert makes. They sit at the foundation of the schema because they color everything above them. A venture capitalist who believes "distribution beats product" will evaluate opportunities differently than one who believes the opposite — and that difference shows up in their mental models, heuristics, and frameworks.
+
+  Extracting philosophies lets your agents reflect the expert's *orientation* toward a problem, not just their tactics. When you ask a Mind Clone Agent a question it has never seen before, its philosophies are what allow it to reason authentically rather than default to generic answers.
+</Accordion>
+
+<Accordion title="Mental Models">
+  Mental models are the repeatable thinking frameworks an expert reaches for when analyzing a situation. They are lenses — structured ways of seeing — that the expert applies across many different contexts. First-principles thinking, inversion, second-order effects, the Pareto principle: these are examples of mental models that might surface during extraction.
+
+  Mega Brain identifies which models appear repeatedly in an expert's materials, how they apply them, and in which contexts. Agents built from this layer can apply the same models to new problems you bring them.
+</Accordion>
+
+<Accordion title="Heuristics">
+  Heuristics are rules of thumb and quick-decision shortcuts derived from accumulated experience. Unlike formal frameworks, heuristics are often implicit — the expert may never spell them out directly. Mega Brain surfaces them by analyzing patterns in how the expert evaluates options, resolves tradeoffs, and draws conclusions.
+
+  Examples might include "always talk to ten customers before building," "if a deal takes longer than ninety days to close, walk away," or "never hire someone you wouldn't work *for*." These compressed judgments are some of the most valuable things you can extract from an expert because they encode hard-won experience in an immediately applicable form.
+</Accordion>
+
+<Accordion title="Frameworks">
+  Frameworks are structured, step-by-step systems the expert uses to accomplish specific goals. Where heuristics are fast and informal, frameworks are deliberate and procedural. They have a defined starting point, a sequence of steps, and a clear output.
+
+  Mega Brain extracts frameworks and represents them as reusable templates inside the DNA Schema. An agent equipped with a framework can walk you through it step by step, adapt it to your specific context, and reference the original source material where the expert taught it.
+</Accordion>
+
+<Accordion title="Methodologies">
+  Methodologies are complete operating procedures that combine multiple frameworks into a cohesive system. They represent an expert's highest-level playbook for a domain — the full approach they take to a category of problem, from diagnosis to execution.
+
+  Extracting a methodology gives you a bird's-eye view of how the expert operates end to end. Agents grounded in a methodology can guide you through an entire engagement rather than just answering one-off questions.
+</Accordion>
+
+## DNA Schema Output
+
+When extraction completes, Mega Brain produces a DNA Schema: a structured, machine-readable document that maps every extracted insight across the five layers, tagged with its source citation and confidence score. The schema is both human-readable (you can review and edit it) and machine-consumable (agents load it directly as their knowledge foundation).
+
+You can use a completed DNA Schema in three ways:
+
+<CardGroup cols={3}>
+  <Card title="Power an Agent" icon="robot">
+    Feed the schema into `/create-agent` to instantiate a Mind Clone Agent that reasons using the expert's full cognitive profile.
+  </Card>
+  <Card title="Generate a Playbook" icon="book-open">
+    Run `/playbook` against the schema to produce a step-by-step operational guide drawn from the expert's frameworks and methodologies.
+  </Card>
+  <Card title="Review and Curate" icon="magnifying-glass">
+    Browse the schema directly in your knowledge base to audit extracted insights, correct errors, and add your own annotations before deploying agents.
+  </Card>
+</CardGroup>
+
+## Triggering Extraction
+
+To run DNA Extraction on ingested material, use the `/extract-dna` command from the CLI:
+
+```bash
+/extract-dna --source "Warren Buffett - 2023 Shareholder Letter"
+```
+
+JARVIS will advance the material through all five extraction layers automatically, applying quality hooks at each stage. You can also let JARVIS trigger extraction automatically as part of a full pipeline run.
+
+<Tip>
+  Run `/extract-dna --review` to open the schema in interactive review mode before it is finalized. This lets you approve, reject, or edit individual extractions before they flow into agents and playbooks.
+</Tip>
+
+## Related Pages
+
+- [Ingesting Materials](/guides/ingesting-materials) — Prepare and import source materials before extraction
+- [Agents](/concepts/agents) — See how DNA schemas power Mind Clone and Cargo Agents

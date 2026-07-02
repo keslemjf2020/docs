@@ -1,0 +1,109 @@
+---
+title: "Mind Clone Agents and Cargo Agents in Mega Brain"
+sidebarTitle: "Agents"
+description: "Understand the two agent types in Mega Brain — person-grounded Mind Clones and role-based Cargo Agents — and choose the right one for your use case."
+---
+
+Agents are the interactive layer of Mega Brain's knowledge pipeline. Once you have ingested materials and extracted a DNA Schema, you can instantiate agents that put that knowledge to work. Mega Brain offers two distinct agent types: **Mind Clone Agents**, which replicate the reasoning of a specific expert, and **Cargo Agents**, which embody a professional role. Both types are grounded in your knowledge base and can participate in Conclave deliberation sessions.
+
+---
+
+## Mind Clone Agents
+
+A Mind Clone Agent is an AI agent built to reason the way a specific expert reasons — not a generic simulation, but a cognitive replica grounded in that expert's actual materials. When you ask a Mind Clone a question, it draws on the DNA Schema extracted from the expert's videos, PDFs, podcasts, and courses. It thinks with their mental models, applies their heuristics, and works through their frameworks.
+
+### How Mind Clones differ from generic AI
+
+Generic AI assistants draw on broad training data and produce statistically average answers. A Mind Clone Agent draws exclusively on the source materials you provided and the DNA Schema extracted from them. Every response it generates is traceable to a specific moment in a specific document or recording.
+
+<CardGroup cols={2}>
+  <Card title="Generic AI Assistant" icon="robot">
+    - Trained on broad internet data
+    - No source citations
+    - Average-consensus answers
+    - No knowledge of your specific expert
+  </Card>
+  <Card title="Mind Clone Agent" icon="brain">
+    - Trained on your expert's materials only
+    - Every claim cites a source
+    - Reasons with the expert's actual mental models
+    - Reflects the expert's philosophies and heuristics
+  </Card>
+</CardGroup>
+
+### Use cases for Mind Clones
+
+- **Expert-style answers:** Ask the Mind Clone how a specific expert would approach your problem and get a response grounded in their actual thinking.
+- **Simulating expert reasoning:** Walk through a decision using the expert's frameworks and methodologies, step by step.
+- **Testing decisions:** Present a plan to the Mind Clone and stress-test it against the expert's known heuristics and philosophies before committing.
+- **Conclave participation:** Deploy the Mind Clone inside a multi-agent Conclave to represent that expert's perspective in a deliberation.
+
+<Warning>
+  Mind Clone Agents require a **Pro** subscription. Creating a Mind Clone also requires that the source expert's materials have been fully processed through the DNA Extraction phase. See [Community vs Pro](/configuration/community-vs-pro) for details.
+</Warning>
+
+---
+
+## Cargo Agents
+
+A Cargo Agent is a role-based agent rather than a person-based one. Instead of cloning a specific expert, you instantiate a professional function — "Marketing Strategist," "Financial Analyst," "Operations Lead" — and Mega Brain equips it with the relevant knowledge from your knowledge base that matches that role.
+
+Cargo Agents are ideal when you need expert-level reasoning on a domain but don't have (or want) a specific person's materials as the foundation. They draw on the structured knowledge you have already ingested and extract the role-relevant subset.
+
+### How Cargo Agents differ from Mind Clones
+
+Where a Mind Clone is anchored to a single expert's identity and source materials, a Cargo Agent synthesizes across all relevant materials in your knowledge base for its role. A "Sales Strategist" Cargo Agent will draw on every sales-related insight in your system, regardless of which expert produced it.
+
+<Tip>
+  Cargo Agents are available on the **Community** plan. They are a good starting point if you are building your knowledge base and not yet ready to commit to a full Mind Clone extraction.
+</Tip>
+
+---
+
+## Comparing Agent Types
+
+<Tabs>
+  <Tab title="Mind Clone Agent">
+    | Attribute | Detail |
+    |---|---|
+    | **Grounded in** | A specific expert's materials |
+    | **Knowledge source** | DNA Schema from that expert only |
+    | **Cites sources** | Yes — exact timestamps and page references |
+    | **Reasoning style** | Replicates the expert's philosophies and mental models |
+    | **Best for** | Simulating a known expert, Conclave debates, high-stakes decisions |
+    | **Availability** | Pro only |
+  </Tab>
+  <Tab title="Cargo Agent">
+    | Attribute | Detail |
+    |---|---|
+    | **Grounded in** | A professional role or function |
+    | **Knowledge source** | All role-relevant content in your knowledge base |
+    | **Cites sources** | Yes — from any contributing material |
+    | **Reasoning style** | Role-optimized synthesis across multiple experts |
+    | **Best for** | Domain Q&A, filling knowledge gaps, early-stage pipelines |
+    | **Availability** | Community and Pro |
+  </Tab>
+</Tabs>
+
+---
+
+## Creating an Agent
+
+Use the `/create-agent` command from the CLI to instantiate either agent type:
+
+```bash
+# Create a Mind Clone Agent
+/create-agent --type mind-clone --expert "Alex Hormozi"
+
+# Create a Cargo Agent
+/create-agent --type cargo --role "Marketing Strategist"
+```
+
+JARVIS will load the relevant DNA Schema or knowledge base subset, configure the agent's reasoning parameters, and make it available for queries and Conclave sessions.
+
+---
+
+## Related Pages
+
+- [Building Mind Clones](/guides/building-mind-clones) — Step-by-step guide to creating and configuring Mind Clone Agents
+- [Conclave](/concepts/conclave) — Learn how to deploy agents in multi-agent deliberation sessions

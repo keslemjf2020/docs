@@ -1,0 +1,64 @@
+---
+title: "Install and Configure Mega Brain"
+sidebarTitle: "Installation"
+description: "Set up Mega Brain from scratch: install dependencies, run the setup wizard, configure your API keys, and verify your environment is ready."
+---
+
+This guide walks you through everything you need to get Mega Brain running in your environment. By the end, you'll have the CLI installed, your API keys configured, and a verified system ready to ingest materials and run the knowledge pipeline. The full setup takes about five minutes.
+
+## Prerequisites
+
+Before you begin, make sure you have the following in place:
+
+- **Node.js 18 or higher** — Mega Brain's CLI and pipeline engine require Node 18+. Run `node --version` to check your current version.
+- **Claude Code** — Mega Brain is designed to run inside [Claude Code](https://claude.ai/code), which serves as your primary interface for slash commands and the JARVIS orchestrator.
+- **OpenAI API key** — This is the only required API key. Obtain one from [platform.openai.com](https://platform.openai.com/api-keys) before you start the setup wizard.
+
+## Installation Steps
+
+<Steps>
+  <Step title="Install dependencies">
+    Navigate to your project directory and install Mega Brain's dependencies:
+
+    ```bash
+    npm install
+    ```
+
+    Run this command from the root of your project. It installs the core engine, CLI tooling, templates, skills, and hooks included in your edition.
+  </Step>
+  <Step title="Run the setup wizard">
+    Launch the interactive setup wizard to initialize your environment:
+
+    ```bash
+    npx mega-brain-ai setup
+    ```
+
+    The wizard walks you through the full configuration process. It prompts you for API keys, detects your edition (Community or Pro), and writes a `.env` file with your settings. Only `OPENAI_API_KEY` is required — all other keys are optional and you can skip them at the prompt.
+  </Step>
+  <Step title="Configure your API keys">
+    The setup wizard creates a `.env` file at the root of your project. At minimum, it must contain your OpenAI API key:
+
+    ```bash
+    OPENAI_API_KEY=sk-...
+    ```
+
+    Open the `.env` file to review or update any keys the wizard wrote. If you chose to skip optional keys during setup, you can add them here at any time. Never commit your `.env` file to version control.
+
+    <Note>
+      Setup auto-triggers on first use if Mega Brain detects that your `.env` file is missing. If you skip the wizard now, the system will prompt you to run it again the first time you execute a command in Claude Code.
+    </Note>
+  </Step>
+  <Step title="Verify your installation">
+    Open Claude Code and run the JARVIS briefing command to confirm the system is configured correctly and all components are online:
+
+    ```
+    /jarvis-briefing
+    ```
+
+    JARVIS responds with a status report covering your pipeline configuration, available slash commands, active hooks, and edition details. If you see the briefing output, your installation is complete and ready to use.
+  </Step>
+</Steps>
+
+<Tip>
+  Mega Brain ships in two editions — **Community (L1)** and **Pro (L2)**. Community includes the CLI, setup wizard, core engine, templates, skills, hooks, and agent templates. Pro adds a populated knowledge base, pre-built mind clone agents, full pipeline processing, and the Council/Conclave system. See [Community vs Pro](/configuration/community-vs-pro) for a full feature comparison.
+</Tip>
