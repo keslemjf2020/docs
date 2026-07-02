@@ -1,7 +1,7 @@
 ---
 title: "/extract-dna: Generate 5-Layer Cognitive Knowledge Profiles"
 sidebarTitle: "/extract-dna"
-description: "Generate a cognitive DNA schema — five YAML files covering philosophies, mental models, heuristics, frameworks, and methodologies — from 3 or more processed expert sources."
+description: "Generate a 5-layer cognitive DNA schema from 3 or more processed expert sources: philosophies, mental models, heuristics, frameworks, and methodologies."
 ---
 
 Once you've processed three or more sources from the same expert through `/process-jarvis`, you have enough material for Mega Brain to identify patterns. `/extract-dna` reads across all that accumulated knowledge — chunks, insights, narratives, and dossiers — and distills it into a structured 5-layer cognitive profile. This DNA schema is what powers mind clone agents and enables Conclave to reason as if drawing on the expert's own thinking.
@@ -47,7 +47,7 @@ Before running `/extract-dna`, confirm that all four of the following are true:
 
 If any prerequisite is missing, the command tells you exactly what to fix:
 
-```
+```text
 [✗] EXTRACTION FAILED
 
 Person "Sam Ovens" does not have sufficient data:
@@ -147,7 +147,7 @@ Mega Brain structures expert knowledge into five distinct, ordered layers.
   <Step title="Validate Prerequisites">
     The command checks all four prerequisites before doing any work, and prints a clear failure message if any are missing.
 
-    ```
+    ```text
     [✓] DOSSIER exists: knowledge/dossiers/persons/DOSSIER-COLE-GORDON.md
     [✓] INSIGHTS-STATE.json has insights for Cole Gordon
     [✓] CHUNKS-STATE.json has chunks for Cole Gordon
@@ -160,7 +160,7 @@ Mega Brain structures expert knowledge into five distinct, ordered layers.
   <Step title="Load Source Data">
     All accumulated insights, narratives, chunks, and dossier content for the person are loaded into memory.
 
-    ```
+    ```text
     • Insights: 247 found
     • Narratives: 18 found
     • Chunks: 487 indexed
@@ -171,7 +171,7 @@ Mega Brain structures expert knowledge into five distinct, ordered layers.
   <Step title="Extract by Layer">
     Classification rules are applied to identify items for each of the five layers. The extraction reports progress as it completes each layer.
 
-    ```
+    ```text
     Layer 3: HEURISTICS (PRIORITY LAYER)
 
     Scanning for rules with numeric thresholds...
@@ -184,7 +184,7 @@ Mega Brain structures expert knowledge into five distinct, ordered layers.
   <Step title="Calculate Weights">
     Every extracted item receives a confidence weight using the formula:
 
-    ```
+    ```text
     BASE: 0.50
 
     Bonuses:
@@ -211,7 +211,7 @@ Mega Brain structures expert knowledge into five distinct, ordered layers.
   </Step>
 
   <Step title="Completion Report">
-    ```
+    ```text
     EXTRACTION COMPLETE: COLE GORDON
 
     FILES GENERATED:
@@ -232,7 +232,7 @@ Mega Brain structures expert knowledge into five distinct, ordered layers.
 
 ## Output Location
 
-```
+```text
 knowledge/dna/persons/{person-name}/
 ├── FILOSOFIAS.yaml        # Layer 1: Philosophies
 ├── MODELOS-MENTAIS.yaml   # Layer 2: Mental Models
@@ -246,7 +246,7 @@ knowledge/dna/persons/{person-name}/
 
 Every DNA item must trace back to its original source material. The full chain is:
 
-```
+```text
 DNA Item
   ↓
 insight_origin (insight ID)

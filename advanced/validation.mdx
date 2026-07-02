@@ -1,5 +1,5 @@
 ---
-title: "Validating Package Integrity and Layer Compliance"
+title: "Validate Package Integrity and Enforce Layer Compliance"
 sidebarTitle: "Validation"
 description: "Run Mega Brain's validation tools to check package integrity, enforce L1/L2/L3 layer compliance, and block secret leaks before publishing."
 ---
@@ -10,7 +10,7 @@ Mega Brain includes a multi-stage validation pipeline that catches issues at eve
 
 The pipeline has four stages, each targeting a different risk:
 
-```
+```text
 Development       →    Pre-Commit       →    Pre-Publish      →    CI/CD
 (Real-time hooks)      (Layer checks)        (Security gate)       (Automated verify)
 ```
@@ -221,7 +221,7 @@ python3 core/intelligence/audit_layers.py
 
 The classifier uses a priority chain to assign layers:
 
-```
+```text
 DELETE > NEVER > L3 > L2 > L1 > REVIEW
 ```
 

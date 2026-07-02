@@ -14,7 +14,7 @@ A skill is a folder in `.claude/skills/` containing a `SKILL.md` file. That file
 
 The routing system runs in five sequential phases, split across two lifecycle events:
 
-```
+```text
 1. SCAN      → List folders in .claude/skills/
 2. DETECT    → For each folder, check if SKILL.md exists
 3. EXTRACT   → Read header: Auto-Trigger, Keywords, Priority
@@ -106,7 +106,7 @@ for keyword, skill_list in keyword_map.items():
 
 When multiple skills match a single prompt, they are sorted by priority before activation. Only the top-priority match is injected into context.
 
-```
+```text
 User: "Create an agent for finance"
 
 Matches:
@@ -260,7 +260,7 @@ Skills can declare what they read from and write to, which helps you understand 
 
 Core skills form a dependency graph rooted at `SKILL-CREATOR`:
 
-```
+```text
 SKILL-CREATOR (meta-skill, root)
     │
     ├── SKILL-DOCS-MEGABRAIN

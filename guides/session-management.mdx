@@ -34,7 +34,7 @@ Sessions are stored in `logs/LIVE-SESSION/` in both human-readable Markdown (`CU
 
     **Example input:**
 
-    ```
+    ```text
     "I've ingested 3 Cole Gordon videos and processed 2 of them.
     Still need to process the third one and then extract DNA."
     ```
@@ -50,7 +50,7 @@ Sessions are stored in `logs/LIVE-SESSION/` in both human-readable Markdown (`CU
 
     The system loads your saved context and displays a summary:
 
-    ```
+    ```text
     ═══════════════════════════════════════════════
                RESUMING SESSION
     ═══════════════════════════════════════════════
@@ -102,7 +102,7 @@ Save your session at these natural checkpoints:
 
 ## Session File Locations
 
-```
+```text
 logs/LIVE-SESSION/
 ├── CURRENT-SESSION.md      # Human-readable session log
 ├── CONTEXT.json            # Structured session data
@@ -253,14 +253,14 @@ The quality of your `/save` notes directly determines how useful `/resume` is. I
 - **Decisions or context** — why you're doing things in a specific order
 
 **Good note:**
-```
+```text
 "Processed AH001–AH003. DNA extracted (19 items, weight 0.74).
 Still need to process AH004 (long video, ~90 min).
 After that, run /view-dna to check quality before querying."
 ```
 
 **Less useful note:**
-```
+```text
 "Did some processing."
 ```
 

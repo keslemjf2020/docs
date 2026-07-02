@@ -1,7 +1,7 @@
 ---
 title: "Configure Mega Brain: API Keys and Environment Setup"
 sidebarTitle: "Configuration"
-description: "Set up your .env file, configure required and optional API keys, run the setup wizard, and validate your Mega Brain environment for full pipeline operation."
+description: "Set up your .env file, configure required and optional API keys, run the setup wizard, and validate your Mega Brain environment for pipeline operation."
 ---
 
 Mega Brain stores all configuration in a `.env` file at your project root. The setup wizard generates this file automatically, but you can also create or edit it by hand. Understanding which keys unlock which features helps you decide what to configure upfront versus what to add later as your workflow expands.
@@ -43,7 +43,7 @@ The wizard walks through six steps:
 
 ### Example wizard session
 
-```
+```text
 $ npx mega-brain-ai setup
 
   [1/6] Checking Python 3
@@ -201,7 +201,7 @@ If you prefer not to use the wizard, copy the example file and edit it directly:
 
     Or from inside Claude Code:
 
-    ```
+    ```bash
     /jarvis-briefing
     ```
   </Step>
@@ -221,7 +221,7 @@ npx mega-brain-ai status
 
 To test a specific integration, run a targeted ingestion:
 
-```
+```bash
 # Test OpenAI transcription
 /ingest https://www.youtube.com/watch?v=SHORT_VIDEO_ID
 ```

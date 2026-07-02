@@ -101,7 +101,7 @@ The setup wizard performs 7 sequential steps:
   <Step title="Connection Validation">
     Setup tests each configured API to confirm your keys work:
 
-    ```
+    ```text
     ═══════════════════════════════════════════════════════════════
      🔌 CONNECTION VALIDATION
     ═══════════════════════════════════════════════════════════════
@@ -140,7 +140,7 @@ The setup wizard performs 7 sequential steps:
 
     If a `.env` file already exists, setup asks before overwriting:
 
-    ```
+    ```text
     ⚠️  .env file already exists
     Overwrite existing configuration? [y/N]
     ```
@@ -153,7 +153,7 @@ The setup wizard performs 7 sequential steps:
 
 ## Configuration File Location
 
-```
+```text
 mega-brain/
 ├── .env                    # Your configuration (gitignored)
 ├── .env.example            # Template with descriptions
@@ -175,7 +175,7 @@ You can re-run `/setup` at any time to update your API keys or add new services.
   <Tab title="Required Steps Fail">
     If Python or Node.js are missing, setup stops immediately and shows installation instructions.
 
-    ```
+    ```text
     ✗ SETUP FAILED
 
     Python 3.10+ is required but not found.
@@ -187,7 +187,7 @@ You can re-run `/setup` at any time to update your API keys or add new services.
   <Tab title="Optional Steps Fail">
     If an optional API key fails validation, setup continues with a warning:
 
-    ```
+    ```text
     ⚠️  Voyage AI connection failed: Invalid API key
 
     You can continue without Voyage AI, but semantic
@@ -201,7 +201,7 @@ You can re-run `/setup` at any time to update your API keys or add new services.
   <Tab title="Partial Configuration">
     If you cancel mid-setup, your partial progress is saved:
 
-    ```
+    ```text
     ⚠️  Setup cancelled by user
 
     Partial configuration saved to .env:

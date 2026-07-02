@@ -1,7 +1,7 @@
 ---
-title: "Querying and Working with Mega Brain AI Agents"
+title: "Querying Cargo Agents and Mind Clones in Mega Brain"
 sidebarTitle: "Working with Agents"
-description: "Learn how to invoke Cargo agents and Mind Clone agents, interpret sourced responses, check confidence scores, and get the most accurate answers from Mega Brain."
+description: "Invoke Cargo agents and Mind Clone agents, interpret sourced responses, check confidence scores, and get the most accurate answers from Mega Brain."
 ---
 
 Mega Brain builds a growing roster of AI agents as you process expert materials. Each agent is automatically enriched with structured knowledge extracted from your sources — and every answer they give traces back to specific chunks in your inbox. This guide covers how to find the right agent for your question, invoke it correctly, and interpret the response you get back.
@@ -35,7 +35,7 @@ Mega Brain organizes agents into four categories:
 
 This shows every active agent, the last date its memory was updated, which experts it knows, and its version:
 
-```
+```text
 ═══════════════════════════════════════════════
               AGENTS STATUS  —  2026-03-06
 ═══════════════════════════════════════════════
@@ -95,7 +95,7 @@ Use `/ask [agent-name] "[question]"` to query any agent directly:
 
     **Sample response:**
 
-    ```
+    ```text
     ────────────────────────────────────
              CLOSER RESPONDS
     ────────────────────────────────────
@@ -145,7 +145,7 @@ Use `/ask [agent-name] "[question]"` to query any agent directly:
 
     **Sample diagnostic:**
 
-    ```
+    ```text
     IF close rate < 60%:
       → Problem: SKILL (need better closers/training)
       → Don't hire more yet
@@ -234,7 +234,7 @@ Every Mind Clone response includes five components:
 
 Agents are automatically updated every time you run the pipeline. After processing completes, Mega Brain maps extracted themes and frameworks to the agents that should receive them:
 
-```
+```text
 "02-SALES-PROCESS" → [closer, SDS, LNS]
 "04-COMPENSATION"  → [sales-manager, CRO, CFO]
 "07-PRICING"       → [CRO, CFO, closer]
@@ -242,7 +242,7 @@ Agents are automatically updated every time you run the pipeline. After processi
 
 Specific frameworks also route to specific agents:
 
-```
+```text
 "NEPQ Framework":   [closer, SDS]
 "Farm System":      [sales-manager, CRO]
 "Value Equation":   [CRO, CFO]

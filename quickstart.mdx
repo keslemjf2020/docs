@@ -1,7 +1,7 @@
 ---
 title: "Quick Start: First Insight with Mega Brain in 5 Minutes"
 sidebarTitle: "Quick Start"
-description: "Go from zero to your first structured knowledge artifact — ingest a YouTube video or PDF, run the JARVIS pipeline, extract DNA, and query a mind-clone agent."
+description: "Go from zero to your first knowledge artifact — ingest a YouTube video or PDF, run the JARVIS pipeline, extract DNA, and query a mind-clone agent."
 ---
 
 This guide gets you from a fresh Mega Brain installation to a queryable mind-clone agent in about five minutes. You'll ingest one expert material, run it through the 5-phase JARVIS pipeline, extract a cognitive DNA profile, and ask your first question of an agent grounded in that expert's actual work.
@@ -49,7 +49,7 @@ Mega Brain accepts YouTube URLs, local PDF paths, Word documents, audio files, a
 
     JARVIS downloads the audio, transcribes it using the Whisper API, extracts metadata, and saves the result to `inbox/`. Expected output:
 
-    ```
+    ```text
     JARVIS: Material received.
 
       Source:    YouTube
@@ -95,7 +95,7 @@ With your material in `inbox/`, trigger the 5-phase processing pipeline:
 
 JARVIS works through five sequential phases and reports progress as it goes:
 
-```
+```text
 JARVIS: Pipeline initiated.
 
   Phase 1/5 - Chunking .............. OK (23 chunks)
@@ -128,7 +128,7 @@ DNA extraction builds a deep cognitive profile of the expert — the five layers
 /extract-dna alex-hormozi
 ```
 
-```
+```text
 JARVIS: DNA extraction initiated.
 
   Expert: Alex Hormozi
@@ -166,7 +166,7 @@ For decisions that benefit from multiple perspectives:
 /conclave "Should I launch my product at $2,997 or $4,997?"
 ```
 
-```
+```text
 CONCLAVE: Session initiated.
 
   ── METHODICAL CRITIC ──

@@ -1,7 +1,7 @@
 ---
 title: "/conclave: Multi-Agent Deliberation for Strategic Decisions"
 sidebarTitle: "/conclave"
-description: "Run a structured 4-phase multi-agent deliberation session — debate, critical review, devil's advocate, and synthesis — to reach evidence-based decisions on complex questions."
+description: "Run a 4-phase multi-agent deliberation — debate, critical review, devil's advocate, and synthesis — to reach evidence-based decisions on complex questions."
 ---
 
 Some decisions are too consequential for a single perspective. `/conclave` assembles the relevant cargo agents from your knowledge base, has them debate a question using evidence drawn from your processed sources, submits the debate to a Methodological Critic and Devil's Advocate for scrutiny, and then produces a synthesised recommendation with a confidence score, residual risks, and clear next steps. If confidence falls below 60%, the session escalates to you rather than guessing.
@@ -60,7 +60,7 @@ Conclave runs **once** per query. There are no re-run loops. If the session ends
 
 Conclave runs 4 phases in sequence:
 
-```
+```text
 ┌─────────────────────────────────────────────────────────────────┐
 │                        CONCLAVE FLOW                            │
 ├─────────────────────────────────────────────────────────────────┤
@@ -80,7 +80,7 @@ Before any agent speaks, four governing principles are established. These overri
   <Tab title="Empiricism">
     All claims must cite chunk IDs. No opinions or unattributed assertions.
 
-    ```
+    ```text
     ✓ "Close rate drops 40% without qualification ^[CG003_089]"
     ✗ "Close rate probably drops without qualification"
     ```
@@ -146,7 +146,7 @@ The Synthesizer integrates feedback from the Critic and Devil's Advocate into a 
 
 **Example synthesis output (abridged):**
 
-```
+```text
 DECISION: YES - Increase commission with safeguards
 
 CONFIDENCE: 78%
@@ -172,7 +172,7 @@ NEXT STEPS:
 
 If the final confidence score falls below 60%, Conclave does **not** make a recommendation. Instead, it presents the options it evaluated and explains what additional data would raise confidence:
 
-```
+```text
 ⚠️  CONFIDENCE: 52% — BELOW THRESHOLD OF 60%
 
 TYPE OF UNCERTAINTY: Insufficient data

@@ -1,5 +1,5 @@
 ---
-title: "/ingest: Import Materials into Mega Brain"
+title: "/ingest: Import Materials into the Mega Brain Inbox"
 sidebarTitle: "/ingest"
 description: "Import YouTube videos, PDFs, local files, or Google Drive documents into the Mega Brain inbox with automatic metadata extraction and source ID assignment."
 ---
@@ -37,7 +37,7 @@ Every piece of expert content you want Mega Brain to learn from enters the syste
 
     Transcripts are formatted with timestamps:
 
-    ```
+    ```text
     [00:00:00] Welcome to today's masterclass on scaling...
     [00:00:15] The first thing you need to understand is...
     [00:00:45] Let me give you a specific example...
@@ -142,7 +142,7 @@ Every piece of expert content you want Mega Brain to learn from enters the syste
   <Step title="Destination Path">
     Files are saved to a structured inbox hierarchy:
 
-    ```
+    ```text
     inbox/
     ├── {PERSON} ({COMPANY})/
     │   ├── PODCASTS/
@@ -158,7 +158,7 @@ Every piece of expert content you want Mega Brain to learn from enters the syste
   <Step title="Source ID Assignment">
     Each ingested file receives a unique source ID based on the person's initials and a sequential counter:
 
-    ```
+    ```text
     CG005   # Cole Gordon, 5th file
     AH023   # Alex Hormozi, 23rd file
     JL010   # Jordan Lee, 10th file
@@ -168,7 +168,7 @@ Every piece of expert content you want Mega Brain to learn from enters the syste
   <Step title="Ingest Report">
     A summary report confirms what was ingested, where it was saved, and the next command to run:
 
-    ```
+    ```text
     ═══════════════════════════════════════════════════════
                         INGEST REPORT
     ═══════════════════════════════════════════════════════
@@ -266,7 +266,7 @@ YouTube transcription time depends on video length and OpenAI Whisper API latenc
 
 <AccordionGroup>
   <Accordion title="YouTube Video Not Available">
-    ```
+    ```text
     ✗ INGEST FAILED
 
     YouTube video not available:
@@ -279,7 +279,7 @@ YouTube transcription time depends on video length and OpenAI Whisper API latenc
   </Accordion>
 
   <Accordion title="Transcription Failed (Quota Exceeded)">
-    ```
+    ```text
     ✗ TRANSCRIPTION FAILED
 
     OpenAI Whisper error: Quota exceeded
@@ -292,7 +292,7 @@ YouTube transcription time depends on video length and OpenAI Whisper API latenc
   </Accordion>
 
   <Accordion title="File Already Exists">
-    ```
+    ```text
     ⚠️  FILE EXISTS
 
     A file with the same name already exists.
@@ -307,7 +307,7 @@ YouTube transcription time depends on video length and OpenAI Whisper API latenc
   </Accordion>
 
   <Accordion title="Unsupported File Type">
-    ```
+    ```text
     ✗ INGEST FAILED
 
     Unsupported file type: .pptx

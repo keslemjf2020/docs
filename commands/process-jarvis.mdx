@@ -40,7 +40,7 @@ All 8 phases are **mandatory**. The pipeline must complete Phase 8 (Finalization
 
 ## Pipeline Overview
 
-```
+```text
 ┌──────────────────────────────────────────────────────────────────┐
 │                     JARVIS PIPELINE v2.2                         │
 ├──────────────────────────────────────────────────────────────────┤
@@ -65,7 +65,7 @@ All 8 phases are **mandatory**. The pipeline must complete Phase 8 (Finalization
 
     **Duplicate detection runs here.** The pipeline checks for exact duplicates (MD5 hash), content hash matches, partial fingerprints, and YouTube ID collisions. If a duplicate is found, processing stops immediately.
 
-    ```
+    ```text
     ⛔ DUPLICATE EXACT DETECTED - PROCESSING STOPPED
 
     Current file: inbox/COLE GORDON/video.txt
@@ -112,7 +112,7 @@ All 8 phases are **mandatory**. The pipeline must complete Phase 8 (Finalization
     <Warning>
       Every dossier section **must** include `chunk_ids` for traceability. Sections without chunk IDs are blocked.
 
-      ```
+      ```text
       ### Christmas Tree Structure [CG001_012, SS001_045]  ✓ Valid
       ### Christmas Tree Structure                          ✗ BLOCKED
       ```
@@ -140,7 +140,7 @@ All 8 phases are **mandatory**. The pipeline must complete Phase 8 (Finalization
 
     If agent coverage is incomplete, Phase 8 fails and logs the missing agents:
 
-    ```
+    ```text
     ❌ AGENT COVERAGE FAILED
 
     Expected: [CLOSER, SDS, LNS]
@@ -156,7 +156,7 @@ All 8 phases are **mandatory**. The pipeline must complete Phase 8 (Finalization
 
 After a successful run, the pipeline prints a full summary:
 
-```
+```text
 ═══════════════════════════════════════════════════════════════════
 JARVIS PIPELINE COMPLETE: COLE GORDON (CG003)
 ═══════════════════════════════════════════════════════════════════
@@ -210,7 +210,7 @@ grep -r "CG003" agents/cargo/*/MEMORY.md
   <Accordion title='"Pipeline stopped at Phase 7"'>
     This is expected behaviour. Phase 8 requires explicit confirmation before running. When you see the prompt, type `Y` to proceed:
 
-    ```
+    ```text
     Continue to Phase 8 (Finalization)? [Y/n]
     ```
   </Accordion>
@@ -226,7 +226,7 @@ grep -r "CG003" agents/cargo/*/MEMORY.md
   <Accordion title="Reprocessing a file that was already processed">
     If you need to reprocess a file, confirm at the prompt:
 
-    ```
+    ```text
     ⚠️  File already processed: CG003
 
     Reprocess? This will:

@@ -1,5 +1,5 @@
 ---
-title: "Running the JARVIS Processing Pipeline"
+title: "Running the JARVIS Processing Pipeline in Mega Brain"
 sidebarTitle: "Processing Pipeline"
 description: "Walk through the 5-phase JARVIS pipeline that converts raw transcriptions into dossiers, structured insights, and enriched agent memories."
 ---
@@ -48,7 +48,7 @@ The pipeline starts by validating inputs, extracting metadata, loading state fil
 
 **Metadata extracted from the file path:**
 
-```
+```text
 inbox/COLE GORDON/MASTERMINDS/video-title.txt
        ↓            ↓           ↓
   SOURCE_PERSON  SOURCE_TYPE  FILENAME
@@ -101,7 +101,7 @@ Entity resolution canonicalizes variations of the same person, theme, or concept
   <Tab title="Person Names">
     **Problem:** Multiple spelling variations
 
-    ```
+    ```text
     "Sam oven"
     "Sam Ovens"
     "sam"
@@ -110,7 +110,7 @@ Entity resolution canonicalizes variations of the same person, theme, or concept
 
     **Solution:** A single canonical entry
 
-    ```
+    ```text
     Canonical: "Sam Ovens"
     Aliases: ["sam", "Sam oven", "Samuel Ovens"]
     Confidence: 0.95
@@ -119,7 +119,7 @@ Entity resolution canonicalizes variations of the same person, theme, or concept
   <Tab title="Themes">
     **Problem:** Synonym explosion
 
-    ```
+    ```text
     "objection handling"
     "overcoming objections"
     "handling resistance"
@@ -128,7 +128,7 @@ Entity resolution canonicalizes variations of the same person, theme, or concept
 
     **Solution:** Normalized theme
 
-    ```
+    ```text
     Canonical: "Objection Handling"
     Related: ["handling resistance", "overcoming objections"]
     Domain: "Sales"
@@ -137,7 +137,7 @@ Entity resolution canonicalizes variations of the same person, theme, or concept
   <Tab title="Concepts & Frameworks">
     **Problem:** Framework name variations
 
-    ```
+    ```text
     "NEPQ"
     "Neuro-Emotional Persuasion Questions"
     "nepq framework"
@@ -146,7 +146,7 @@ Entity resolution canonicalizes variations of the same person, theme, or concept
 
     **Solution:** Registered concept
 
-    ```
+    ```text
     Canonical: "NEPQ (Neuro-Emotional Persuasion Questions)"
     Author: "Jeremy Miner"
     Category: "Sales Framework"
@@ -260,7 +260,7 @@ All 3 experts agree:
 
 When the pipeline finishes, you'll see a structured summary:
 
-```
+```text
 ═══════════════════════════════════════════════
         JARVIS PIPELINE COMPLETE
          Cole Gordon (CG003)

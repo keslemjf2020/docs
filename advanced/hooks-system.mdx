@@ -1,5 +1,5 @@
 ---
-title: "Automating Mega Brain with the Hooks System"
+title: "Automating Mega Brain with the Python Hooks System"
 sidebarTitle: "Hooks System"
 description: "Use Mega Brain's event-driven hook system to automate 20+ Python hooks across six lifecycle events, from session start to cleanup."
 ---
@@ -10,7 +10,7 @@ Mega Brain's hooks system lets you run Python scripts automatically at key momen
 
 Hooks are configured in `.claude/settings.json` under a `"hooks"` key. Each entry maps a lifecycle event name to an array of hook definitions. When Claude Code fires an event, it runs every matching hook in sequence, reads the JSON response from stdout, and decides whether to continue or block the current action.
 
-```
+```text
 SessionStart → UserPromptSubmit → PreToolUse → PostToolUse → Stop → SessionEnd
 ```
 

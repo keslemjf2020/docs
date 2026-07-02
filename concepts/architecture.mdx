@@ -10,7 +10,7 @@ Mega Brain follows a modular architecture designed to keep concerns cleanly sepa
 
 Here is how the top-level directories relate to each other:
 
-```
+```text
 mega-brain/
 ├── inbox/          ← Raw materials waiting to be processed
 ├── core/           ← Processing engine (tasks, workflows, schemas)
@@ -88,7 +88,7 @@ The `core/` directory contains everything needed to convert raw material into st
 
 Mega Brain ships with four categories of agents, each at a different layer of the distribution system:
 
-```
+```text
 agents/
 ├── minds/          # Expert mind clones (Hormozi, Cole Gordon, etc.)
 ├── cargo/          # Functional role agents (Sales, Marketing, Ops, Finance)
@@ -132,7 +132,7 @@ The `.claude/` directory wires Mega Brain into your Claude Code environment thro
 
 Every piece of structured knowledge Mega Brain produces lands here, fully traceable to its source:
 
-```
+```text
 knowledge/
 ├── dossiers/
 │   ├── persons/    # Expert dossiers (e.g., ALEX-HORMOZI.md)
@@ -150,7 +150,7 @@ knowledge/
 
 Intermediate stages of the processing pipeline write their outputs here:
 
-```
+```text
 artifacts/
 ├── chunks/         # Segmented content with metadata
 ├── insights/       # Extracted actionable insights

@@ -1,7 +1,7 @@
 ---
 title: "/save and /resume: Persist and Restore Work Sessions"
 sidebarTitle: "/save & /resume"
-description: "Save your current Mega Brain work context — tasks, pending files, notes, and next steps — and restore it seamlessly at the start of your next Claude Code session."
+description: "Save your Mega Brain work context — tasks, pending files, notes, and next steps — and restore it seamlessly at the start of your next Claude Code session."
 ---
 
 Claude Code sessions don't persist context automatically. When you close a session and come back the next day, Mega Brain won't know where you left off — unless you saved first. `/save` captures your current task, status, pending items, and next steps into two files. `/resume` reads those files at the start of your next session and picks up exactly where you stopped. Together, they make multi-day and multi-session projects feel seamless.
@@ -47,7 +47,7 @@ When you run `/save`, you describe your current state in plain language. Mega Br
   <Step title="Describe your context">
     JARVIS asks what you want to save. Respond in plain language:
 
-    ```
+    ```text
     What do you want me to save as context?
 
     Examples:
@@ -115,7 +115,7 @@ When you run `/save`, you describe your current state in plain language. Mega Br
   </Step>
 
   <Step title="Confirmation">
-    ```
+    ```text
     [SAVED] Context saved in:
     - /logs/LIVE-SESSION/CURRENT-SESSION.md
     - /logs/LIVE-SESSION/CONTEXT.json
@@ -127,7 +127,7 @@ When you run `/save`, you describe your current state in plain language. Mega Br
 
 ### Example Interaction
 
-```
+```text
 User: /save
 
 JARVIS: What do you want me to save as context?
@@ -174,7 +174,7 @@ When you run `/resume` at the start of a new session, Mega Brain reads both save
   </Step>
 
   <Step title="Session summary is displayed">
-    ```
+    ```text
     [RESUMING SESSION]
 
     ## Last Activity
@@ -209,7 +209,7 @@ When you run `/resume` at the start of a new session, Mega Brain reads both save
   <Step title="Confirm and continue">
     You can proceed with the suggested next steps, do something different, or update the context before continuing.
 
-    ```
+    ```text
     User: Yes, let's process CG005.
 
     JARVIS: [Executing /process-jarvis...]
@@ -221,7 +221,7 @@ When you run `/resume` at the start of a new session, Mega Brain reads both save
 
 ## Storage Location
 
-```
+```text
 logs/LIVE-SESSION/
 ├── CURRENT-SESSION.md     # Human-readable context
 ├── CONTEXT.json           # Machine-readable context
@@ -261,7 +261,7 @@ Only the **most recent** session lives in `CURRENT-SESSION.md`. When you save a 
 
 ### Multi-Session Project
 
-```
+```text
 Day 1:
   Ingest 10 videos
   Process 3 → /save (status: in_progress, 7 pending)
@@ -279,7 +279,7 @@ Day 3:
 
 ### Blocked Workflow
 
-```
+```text
 Session 1:
   Start processing CG005
   Phase 4 fails (missing chunk_ids)
@@ -295,7 +295,7 @@ Session 2:
 
 ### Switching Between Experts
 
-```
+```text
 Session A (Cole Gordon work):
   /save  →  "Cole Gordon: 3/5 processed"
 
@@ -315,7 +315,7 @@ Session C (back to Cole Gordon):
 
 **Be specific in your notes.** Vague notes help no one the next day:
 
-```
+```text
 # Good
 "CG004 has Email Hammer framework (12 emails, 48h).
 Heuristic: 'If show rate < 60%, deploy Email Hammer'.
